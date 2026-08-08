@@ -377,3 +377,17 @@ var HISTORICAL_DRAFT_CLASSES = {
     { pick: 46, team: 'CLE', en: 'Danny Green', cn: '丹尼-格林', pos: 'SG', height: '1.98米', tier: 'allstar', _potential: 90 }
   ]
 };
+
+
+// ★ 历史球星双位置映射（主 / 次）：与玩家同位置且玩家综评更高时，自动让位到次位置，避免被挤去替补
+var HISTORICAL_SECONDARY_POS = {
+  'Hakeem Olajuwon': 'PF', 'Michael Jordan': 'SF', 'Charles Barkley': 'SF', 'Patrick Ewing': 'PF',
+  'Karl Malone': 'C', 'David Robinson': 'PF', 'Scottie Pippen': 'SG', 'Gary Payton': 'SG',
+  "Shaquille O'Neal": 'PF', 'Alonzo Mourning': 'PF', 'Chris Webber': 'C', 'Anfernee Hardaway': 'PG',
+  'Jason Kidd': 'SG', 'Grant Hill': 'PF', 'Kevin Garnett': 'C', 'Allen Iverson': 'SG',
+  'Ray Allen': 'PG', 'Kobe Bryant': 'SF', 'Steve Nash': 'SG', 'Tim Duncan': 'C',
+  'Tracy McGrady': 'SF', 'Vince Carter': 'SF', 'Dirk Nowitzki': 'C', 'Paul Pierce': 'SG',
+  'Pau Gasol': 'C', 'Tony Parker': 'SG', 'Yao Ming': 'PF', 'Amare Stoudemire': 'C',
+  'LeBron James': 'PF', 'Carmelo Anthony': 'PF', 'Dwyane Wade': 'PG', 'Dwight Howard': 'C',
+  'Chris Paul': 'SG', 'Kevin Durant': 'PF', 'James Harden': 'PG', 'Stephen Curry': 'SG'
+};

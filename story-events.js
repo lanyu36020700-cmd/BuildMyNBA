@@ -10,6 +10,8 @@ const BRANCH_EVENTS = [
     phase: 'offseason',
     slot: 'main',
     weight: 12,
+    // ★ 防重复：国家队支线只允许在尚未开启时作为入口出现一次（DAG 版首次征召/第二次电话接管后续）
+    requires: function() { return getBranchNode('china_team') === 'start' && getBranchStage('china_team') === 0; },
     title: '中国男篮征召',
     body: '中国男篮向你发来正式征召。这个夏天，国家队需要一个真正能扛球权的人。经纪团队提醒你：这是荣誉，也是压力，回到新赛季时身体负担会更重。',
     choices: [
@@ -63,6 +65,8 @@ const BRANCH_EVENTS = [
     phase: 'offseason',
     slot: 'main',
     weight: 13,
+    // ★ 防重复：训练营入口只允许在训练支线（training）尚未开启时出现一次
+    requires: function() { return getBranchNode('training') === 'start' && getBranchStage('mentor') === 0; },
     title: '巨星训练营邀请',
     body: '休赛期你收到几个私人训练营邀请。它们不只是训练课，更像一次路线选择：你要从谁身上偷走一部分比赛理解？',
     choices: [
@@ -130,6 +134,8 @@ const BRANCH_EVENTS = [
     phase: 'offseason',
     slot: 'main',
     weight: 11,
+    // ★ 防重复：专项突破只允许在训练支线（training）尚未开启时出现一次
+    requires: function() { return getBranchNode('training') === 'start' && getBranchStage('skill_training') === 0; },
     title: '专项技术突破',
     body: '训练师建议你把整个夏天押在一项技术上。高投入有机会换来突飞猛进，也可能遇到瓶颈，甚至因为过度训练把风险带进新赛季。',
     choices: [
@@ -181,6 +187,8 @@ const BRANCH_EVENTS = [
     phase: 'offseason',
     slot: 'main',
     weight: 9,
+    // ★ 防重复：球队合练只允许在球队线尚未开启时出现一次（DAG 版提前合练接管后续）
+    requires: function() { return getBranchNode('team_practice') === 'start' && getBranchStage('team_practice') === 0; },
     title: '球队合练',
     body: '队友们约你提前回到训练馆合练。教练组认为这能让球队更快进入状态。',
     choices: [
@@ -210,7 +218,9 @@ const BRANCH_EVENTS = [
     body: '休赛期刚开始，一位很有名的女明星通过共同朋友给你发来邀请。经纪团队提醒你：这可能是轻松的夏天，也可能把你的名字送上娱乐版头条。',
     requires: function() {
       var c = STATE.career || {};
-      return (c.currentAge || 22) >= 22 && ((STATE.finalOVR || 0) >= 82 || hasCareerHonor('全明星') || hasCareerHonor('最佳阵容'));
+      // ★ 防重复：恋爱线已开启/已完结（declined_closed、breakup、partnership 等）后不再反复触发
+      return getBranchNode('relationship') === 'start' && getBranchStage('relationship') === 0
+        && (c.currentAge || 22) >= 22 && ((STATE.finalOVR || 0) >= 82 || hasCareerHonor('全明星') || hasCareerHonor('最佳阵容'));
     },
     choices: [
       { label: '接受女明星邀约', hint: '可能状态火热，也可能陷入感情纠纷', apply: function() {
@@ -267,7 +277,9 @@ const BRANCH_EVENTS = [
     title: '名人高尔夫局',
     body: '赞助商给你安排了一场名人高尔夫局。球场上不只有挥杆，还有经纪团队、人脉圈和未来合作的试探。',
     requires: function() {
-      return (STATE.career.currentAge || 22) >= 24 && ((STATE.finalOVR || 0) >= 85 || hasCareerHonor('全明星') || hasCareerHonor('总冠军'));
+      // ★ 防重复：人脉线已开启/已完结后不再反复触发
+      return getBranchNode('network') === 'start' && getBranchStage('network') === 0
+        && (STATE.career.currentAge || 22) >= 24 && ((STATE.finalOVR || 0) >= 85 || hasCareerHonor('全明星') || hasCareerHonor('总冠军'));
     },
     choices: [
       { label: '参加高尔夫局', hint: '可能遇到 Rich Paul、库里团队或商业机会', apply: function() {
@@ -1013,8 +1025,19 @@ const STAGED_BRANCH_EVENTS = [
       if (!c || !c.flags) return false;
       var season = c.seasonCount || 0;
       if ((STATE.finalOVR || 0) < 85 && !hasCareerHonor('全明星') && !hasCareerHonor('最佳阵容')) return false;
-      if ((c.contract || 0) > 1 && (c.currentAge || 22) < 24) return false;
+      // ★ 本地修改：巨星邀约只在玩家合同结束的赛季（合同到期年 contract<=1，或球员选项跳出后）出现，
+      //   合同期内不再提前触发，避免“还在合同年就被招募”的不现实情况
+      if ((c.contract || 0) > 1) return false;
       if (c.flags.lastSuperstarRecruitSeason != null && season - c.flags.lastSuperstarRecruitSeason < 3) return false;
+      // ★ 生涯最多触发 3 次
+      if ((c.flags.superstarRecruitCount || 0) >= 3) return false;
+      // ★ 玩家球队近 2 年进过季后赛才有争冠吸引力（无历史记录的前期放行）
+      var _hist = STATE._teamHistory && STATE._teamHistory[STATE.careerTeam];
+      var madePlayoffs = true;
+      if (_hist && _hist.length > 0) {
+        madePlayoffs = (_hist[0] || 0) >= 0.5 || (_hist.length > 1 && (_hist[1] || 0) >= 0.5);
+      }
+      if (!madePlayoffs) return false;
       var node = getBranchNode('superstar_recruit');
       if (node && node !== 'start') return false;
       return !!prepareSuperstarRecruitment();
@@ -1022,9 +1045,16 @@ const STAGED_BRANCH_EVENTS = [
     choices: [
       { label: '认真考虑联手', hint: '目标球队报价倾向明显提高，但争议会上升', apply: function() {
         var c = STATE.career; c.flags = c.flags || {};
+        c.flags.superstarRecruitCount = (c.flags.superstarRecruitCount || 0) + 1;
         var star = prepareSuperstarRecruitment();
         if (!star) return '你让经纪人先别回应。电话挂断后，训练馆重新安静下来。';
         c.flags.lastSuperstarRecruitSeason = c.seasonCount || 0;
+        // ★ 加盟判定：约 3/4 概率对方积极回应，1/4 对方最终选择留队（增加随机感）
+        if (Math.random() < 0.25) {
+          c.flags.superstarRecruitInterest = 'declined';
+          setBranchNode('superstar_recruit', 'kept_distance', { targetTeam: c.flags.superstarRecruitTargetTeam, recruiter: c.flags.superstarRecruiterName });
+          return '你让团队接触了{招募球队}，对方的态度最初很积极，但几天后经纪人打来说：他最终决定留在母队。电话挂断时，你反而松了口气。<br><br>影响：此事到此为止。';
+        }
         c.flags.superstarRecruitInterest = 'serious';
         c.flags.freeAgentChoice = 'contender';
         setBranchNode('superstar_recruit', 'consider_team_up', { targetTeam: c.flags.superstarRecruitTargetTeam, recruiter: c.flags.superstarRecruiterName });
@@ -1034,6 +1064,7 @@ const STAGED_BRANCH_EVENTS = [
       }},
       { label: '保持距离', hint: '维持自主和忠诚，不改变报价倾向', apply: function() {
         var c = STATE.career; c.flags = c.flags || {};
+        c.flags.superstarRecruitCount = (c.flags.superstarRecruitCount || 0) + 1;
         prepareSuperstarRecruitment();
         c.flags.lastSuperstarRecruitSeason = c.seasonCount || 0;
         c.flags.superstarRecruitInterest = 'declined';
@@ -1044,6 +1075,7 @@ const STAGED_BRANCH_EVENTS = [
       }},
       { label: '把消息放给媒体', hint: '制造热度，大市场和争冠队更关注你', apply: function() {
         var c = STATE.career; c.flags = c.flags || {};
+        c.flags.superstarRecruitCount = (c.flags.superstarRecruitCount || 0) + 1;
         var star = prepareSuperstarRecruitment();
         if (!star) return '你让经纪人先别回应。电话挂断后，训练馆重新安静下来。';
         c.flags.lastSuperstarRecruitSeason = c.seasonCount || 0;
@@ -3594,6 +3626,8 @@ const STAGED_BRANCH_EVENTS = [
     choices: [
       { label: '留守母队，要求补强', hint: '队史评价上升，冠军不确定', apply: function() {
         STATE.career.flags.freeAgentChoice = 'stay';
+        // ★ 连锁：记录补强承诺，新赛季中检测是否兑现
+        if (STATE.career && STATE.career.flags) STATE.career.flags.faPromise = { season: (STATE.career.seasonCount || 0), done: false };
         addProfileDelta('fanSupport', 2);
         addProfileDelta('legacyBonus', 1);
         addProfileDelta('mediaTrust', 1);
@@ -3934,6 +3968,10 @@ const STAGED_BRANCH_EVENTS = [
     requires: function() {
       var c = STATE.career || {};
       var profile = c.profile || {};
+      // ★ 旧存档兼容：历史中已选过“继续婉拒”则彻底关闭，不再每年重弹
+      var history = (c.branchHistory || []);
+      var declinedBefore = history.some(function(h) { return h.eventId === 'crossover_second_chance' && h.choice === '继续婉拒'; });
+      if (declinedBefore) return false;
       return getBranchNode('crossover') === 'declined' && (profile.fame || 0) >= 8;
     },
     choices: [
@@ -3943,7 +3981,8 @@ const STAGED_BRANCH_EVENTS = [
         return '你拨通了那通早就该拨的电话。揽佬接起来第一句：我就知道你会回来。<br><br>影响：人气+1；下一步进入演唱会彩排。';
       }},
       { label: '继续婉拒', hint: '彻底留在篮球这一侧', apply: function() {
-        setBranchNode('crossover', 'declined', { status: 'declined' });
+        // ★ 修复重复触发：第二次仍婉拒则进入终态，不再每年夏天重弹
+        setBranchNode('crossover', 'declined_final', { status: 'declined_final' });
         addSeasonMod('formVariance', -1, -10, 10);
         return '你说：替我谢谢揽佬，这个夏天我还是想在球馆里。电话那头没有失望，只说：那歌我给你留着。<br><br>影响：下赛季状态波动略降。';
       }}
@@ -4123,8 +4162,8 @@ const STAGED_BRANCH_EVENTS = [
           c.flags.kdJoinTeam = team; // 合同未到期 → 休赛期交易（合同随队转移）
           return '你给经纪人发了四个字：去谈吧。消息在自由市场开启前夜炸开：你将通过交易加盟刚刚在总决赛击败你的' + tn + '。球迷烧掉你的球衣，社交媒体把你和"投敌"两个字绑在一起，但你清楚自己要什么——一枚戒指。<br><br>效果：休赛期将被交易至' + tn + '（合同年限不变）；争议+3；球迷支持-3；媒体压力+2。';
         }
-        c.flags.kdChampionFA = team; // 合同到期/球员选项年 → 自由市场加盟
-        return '你给经纪人发了四个字：去谈吧。你的合同正好走到了终点，' + tn + '的大门顺势打开。球迷烧掉你的球衣，社交媒体把你和"投敌"两个字绑在一起，但你清楚自己要什么——一枚戒指。<br><br>效果：自由市场将收到' + tn + '的顶配邀约（冠军球队邀约）；争议+3；球迷支持-3；媒体压力+2。';
+        c.flags.kdChampionFA = team; // 合同到期/球员选项年 → 休赛期直接加盟（不弹自由市场选队）
+        return '你给经纪人发了四个字：去谈吧。你的合同正好走到了终点，' + tn + '的大门顺势打开。球迷烧掉你的球衣，社交媒体把你和"投敌"两个字绑在一起，但你清楚自己要什么——一枚戒指。<br><br>效果：休赛期将直接加盟' + tn + '（新签合同，不再进入自由市场选队）；争议+3；球迷支持-3；媒体压力+2。';
       }},
       { label: '拒绝，坚守老东家', hint: '拒绝诱惑，球迷敬你，关键球+1', apply: function() {
         var c = STATE.career;
@@ -4306,4 +4345,519 @@ const STAGED_BRANCH_EVENTS = [
       }}
     ]
   },
+
+  {
+    id: 'wanderer_endorsement',
+    branch: 'wanderer',
+    phase: 'offseason',
+    slot: 'main',
+    weight: 40,
+    recordHistory: true,
+    title: '游子代言：换队四次的商业邀请',
+    scenes: [
+      '你的职业履历上已经写下了四支球队。休赛期刚开始，一间广告公司把方案送到了经纪人桌上：他们想拍一支短片，主题就叫“流浪者”。',
+      '拍摄那天，导演让你站在四个城市的地标前。你忽然意识到，这支片子说的不只是篮球。'
+    ],
+    body: '你愿意把自己的故事卖给品牌吗？',
+    requires: function() {
+      var c = STATE.career;
+      if (!c) return false;
+      c.flags = c.flags || {};
+      if (c.flags.wandererEndorsementDone) return false;
+      var m = getMobility ? getMobility() : null;
+      var fa = (m && m.freeAgencyTeams) ? m.freeAgencyTeams.length : 0;
+      var trades = (m && (m.teamInitiatedTrades || m.trades)) || 0;
+      var waived = (m && m.waived) || 0;
+      return (fa + trades + waived) >= 4;
+    },
+    choices: [
+      { label: '接下代言，讲好流浪故事', hint: '商业价值+3，人气+2；忠诚-1，争议+1', apply: function() {
+        var c = STATE.career; c.flags = c.flags || {};
+        c.flags.wandererEndorsementDone = true;
+        setBranchNode('wanderer', 'signed', { status: 'signed' });
+        addProfileDelta('businessValue', 3);
+        addProfileDelta('fame', 2);
+        addProfileDelta('loyalty', -1);
+        addProfileDelta('controversy', 1);
+        return '广告上线那周，你的球衣销量翻了一倍。海报上的文案只有一句话：不是没有根，是每个城市都长过根。<br><br>效果：商业价值+3；人气+2；忠诚-1；争议+1。';
+      }},
+      { label: '拒绝，篮球不该被包装', hint: '媒体好感+1，状态更稳；商业扩张放缓', apply: function() {
+        var c = STATE.career; c.flags = c.flags || {};
+        c.flags.wandererEndorsementDone = true;
+        setBranchNode('wanderer', 'declined', { status: 'declined' });
+        addProfileDelta('mediaTrust', 1);
+        addProfileDelta('loyalty', 1);
+        addSeasonMod('formVariance', -1, -10, 10);
+        return '你回绝了广告公司，说篮球是我的工作，不是我的故事。记者后来问起，你只答了一句：等我想讲的时候，我自己会讲。<br><br>效果：媒体好感+1；忠诚+1；状态波动略降。';
+      }}
+    ]
+  },
+  {
+    id: 'scrimmage_bench_uprising',
+    branch: 'scrimmage',
+    phase: 'season',
+    slot: 'main',
+    weight: 10,
+    recordHistory: true,
+    title: '训练赛：替补阵容的挑衅',
+    scenes: [
+      '例行队内对抗训练，主力队按惯例开打。今天替补席那边不知哪来的火气，替补控卫运球过半场时朝你喊了一句：别以为稳赢。',
+      '主教练把战术板往椅子上一扔：既然都这么有精神，那就认真打一场。'
+    ],
+    body: '训练赛要开始了，你打算怎么打？',
+    requires: function() {
+      var c = STATE.career;
+      if (!c) return false;
+      var g = STATE.season && STATE.season.games ? STATE.season.games.length : 0;
+      if (g < 20) return false;
+      if (STATE.season && STATE.season.isUserStarter === false) return false;
+      return true;
+    },
+    choices: [
+      { label: '认真带主力赢下训练赛', hint: '教练信任+1，队内氛围稳定', apply: function() {
+        setBranchNode('scrimmage', 'main_wins', { status: 'main' });
+        addProfileDelta('coachTrust', 1);
+        addSeasonMod('teamChemistry', 1, -10, 10);
+        return '你按正规比赛的强度打了整场，主力队赢下对抗。替补们虽然输了，但态度明显认真了。教练赛后说：这才像一支要夺冠的球队。<br><br>效果：教练信任+1；球队默契+1。';
+      }},
+      { label: '故意放水，让替补赢', hint: '士气波动；可能被视为不认真', apply: function() {
+        var r = Math.random();
+        if (r < 0.45) {
+          addProfileDelta('coachTrust', -1);
+          addProfileDelta('controversy', 1);
+          return '你放了水，替补队赢下训练赛，全场欢呼。但教练在战术板前停了很久，最后说：明天开始，你回替补席热身。<br><br>效果：教练信任-1；争议+1。';
+        }
+        addProfileDelta('lockerRoomTrust', 1);
+        addSeasonMod('moraleBonus', 1, -10, 10);
+        return '你放了几球，替补们越打越兴奋，最终赢下对抗。赛后更衣室气氛意外地好——年轻人说：这是他们这赛季最开心的一天。<br><br>效果：更衣室信任+1；士气+1。';
+      }},
+      { label: '用全力打爆替补', hint: '数据占优但可能激化矛盾；有概率冲突', apply: function() {
+        var r = Math.random();
+        if (r < 0.3) {
+          addProfileDelta('coachTrust', -1);
+          addProfileDelta('lockerRoomTrust', -2);
+          addProfileDelta('controversy', 1);
+          try {
+            var ev = STATE.season.events;
+            if (ev) {
+              var injDays = 3 + Math.floor(Math.random() * 5);
+              var injGames = Math.max(1, Math.ceil(injDays / 2.1));
+              ev.injuryGamesLeft += injGames;
+              ev.injury = { id: 'injury_teammate_punch', name: '更衣室冲突', severity: 'minor', daysLeft: injDays, gamesLeft: injGames, forbidPlay: false, injuredAt: STATE.season.games.length };
+              ev.injuryReason = '更衣室冲突';
+              if (ev.storyTimeline) ev.storyTimeline.push({ gameNum: STATE.season.games.length, title: '更衣室冲突', desc: '被打伤缺阵 ' + injGames + ' 场', emoji: '💥' });
+            }
+          } catch(e) {}
+          return '你在对抗赛里把替补打了个透——连续三球顶着人硬上，替补中锋终于忍不住推了你一把，两人扭打在一起。教练冲过来把你们分开，你的眼角挂了彩。<br><br>效果：教练信任-1；更衣室信任-2；争议+1；轻伤缺阵数场。';
+        }
+        addProfileDelta('lockerRoomTrust', 1);
+        addSeasonMod('teamChemistry', 1, -10, 10);
+        return '你火力全开，替补们被压在半场动弹不得。赛后替补控卫主动找你击掌：下次我们练好战术再来。你笑了：随时欢迎。<br><br>效果：更衣室信任+1；球队默契+1。';
+      }}
+    ]
+  },
+  {
+    id: 'season_start_declaration',
+    branch: 'season_start_decl',
+    phase: 'season',
+    slot: 'main',
+    weight: 10,
+    recordHistory: false,
+    title: '开季发布会：放狠话',
+    scenes: [
+      '赛季第一周，记者把话筒递到你面前：这个赛季，你们的目标是什么？',
+      '更衣室的老将们都在看你——上一句话，会决定整个赛季的舆论温度。'
+    ],
+    body: '你会怎么回答？',
+    requires: function() {
+      var g = STATE.season && STATE.season.games ? STATE.season.games.length : 0;
+      return g <= 11;
+    },
+    choices: [
+      { label: '高调宣言：不夺冠就是失败', hint: '士气+、媒体压力+', apply: function() {
+        addSeasonMod('moraleBonus', 2, -10, 10);
+        addSeasonMod('mediaPressure', 1, -10, 10);
+        return '“不夺冠，这个赛季就是失败。”全场安静了一秒，然后掌声和议论一起爆发。队友在镜头外笑了——有人替他们把这个flag立出来了。<br><br>效果：士气+2；媒体压力+1。';
+      }},
+      { label: '低调务实：一场一场来', hint: '教练信任+、媒体好感+', apply: function() {
+        addProfileDelta('coachTrust', 1);
+        addProfileDelta('mediaTrust', 1);
+        return '“我们还有82场要打，一场一场来。”教练在走廊里路过，轻轻拍了拍你的肩。没有标题，但有信任。<br><br>效果：教练信任+1；媒体好感+1。';
+      }},
+      { label: '反问记者：你们觉得呢', hint: '人气+、争议+', apply: function() {
+        addProfileDelta('fame', 1);
+        addProfileDelta('controversy', 1);
+        return '你笑了笑，把问题抛回去：你们觉得呢？第二天的标题是“他看起来像要搞事情”。<br><br>效果：人气+1；争议+1。';
+      }}
+    ]
+  },
+  {
+    id: 'season_start_newcomer_dinner',
+    branch: 'season_start_dinner',
+    phase: 'season',
+    slot: 'main',
+    weight: 9,
+    recordHistory: false,
+    title: '新队友的第一次夜谈',
+    scenes: [
+      '开季前两周，更衣室里多了几张新面孔。训练结束后，新援一个人坐在储物柜前刷手机。',
+      '老队员都在各自的小圈子里，没人主动打破那层陌生。'
+    ],
+    body: '你会怎么做？',
+    requires: function() {
+      var g = STATE.season && STATE.season.games ? STATE.season.games.length : 0;
+      return g <= 11;
+    },
+    choices: [
+      { label: '组局：叫上所有人吃顿饭', hint: '化学+、更衣室信任+', apply: function() {
+        addSeasonMod('teamChemistry', 2, -10, 10);
+        addProfileDelta('lockerRoomTrust', 1);
+        return '你订了全城的烤肉店，把新人和老将拉到一张桌上。酒过三巡，新援终于讲起自己为什么离开母队——那顿饭之后，更衣室的隔阂碎了大半。<br><br>效果：球队化学+2；更衣室信任+1。';
+      }},
+      { label: '主动陪他加练', hint: '更衣室信任+、状态稳定', apply: function() {
+        addProfileDelta('lockerRoomTrust', 2);
+        addSeasonMod('formVariance', -1, -10, 10);
+        return '训练结束后你留了下来，和新援一组一组地跑战术。他没说什么，但第二天开始主动喊战术了。<br><br>效果：更衣室信任+2；状态波动-1。';
+      }},
+      { label: '顺其自然，球场见', hint: '保持距离，无风险', apply: function() {
+        return '你点了点头算是打过招呼。有些关系要等比赛来检验——你相信球场上的默契不需要饭局。';
+      }}
+    ]
+  },
+  {
+    id: 'season_start_mediaday',
+    branch: 'season_start_media',
+    phase: 'season',
+    slot: 'main',
+    weight: 8,
+    recordHistory: false,
+    title: '媒体日：定妆照整活',
+    scenes: [
+      '媒体日，摄影师让你摆出定妆照造型。更衣室角落的队友们都在偷偷看你准备怎么拍。',
+      '去年的定妆照被球迷做成了表情包，今年你有机会换个画风。'
+    ],
+    body: '这一季，你打算以什么形象开场？',
+    requires: function() {
+      var g = STATE.season && STATE.season.games ? STATE.season.games.length : 0;
+      return g <= 11;
+    },
+    choices: [
+      { label: '整活：换个离谱造型', hint: '人气+、商业价值+；小概率媒体反感', apply: function() {
+        addProfileDelta('fame', 1);
+        addProfileDelta('businessValue', 1);
+        if (Math.random() < 0.3) {
+          addProfileDelta('mediaTrust', -1);
+          return '你戴着拳击手披风拍完了定妆照。球迷笑疯，球衣销量涨了一截，但媒体吐槽你“不够严肃”。<br><br>效果：人气+1；商业价值+1；媒体好感-1。';
+        }
+        return '你戴着拳击手披风拍完了定妆照。照片发布当晚冲上热搜，连品牌方都来打听你。<br><br>效果：人气+1；商业价值+1。';
+      }},
+      { label: '认真拍，用表现说话', hint: '媒体好感+、教练信任+', apply: function() {
+        addProfileDelta('mediaTrust', 1);
+        addProfileDelta('coachTrust', 1);
+        return '你只拍了标准造型，微笑、握球、目视前方。摄影师说这是今年最省事的十分钟。<br><br>效果：媒体好感+1；教练信任+1。';
+      }}
+    ]
+  },
+  {
+    id: 'season_allstar_vote',
+    branch: 'season_allstar_vote',
+    phase: 'season',
+    slot: 'main',
+    weight: 10,
+    recordHistory: false,
+    title: '全明星拉票',
+    scenes: [
+      '全明星投票窗口开启，记者问你有什么想对球迷说的。',
+      '社交媒体上，球迷正在为“该不该首发”吵成一团。'
+    ],
+    body: '你会怎么拉票？',
+    requires: function() {
+      var g = STATE.season && STATE.season.games ? STATE.season.games.length : 0;
+      return g >= 25;
+    },
+    choices: [
+      { label: '公开拉票：转发投票链接', hint: '人气+、媒体好感-', apply: function() {
+        addProfileDelta('fame', 1);
+        addProfileDelta('mediaTrust', -1);
+        return '你转发了投票链接并配上“全明星见”。球迷疯狂投票，媒体却批评你“跪求首发”。<br><br>效果：人气+1；媒体好感-1。';
+      }},
+      { label: '让数据说话', hint: '媒体好感+、教练信任+', apply: function() {
+        addProfileDelta('mediaTrust', 1);
+        addProfileDelta('coachTrust', 1);
+        return '你只发了一条训练视频。第二周，你的场均数据出现在所有讨论帖里——数据自己会说话。<br><br>效果：媒体好感+1；教练信任+1。';
+      }}
+    ]
+  },
+  {
+    id: 'season_streak_media',
+    branch: 'season_streak_media',
+    phase: 'season',
+    slot: 'main',
+    weight: 9,
+    recordHistory: false,
+    title: '连胜毒奶',
+    scenes: [
+      '球队正处于一波连胜中，ESPN 的节目已经连续三晚在吹“这支球队没有弱点”。',
+      '更衣室的战术板上贴满了剪报，每一条都是毒奶。'
+    ],
+    body: '面对铺天盖地的吹捧，你会怎么做？',
+    requires: function() {
+      var g = STATE.season && STATE.season.games ? STATE.season.games.length : 0;
+      if (g < 25) return false;
+      var st = STATE.season && STATE.season.standings && STATE.season.standings[STATE.careerTeam];
+      return !!(st && st.streak === 'W' && (st.streakLen || 0) >= 3);
+    },
+    choices: [
+      { label: '回应媒体：我们还没赢够', hint: '士气+、媒体好感+', apply: function() {
+        addSeasonMod('moraleBonus', 1, -10, 10);
+        addProfileDelta('mediaTrust', 1);
+        return '“三连胜只是热身，我们还没赢够。”这句话成了新标语，更衣室里的气氛比连胜更热。<br><br>效果：士气+1；媒体好感+1。';
+      }},
+      { label: '冷处理：拒绝毒奶', hint: '媒体压力-', apply: function() {
+        addSeasonMod('mediaPressure', -1, -10, 10);
+        return '你只说了句“下一场见”就关掉麦克风。没有新梗，但也没有被打脸的素材。<br><br>效果：媒体压力-1。';
+      }}
+    ]
+  },
+  {
+    id: 'offseason_2k_cover',
+    branch: 'offseason_2k_cover',
+    phase: 'offseason',
+    slot: 'main',
+    weight: 24,
+    recordHistory: false,
+    title: '2K封面魔咒',
+    scenes: [
+      '游戏公司把一份封面合同送到经纪人桌上：下一代的封面球员，他们想请你。',
+      '经纪人压低声音：你知道那个魔咒吧——上过封面的人，第二年大多打得像换了一个人。'
+    ],
+    body: '你愿意接过封面吗？',
+    requires: function() {
+      var c = STATE.career;
+      if (!c) return false;
+      c.flags = c.flags || {};
+      if (c.flags.offseason2kCoverDone) return false;
+      return (c.seasonCount || 0) >= 2;
+    },
+    choices: [
+      { label: '接封面，无视魔咒', hint: '商业价值+、人气+；下赛季伤病风险略升', apply: function() {
+        var c = STATE.career; c.flags = c.flags || {};
+        c.flags.offseason2kCoverDone = true;
+        addProfileDelta('businessValue', 3);
+        addProfileDelta('fame', 2);
+        addSeasonMod('injuryRiskBonus', 1, -4, 8);
+        return '你穿着球衣走进摄影棚，拍了四小时封面。发售当周销量破纪录——但你知道，魔咒开始计时了。<br><br>效果：商业价值+3；人气+2；下赛季伤病风险+1。';
+      }},
+      { label: '婉拒，专心打球', hint: '商业价值+1', apply: function() {
+        var c = STATE.career; c.flags = c.flags || {};
+        c.flags.offseason2kCoverDone = true;
+        addProfileDelta('businessValue', 1);
+        return '你谢绝了封面邀约。品牌方有些意外，但你的经纪人笑着说：他从不相信魔咒，他只是更相信训练馆。<br><br>效果：商业价值+1。';
+      }}
+    ]
+  },
+  {
+    id: 'offseason_drew_league',
+    branch: 'offseason_drew_league',
+    phase: 'offseason',
+    slot: 'main',
+    weight: 18,
+    recordHistory: false,
+    title: '德鲁联赛：回业余赛场',
+    scenes: [
+      '休赛期，洛杉矶的德鲁联赛邀请你登场。对手里有退役球星，也有健身教练。',
+      '消息传出后，球馆连夜多了三千张站票。'
+    ],
+    body: '要不要去打一场？',
+    requires: function() {
+      return true;
+    },
+    choices: [
+      { label: '空降德鲁联赛', hint: '人气+、球迷好感+；伤病风险略升', apply: function() {
+        addProfileDelta('fame', 2);
+        addProfileDelta('fanSupport', 1);
+        addSeasonMod('injuryRiskBonus', 1, -4, 8);
+        return '你在业余赛场上砍下高分，视频刷爆全网。解说员喊了一整晚你的名字——但场馆地板比NBA硬得多。<br><br>效果：人气+2；球迷好感+1；下赛季伤病风险+1。';
+      }},
+      { label: '不去，保持休整', hint: '体能负担-', apply: function() {
+        addSeasonMod('staminaLoad', -1, -10, 10);
+        return '你婉拒了邀请，在家陪孩子看录像。经纪人发来一条消息：球馆今晚还是满的，他们喊了一晚上你的名字。<br><br>效果：体能负担-1。';
+      }}
+    ]
+  },
+  {
+    id: 'offseason_invest_chain',
+    branch: 'offseason_invest_chain',
+    phase: 'offseason',
+    slot: 'main',
+    weight: 18,
+    recordHistory: false,
+    title: '餐饮帝国：投资连锁店',
+    scenes: [
+      '一个连锁餐饮品牌找上门，想请你做合伙人：你的名字，他们的门店。',
+      '经纪人给你算了一笔账：品牌溢价、门店扩张、以及那些倒闭的先例。'
+    ],
+    body: '这笔投资，接不接？',
+    requires: function() {
+      var c = STATE.career;
+      if (!c) return false;
+      c.flags = c.flags || {};
+      if (c.flags.offseasonInvestDone) return false;
+      return (c.seasonCount || 0) >= 2;
+    },
+    choices: [
+      { label: '投资，当合伙人', hint: '商业价值+；有亏损风险', apply: function() {
+        var c = STATE.career; c.flags = c.flags || {};
+        c.flags.offseasonInvestDone = true;
+        addProfileDelta('businessValue', 2);
+        if (Math.random() < 0.35) {
+          addProfileDelta('businessValue', -1);
+          addProfileDelta('controversy', 1);
+          return '第一家门店开业很顺利，第二家开始亏钱。媒体开始写“运动员不懂做生意”。<br><br>效果：商业价值+1（先升后降）；争议+1。';
+        }
+        return '门店越开越多，你的名字印在了每一杯饮品上。连客场球员都开始问你拿折扣码。<br><br>效果：商业价值+2。';
+      }},
+      { label: '拒绝，专注篮球', hint: '无风险', apply: function() {
+        var c = STATE.career; c.flags = c.flags || {};
+        c.flags.offseasonInvestDone = true;
+        return '你把合同推了回去：等退役再说。经纪人点头：也好，篮球才是你的本业。';
+      }}
+    ]
+  },
+  {
+    id: 'offseason_documentary',
+    branch: 'offseason_documentary',
+    phase: 'offseason',
+    slot: 'main',
+    weight: 20,
+    recordHistory: false,
+    title: '纪录片：镜头背后的镜头',
+    scenes: [
+      '一个纪录片团队想跟拍你一整年：训练、客场、更衣室、以及你不愿被拍到的部分。',
+      '上一个拍这种片子的人，成了“最后一舞”的主角。'
+    ],
+    body: '让镜头进你的生活吗？',
+    requires: function() {
+      var c = STATE.career;
+      if (!c) return false;
+      c.flags = c.flags || {};
+      if (c.flags.offseasonDocDone) return false;
+      return (c.seasonCount || 0) >= 4;
+    },
+    choices: [
+      { label: '拍摄，留下传记', hint: '商业价值+、媒体好感+；争议+', apply: function() {
+        var c = STATE.career; c.flags = c.flags || {};
+        c.flags.offseasonDocDone = true;
+        addProfileDelta('businessValue', 2);
+        addProfileDelta('mediaTrust', 1);
+        addProfileDelta('controversy', 1);
+        return '你跟拍了整整一年。成片里你有高光，也有和教练争吵的片段——首映夜，票房和争议一起破纪录。<br><br>效果：商业价值+2；媒体好感+1；争议+1。';
+      }},
+      { label: '拒绝，保持神秘', hint: '媒体好感+', apply: function() {
+        var c = STATE.career; c.flags = c.flags || {};
+        c.flags.offseasonDocDone = true;
+        addProfileDelta('mediaTrust', 1);
+        return '你拒绝了跟拍。记者们反而更想采访你——神秘感有时是最好的宣传。<br><br>效果：媒体好感+1。';
+      }}
+    ]
+  },
+  {
+    id: 'offseason_jersey_number',
+    branch: 'offseason_jersey',
+    phase: 'offseason',
+    slot: 'main',
+    weight: 16,
+    recordHistory: false,
+    title: '换号码：重新开始',
+    scenes: [
+      '经纪人问你：要不要换一个球衣号码？他说换号能带来新气象，还能再卖一波球衣。',
+      '训练馆里的老球衣还挂在柜子里，像一段你还没告别完的历史。'
+    ],
+    body: '号码，换不换？',
+    requires: function() {
+      var c = STATE.career;
+      if (!c) return false;
+      c.flags = c.flags || {};
+      if (c.flags.offseasonJerseyDone) return false;
+      return (c.seasonCount || 0) >= 2;
+    },
+    choices: [
+      { label: '换号，重新出发', hint: '商业价值+、人气+', apply: function() {
+        var c = STATE.career; c.flags = c.flags || {};
+        c.flags.offseasonJerseyDone = true;
+        addProfileDelta('businessValue', 2);
+        addProfileDelta('fame', 1);
+        return '新号码的球衣上架首周就卖断货。有人说是迷信，你说这是仪式感。<br><br>效果：商业价值+2；人气+1。';
+      }},
+      { label: '不换，号码代表我', hint: '球迷好感+', apply: function() {
+        var c = STATE.career; c.flags = c.flags || {};
+        c.flags.offseasonJerseyDone = true;
+        addProfileDelta('fanSupport', 1);
+        return '“这个号码就是我的故事，故事还没写完。”球迷在社交媒体上把这句话顶上了热搜。<br><br>效果：球迷好感+1。';
+      }}
+    ]
+  },
+  {
+    id: 'offseason_dawn_workout',
+    branch: 'offseason_dawn',
+    phase: 'offseason',
+    slot: 'main',
+    weight: 16,
+    recordHistory: false,
+    title: '凌晨四点半',
+    scenes: [
+      '休赛期的训练馆凌晨四点就亮了一盏灯。你见过它，但还没走进去过。',
+      '老将说过：这座球馆不会说谎，它只记录凌晨来过的人。'
+    ],
+    body: '这个休赛期，你要怎么练？',
+    requires: function() {
+      return true;
+    },
+    choices: [
+      { label: '凌晨特训', hint: '关键球+1；体能负担+', apply: function() {
+        addAttrDelta('CLU', 1);
+        STATE.finalOVR = calcOVR(STATE.attrs);
+        addSeasonMod('staminaLoad', 1, -10, 10);
+        return '四点的球馆很安静，你投到手腕发酸。赛季开始后，那些“原本会输”的关键球开始进了。<br><br>效果：关键球+1；体能负担+1。';
+      }},
+      { label: '按计划科学训练', hint: '状态稳定', apply: function() {
+        addSeasonMod('formVariance', -1, -10, 10);
+        return '你请了新的体能师，把训练拆成科学计划。没有凌晨四点的故事，但赛季里你的状态像时钟一样稳。<br><br>效果：状态波动-1。';
+      }}
+    ]
+  },
+  {
+    id: 'offseason_summer_league',
+    branch: 'offseason_summer_league',
+    phase: 'offseason',
+    slot: 'main',
+    weight: 15,
+    recordHistory: false,
+    title: '夏季联赛：老将下场',
+    scenes: [
+      '夏季联赛的球馆里坐满了球探。你坐在场边看年轻人打球，有人认出了你。',
+      '新秀们在你面前炫技，一个比你小十岁的后卫朝你勾了勾手指。'
+    ],
+    body: '要不要下场打一场？',
+    requires: function() {
+      var c = STATE.career;
+      return !!(c && (c.seasonCount || 0) >= 5);
+    },
+    choices: [
+      { label: '下场教育新秀', hint: '人气+；表现好媒体好感+，表现差争议+；伤病风险略升', apply: function() {
+        addProfileDelta('fame', 1);
+        addSeasonMod('injuryRiskBonus', 1, -4, 8);
+        if (Math.random() < 0.6) {
+          addProfileDelta('mediaTrust', 1);
+          return '你接过球，在年轻后卫面前连打三个回合。场边球探都在笑：有些课，得亲自来上。<br><br>效果：人气+1；媒体好感+1；下赛季伤病风险+1。';
+        }
+        addProfileDelta('controversy', 1);
+        return '你下场打了几个回合，脚步明显跟不上年轻人。看台上的声音变成：“老兵不死，只是凋零”。<br><br>效果：人气+1；争议+1；下赛季伤病风险+1。';
+      }},
+      { label: '坐在场边指导', hint: '更衣室信任+', apply: function() {
+        addProfileDelta('lockerRoomTrust', 1);
+        return '你没有下场，但把年轻后卫叫到身边讲了十分钟防守站位。赛后他在社交媒体上感谢你——更衣室的人都看到了。<br><br>效果：更衣室信任+1。';
+      }}
+    ]
+  }
 ];
