@@ -396,7 +396,7 @@ const BRANCH_EVENTS = [
     ]
   },
   {
-    id: 'brand_offer',
+    id: 'brand_offer', eraMin: 1990,
     branch: 'brand',
     phase: 'offseason',
     slot: 'main',
@@ -1954,7 +1954,7 @@ const STAGED_BRANCH_EVENTS = [
     ]
   },
   {
-    id: 'china_market_homecoming',
+    id: 'china_market_homecoming', eraMin: 2002,
     branch: 'china_market', phase: 'offseason', slot: 'main', weight: 10,
     title: '中国市场：中国行',
     scenes: [
@@ -1992,7 +1992,7 @@ const STAGED_BRANCH_EVENTS = [
     ]
   },
   {
-    id: 'china_market_brand_offer',
+    id: 'china_market_brand_offer', eraMin: 2010,
     branch: 'china_market', phase: 'offseason', slot: 'main', weight: 12,
     title: '中国市场：国产品牌接触',
     scenes: [
@@ -2029,7 +2029,7 @@ const STAGED_BRANCH_EVENTS = [
     ]
   },
   {
-    id: 'china_market_shoe_deal',
+    id: 'china_market_shoe_deal', eraMin: 2002,
     branch: 'china_market', phase: 'offseason', slot: 'main', weight: 12,
     title: '中国市场：球鞋落地',
     scenes: [
@@ -2113,7 +2113,7 @@ const STAGED_BRANCH_EVENTS = [
     ]
   },
   {
-    id: 'media_social_storm',
+    id: 'media_social_storm', eraMin: 2010,
     branch: 'media', phase: 'season', slot: 'main', weight: 12,
     title: '媒体：社交媒体风波',
     scenes: [
@@ -2252,7 +2252,7 @@ const STAGED_BRANCH_EVENTS = [
     ]
   },
   {
-    id: 'fan_culture_heat',
+    id: 'fan_culture_heat', eraMin: 2004,
     branch: 'fan_culture', phase: 'season', slot: 'main', weight: 11,
     title: '球迷文化：虎扑的第一张热度帖',
     scenes: [
@@ -2294,7 +2294,7 @@ const STAGED_BRANCH_EVENTS = [
     ]
   },
   {
-    id: 'fan_culture_score',
+    id: 'fan_culture_score', eraMin: 2004,
     branch: 'fan_culture', phase: 'season', slot: 'main', weight: 12,
     title: '球迷文化：虎扑评分事件',
     scenes: [
@@ -2334,7 +2334,7 @@ const STAGED_BRANCH_EVENTS = [
     ]
   },
   {
-    id: 'fan_culture_community',
+    id: 'fan_culture_community', eraMin: 2004,
     branch: 'fan_culture', phase: 'season', slot: 'main', weight: 11,
     title: '球迷文化：社区互动',
     scenes: [
@@ -4045,7 +4045,7 @@ const STAGED_BRANCH_EVENTS = [
     ]
   },
   {
-    id: 'crossover_invite',
+    id: 'crossover_invite', eraMin: 2026,
     branch: 'crossover', phase: 'offseason', slot: 'main', weight: 12,
     title: '揽佬 · 中国人能飞：邀约',
     scenes: [
@@ -4074,7 +4074,7 @@ const STAGED_BRANCH_EVENTS = [
     ]
   },
   {
-    id: 'concert_rehearsal',
+    id: 'concert_rehearsal', eraMin: 2026,
     branch: 'crossover', phase: 'offseason', slot: 'main', weight: 10,
     title: '揽佬 · 中国人能飞：演唱会彩排',
     scenes: [
@@ -4102,7 +4102,7 @@ const STAGED_BRANCH_EVENTS = [
     ]
   },
   {
-    id: 'concert_stage',
+    id: 'concert_stage', eraMin: 2026,
     branch: 'crossover', phase: 'offseason', slot: 'main', weight: 10,
     title: '揽佬 · 中国人能飞：演唱会登台',
     scenes: [
@@ -4136,7 +4136,7 @@ const STAGED_BRANCH_EVENTS = [
     ]
   },
   {
-    id: 'crossover_aftermath',
+    id: 'crossover_aftermath', eraMin: 2026,
     branch: 'crossover', phase: 'offseason', slot: 'main', weight: 10,
     title: '揽佬 · 中国人能飞：当晚反响',
     scenes: [
@@ -4168,7 +4168,7 @@ const STAGED_BRANCH_EVENTS = [
     ]
   },
   {
-    id: 'crossover_close',
+    id: 'crossover_close', eraMin: 2026,
     branch: 'crossover', phase: 'offseason', slot: 'main', weight: 10,
     title: '揽佬 · 中国人能飞：演唱会收束',
     scenes: [
@@ -4205,7 +4205,7 @@ const STAGED_BRANCH_EVENTS = [
     ]
   },
   {
-    id: 'crossover_second_chance',
+    id: 'crossover_second_chance', eraMin: 2026,
     branch: 'crossover', phase: 'offseason', slot: 'main', weight: 8,
     title: '揽佬 · 中国人能飞：第二次邀约',
     scenes: ['一年后，揽佬托人带来一句话：上次的邀请还在。《中国人能飞》改版了，第二句我想让你唱。'],
@@ -4760,7 +4760,7 @@ const STAGED_BRANCH_EVENTS = [
     ]
   },
   {
-    id: 'season_allstar_vote',
+    id: 'season_allstar_vote', eraMin: 2005,
     branch: 'season_allstar_vote',
     phase: 'season',
     slot: 'main',
@@ -4790,7 +4790,7 @@ const STAGED_BRANCH_EVENTS = [
     ]
   },
   {
-    id: 'season_streak_media',
+    id: 'season_streak_media', eraMin: 2010,
     branch: 'season_streak_media',
     phase: 'season',
     slot: 'main',
@@ -4821,7 +4821,7 @@ const STAGED_BRANCH_EVENTS = [
     ]
   },
   {
-    id: 'offseason_2k_cover',
+    id: 'offseason_2k_cover', eraMin: 1999,
     branch: 'offseason_2k_cover',
     phase: 'offseason',
     slot: 'main',
@@ -4858,7 +4858,7 @@ const STAGED_BRANCH_EVENTS = [
     ]
   },
   {
-    id: 'offseason_drew_league',
+    id: 'offseason_drew_league', eraMin: 2000,
     branch: 'offseason_drew_league',
     phase: 'offseason',
     slot: 'main',
@@ -4897,7 +4897,7 @@ const STAGED_BRANCH_EVENTS = [
     ]
   },
   {
-    id: 'offseason_invest_chain',
+    id: 'offseason_invest_chain', eraMin: 1990,
     branch: 'offseason_invest_chain',
     phase: 'offseason',
     slot: 'main',
@@ -4936,7 +4936,7 @@ const STAGED_BRANCH_EVENTS = [
     ]
   },
   {
-    id: 'offseason_documentary',
+    id: 'offseason_documentary', eraMin: 2000,
     branch: 'offseason_documentary',
     phase: 'offseason',
     slot: 'main',
@@ -5009,7 +5009,7 @@ const STAGED_BRANCH_EVENTS = [
     ]
   },
   {
-    id: 'offseason_dawn_workout',
+    id: 'offseason_dawn_workout', eraMin: 2000,
     branch: 'offseason_dawn',
     phase: 'offseason',
     slot: 'main',
@@ -5041,7 +5041,7 @@ const STAGED_BRANCH_EVENTS = [
     ]
   },
   {
-    id: 'offseason_summer_league',
+    id: 'offseason_summer_league', eraMin: 1984,
     branch: 'offseason_summer_league',
     phase: 'offseason',
     slot: 'main',
@@ -5078,7 +5078,7 @@ const STAGED_BRANCH_EVENTS = [
   }
 
   ,{
-    id: 'reading_open',
+    id: 'reading_open', eraMin: 2007,
     branch: 'reading',
     phase: 'season',
     slot: 'main',
@@ -5112,7 +5112,7 @@ const STAGED_BRANCH_EVENTS = [
     ]
   },
   {
-    id: 'reading_echo',
+    id: 'reading_echo', eraMin: 2007,
     branch: 'reading',
     phase: 'season',
     slot: 'main',

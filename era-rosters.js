@@ -169,6 +169,12 @@ var ERA_ROLE_POOLS = {
     ['Tom McMillen', '汤姆-麦克米伦', 'PF', '2.11米', 74, 'WAS'],
     ['Darren Daye', '达伦-达耶', 'SF', '2.03米', 72, 'WAS'],
     ['Jerome Kersey', '杰罗姆-科西', 'SF', '2.01米', 76, 'POR'],
+    ['Dan Schayes', '丹-谢伊斯', 'PF', '2.11米', 74, 'DEN'],
+    ['Larry Micheaux', '拉里-米肖', 'PF', '2.06米', 70, 'LAC'],
+    ['Eddie Lee Wilkins', '埃迪-李-威尔金斯', 'PF', '2.08米', 72, 'NYK'],
+    ['Mark West', '马克-韦斯特', 'PF', '2.08米', 74, 'CLE'],
+    ['Terry Teagle', '特里-蒂格尔', 'SF', '1.96米', 72, 'HOU'],
+    ['Craig Ehlo', '克雷格-埃洛', 'SF', '1.98米', 74, 'HOU'],
   ],
   1996: [
     ['Mookie Blaylock', '穆基-布莱洛克', 'PG', '1.85米', 78, 'ATL'],
@@ -281,7 +287,6 @@ var ERA_ROLE_POOLS = {
     ['Armon Gilliam', '阿蒙-吉列姆', 'PF', '2.06米', 76, 'MIL'],
     ['Johnny Newman', '约翰尼-纽曼', 'SF', '2.01米', 76, 'MIL'],
     ['Ray Allen', '雷-阿伦', 'SG', '1.96米', 80, 'MIL'],
-    ['Andrew Lang', '安德鲁-朗', 'C', '2.11米', 74, 'MIL'],
     ['Jeff Nordgaard', '杰夫-诺德加德', 'SF', '2.01米', 70, 'MIL'],
     ['Jerald Honeycutt', '杰拉德-霍尼卡特', 'SF', '2.06米', 70, 'MIL'],
     ['Stephon Marbury', '斯蒂芬-马布里', 'PG', '1.88米', 80, 'MIN'],
@@ -386,6 +391,12 @@ var ERA_ROLE_POOLS = {
     ['Anthony Avent', '安东尼-阿文特', 'PF', '2.06米', 72, 'MEM'],
     ['Roy Rogers', '罗伊-罗杰斯', 'PF', '2.06米', 74, 'MEM'],
     ['Kevin Edwards', '凯文-爱德华兹', 'SG', '1.91米', 74, 'MEM'],
+    ['Andrew Lang', '安德鲁-朗', 'C', '2.11米', 74, 'MIL'],
+    ['Chucky Brown', '查基-布朗', 'SF', '2.01米', 72, 'HOU'],
+    ['John Salley', '约翰-萨利', 'SF', '2.11米', 74, 'MIA'],
+    ['Vincent Askew', '文森特-阿斯丘', 'SF', '1.98米', 72, 'MIL'],
+    ['Vernon Maxwell', '弗农-麦克斯韦', 'SF', '1.93米', 74, 'HOU'],
+    ['Bill Wennington', '比尔-温宁顿', 'C', '2.13米', 72, 'CHI'],
   ],
   2003: [
     ['Alan Henderson', '阿兰-亨德森', 'PF', '2.06米', 74, 'ATL'],
@@ -527,7 +538,7 @@ var ERA_ROLE_POOLS = {
     ['Glenn Robinson', '格伦-罗宾逊', 'SF', '2.01米', 78, 'PHI'],
     ['Kenny Thomas', '肯尼-托马斯', 'PF', '2.01米', 76, 'PHI'],
     ['John Salmons', '约翰-萨尔蒙斯', 'SG', '1.98米', 74, 'PHI'],
-    ['Marc Jackson', '马克-杰克逊', 'C', '2.08米', 74, 'PHI'],
+    ['Marc Jackson', '马科-杰克逊', 'C', '2.08米', 74, 'PHI'],
     ['Kyle Korver', '凯尔-科沃尔', 'SF', '2.01米', 74, 'PHI'],
     ['Willie Green', '威利-格林', 'SG', '1.93米', 74, 'PHI'],
     ['Zendon Hamilton', '曾顿-汉密尔顿', 'C', '2.11米', 72, 'PHI'],
@@ -585,6 +596,17 @@ var ERA_ROLE_POOLS = {
     ['Earl Watson', '厄尔-沃特森', 'PG', '1.85米', 74, 'MEM'],
     ['Dahntay Jones', '丹泰-琼斯', 'SF', '1.98米', 74, 'MEM'],
     ['Ryan Humphrey', '瑞安-汉弗莱', 'PF', '2.03米', 72, 'MEM'],
+    ['Jannero Pargo', '扬内罗-帕戈', 'PG', '1.85米', 72, 'TOR'],
+    ['Dan Dickau', '丹-迪考', 'PG', '1.83米', 72, 'ATL'],
+    ['Tyronn Lue', '泰伦-卢', 'PG', '1.83米', 74, 'ORL'],
+    ['Primoz Brezec', '普里莫兹-布雷泽克', 'C', '2.16米', 74, 'IND'],
+    ['Lonny Baxter', '隆尼-巴克斯特', 'C', '2.03米', 70, 'TOR'],
+    ['Jelani McCoy', '杰拉尼-麦考伊', 'C', '2.13米', 72, 'TOR'],
+    ['Matt Harpring', '马特-哈普林', 'SF', '2.01米', 76, 'UTA'],
+    ['Rashard Lewis', '拉沙德-刘易斯', 'SF', '2.08米', 82, 'OKC'],
+    ['Keon Clark', '基翁-克拉克', 'PF', '2.11米', 76, 'UTA'],
+    ['Popeye Jones', '波普耶-琼斯', 'PF', '2.03米', 74, 'DAL'],
+    ['Michael Ruffin', '迈克尔-鲁芬', 'PF', '2.06米', 72, 'CHI'],
   ]
 };
 var _eraPoolUsed = {};
@@ -598,15 +620,21 @@ function takeEraRoleFromPool(era, pos, teamHint, strictHint) {
     // 当届新秀由 applyEraDraftClass 负责入盟，池中同名一律跳过
     if (typeof HISTORICAL_DRAFT_CLASSES !== 'undefined' && HISTORICAL_DRAFT_CLASSES[era]) {
       var _cls = HISTORICAL_DRAFT_CLASSES[era];
-      for (var _c = 0; _c < _cls.length; _c++) { if (_cls[_c] && _cls[_c].en === en) return true; }
+      var _enN = en.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      for (var _c = 0; _c < _cls.length; _c++) {
+        if (_cls[_c] && _cls[_c].en && _cls[_c].en.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase() === _enN) return true;
+      }
     }
     if (typeof NBA2K_DATA === 'undefined') return false;
+    var _enN = String(en || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, ' ').replace(/\s+/g, ' ').trim();
     for (var _t in NBA2K_DATA) {
       var _r = NBA2K_DATA[_t];
       if (!Array.isArray(_r)) continue;
       for (var _i = 0; _i < _r.length; _i++) {
         var _p = _r[_i];
-        if (_p && (_p.nameEN === en || _p.name === en)) return true;
+        if (!_p) continue;
+        var _pn = String(_p.nameEN || _p.name || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, ' ').replace(/\s+/g, ' ').trim();
+        if (_pn === _enN) return true;
       }
     }
     return false;
@@ -627,6 +655,43 @@ function takeEraRoleFromPool(era, pos, teamHint, strictHint) {
   return hit;
 }
 /** 按位置 + 综评生成 13 项能力值（无精确属性的核心/角色/新秀球员使用） */
+/** 从独立替补池取一名真实替补：优先（同队+位置）→ 同队 → 位置匹配 → 任意；同次建联盟不重复。
+ *  替补池（ERA_BENCH_POOLS）条目与核心名单/当届新秀不重叠，赛季初名单口径每名球员只归属一队。 */
+var _eraBenchUsed = {};
+function takeEraBenchPlayer(era, pos, teamHint, strictHint) {
+  var pool = (typeof ERA_BENCH_POOLS !== 'undefined' && ERA_BENCH_POOLS[era]) ? ERA_BENCH_POOLS[era] : [];
+  if (!pool || !pool.length) return null;
+  var used = _eraBenchUsed[era] || (_eraBenchUsed[era] = {});
+  function _bn(s) { return String(s || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, ' ').replace(/\s+/g, ' ').trim(); }
+  function _takenByLeague(en) {
+    if (typeof NBA2K_DATA === 'undefined') return false;
+    var _k = _bn(en);
+    for (var _t2 in NBA2K_DATA) {
+      var _r2 = NBA2K_DATA[_t2];
+      if (!Array.isArray(_r2)) continue;
+      for (var _i2 = 0; _i2 < _r2.length; _i2++) {
+        var _p2 = _r2[_i2];
+        if (_p2 && _bn(_p2.nameEN || _p2.name || '') === _k) return true;
+      }
+    }
+    return false;
+  }
+  var candidates = pool.filter(function(x) { return x && x[0] && !used[_bn(x[0])] && !_takenByLeague(x[0]); });
+  if (strictHint) candidates = candidates.filter(function(x) { return x[5] === teamHint; });
+  if (!candidates.length) return null;
+  var hit = null;
+  candidates.forEach(function(x) {
+    if (!hit && x[5] === teamHint && String(x[2]).toUpperCase() === pos) hit = x;
+  });
+  if (!hit) candidates.forEach(function(x) { if (!hit && x[5] === teamHint) hit = x; });
+  if (!hit) candidates.forEach(function(x) {
+    if (!hit && String(x[2]).toUpperCase() === pos) hit = x;
+  });
+  if (!hit) hit = candidates[0];
+  used[_bn(hit[0])] = true;
+  return hit;
+}
+
 function getEraPlayerAttrs(pos, ovr) {
   var p = String(pos || 'SF').split('/')[0].trim().toUpperCase();
   var tpl = ERA_ATTR_TEMPLATES[p] || ERA_ATTR_TEMPLATES.SF;
@@ -882,27 +947,27 @@ var ERA_ROSTERS = {
     CLE: ['World B. Free', 'Roy Hinson', 'Mark West', 'John Bagley', 'Kevin Williams', 'Lonnie Shelton', 'Mel Turpin', 'Dirk Minniefield', 'Phil Hubbard', 'Ben Poquette'],
     DAL: ['Mark Aguirre', 'Rolando Blackman', 'Derek Harper', 'Jay Vincent', 'Brad Davis', 'Dale Ellis', 'Sam Perkins', 'Kurt Nimphius', 'Pat Cummings', 'Bill Wennington'],
     DEN: ['Alex English', 'Dan Issel', 'Fat Lever', 'Calvin Natt', 'Mike Evans', 'T.R. Dunn', 'Wayne Cooper', 'Bill Hanzlik', 'Elston Turner', 'Willie White'],
-    DET: ['Isiah Thomas', 'Bill Laimbeer', 'Vinnie Johnson', 'Rick Mahorn', 'Kelly Tripucka', 'John Long', 'Joe Dumars', 'Earl Cureton', 'Tony Campbell', 'David Thirdkill'],
+    DET: ['Isiah Thomas', 'Bill Laimbeer', 'Vinnie Johnson', 'Kelly Tripucka', 'John Long', 'Joe Dumars', 'Earl Cureton', 'Tony Campbell', 'David Thirdkill'], // ★ 修复：马洪 84-85 在奇才
     GSW: ['Purvis Short', 'Sleepy Floyd', 'Lester Conner', 'Steve Burtt', 'Larry Smith', 'Joe Barry Carroll', 'Mickey Johnson', 'Chris Mullin'],
     HOU: ['Ralph Sampson', 'Rodney McCray', 'Lewis Lloyd', 'John Lucas', 'Mitchell Wiggins', 'Jim Petersen', 'Allen Leavell', 'Hank McDowell'],
-    IND: ['Clark Kellogg', 'Herb Williams', 'Vern Fleming', 'Terence Stansbury', 'Bill Garnett', 'Steve Stipanovich', 'George Johnson', 'Devin Durrant', 'Jim Thomas'],
+    IND: ['Clark Kellogg', 'Herb Williams', 'Vern Fleming', 'Terence Stansbury', 'Bill Garnett', 'Steve Stipanovich', 'Devin Durrant', 'Jim Thomas'], // ★ 修复：乔治-约翰逊 84-85 在 76 人
     LAC: ['Bill Walton', 'Norm Nixon', 'Derek Smith', 'James Donaldson', 'Junior Bridgeman', 'Michael Brooks', 'Roy White', 'Lancaster Gordon'],
     LAL: ['Magic Johnson', 'Kareem Abdul-Jabbar', 'James Worthy', 'Byron Scott', 'Michael Cooper', 'Bob McAdoo', 'Kurt Rambis', 'Mitch Kupchak', 'Mike McGee', 'Larry Spriggs'],
     MIL: ['Sidney Moncrief', 'Terry Cummings', 'Paul Pressey', 'Marques Johnson', 'Craig Hodges', 'Kevin Grevey', 'Alton Lister', 'Randy Breuer', 'Kenny Fields', 'Paul Mokeski'],
     NOP: ['Baron Davis', 'Jamal Mashburn', 'David Wesley', 'P.J. Brown'],
     NYK: ['Bernard King', 'Bill Cartwright', 'Rory Sparrow', 'Darrell Walker', 'Trent Tucker', 'James Bailey', 'Marvin Webster', 'Louis Orr', 'Ernie Grunfeld', 'Ken Bannister'],
-    OKC: ['Tom Chambers', 'Jack Sikma', 'Gus Williams', 'Sedale Threatt', 'Al Wood', 'Frank Brickowski', 'Tim McCormick', 'Danny Vranes', 'John Greig'],
-    PHI: ['Julius Erving', 'Moses Malone', 'Maurice Cheeks', 'Andrew Toney', 'Clint Richardson', 'Bobby Jones', 'Leon Wood', 'Sam Williams', 'Clemon Johnson'],
+    OKC: ['Tom Chambers', 'Jack Sikma', 'Al Wood', 'Frank Brickowski', 'Tim McCormick', 'Danny Vranes', 'John Greig'], // ★ 修复 84-85 超音速实际名单：威廉姆斯/斯瑞特当年在 76 人与奇才
+    PHI: ['Julius Erving', 'Moses Malone', 'Maurice Cheeks', 'Andrew Toney', 'Clint Richardson', 'Bobby Jones', 'Leon Wood', 'Sam Williams', 'Clemon Johnson', 'Sedale Threatt', 'George Johnson'], // ★ 修复：补回 84-85 76 人真实成员
     PHX: ['Larry Nance', 'Walter Davis', 'Maurice Lucas', 'Alvan Adams', 'Kyle Macy', 'Jay Humphries', 'James Edwards', 'Charles Jones', 'Rod Foster', 'Mike Sanders'],
     POR: ['Clyde Drexler', 'Jim Paxson', 'Kiki Vandeweghe', 'Steve Colter', 'Mychal Thompson', 'Kenny Carr', 'Darnell Valentine', 'Sam Bowie', 'Jerome Kersey'],
     SAC: ['Reggie Theus', 'LaSalle Thompson', 'Larry Drew', 'Mike Woodson', 'Otis Thorpe', 'Joe Meriweather', 'Mark Olberding', 'Carl Henry'],
     SAS: ['George Gervin', 'Artis Gilmore', 'Mike Mitchell', 'Johnny Moore', 'Alvin Robertson', 'Jeff Cook', 'Marc Iavaroni', 'Ed Nealy', 'Ozell Jones'],
     UTA: ['Adrian Dantley', 'Darrell Griffith', 'Thurl Bailey', 'Mark Eaton', 'John Stockton', 'Bob Hansen', 'Jeff Wilkins', 'Rickey Green', 'Pace Mannion'],
-    WAS: ['Jeff Malone', 'Jeff Ruland', 'Frank Johnson', 'Dan Roundfield', 'Dudley Bradley', 'Greg Ballard', 'Tom McMillen', 'Darren Daye'],
+    WAS: ['Jeff Malone', 'Jeff Ruland', 'Frank Johnson', 'Dan Roundfield', 'Dudley Bradley', 'Greg Ballard', 'Tom McMillen', 'Darren Daye', 'Gus Williams', 'Rick Mahorn'], // ★ 修复：补回 84-85 奇才真实成员
   },
   1996: {
     ATL: ['Dikembe Mutombo', 'Steve Smith', 'Mookie Blaylock', 'Ed Gray', 'Christian Laettner', 'Dwayne Schintzius', 'Eldridge Recasner', 'Donnie Boyce', 'Alan Henderson', 'Tyrone Corbin'],
-    BKN: ['Kendall Gill', 'Jayson Williams', 'Sam Cassell', 'Chris Gatling', 'Yinka Dare', "Ed O'Bannon", 'Tony Massenburg', 'David Benoit', 'Rumeal Robinson', 'Adrian Caldwell'],
+    BKN: ['Kendall Gill', 'Jayson Williams', 'Sam Cassell', 'Chris Gatling', 'Yinka Dare', "Ed O'Bannon", 'David Benoit', 'Rumeal Robinson', 'Adrian Caldwell'],
     BOS: ['Dana Barros', 'Rick Fox', 'Dino Radja', 'Dee Brown', 'Todd Day', 'Antoine Walker', 'Brett Szabo', 'Tyus Edney', 'Greg Minor', 'Marty Conlon'],
     CHA: ['Glen Rice', 'Vlade Divac', 'Anthony Mason', 'Dell Curry', 'Muggsy Bogues', 'Tony Delk', 'J.R. Reid', 'George Zidek', 'Malik Rose', 'Scott Burrell'],
     CHI: ['Michael Jordan', 'Scottie Pippen', 'Dennis Rodman', 'Toni Kukoc', 'Ron Harper', 'Steve Kerr', 'Randy Brown', 'Luc Longley', 'Jud Buechler', 'Jason Caffey'],
@@ -912,9 +977,9 @@ var ERA_ROSTERS = {
     DET: ['Grant Hill', 'Joe Dumars', 'Otis Thorpe', 'Terry Mills', 'Lindsey Hunter', 'Theo Ratliff', 'Don Reid', 'Michael Curry', 'Stacey Augmon', 'Jerome Williams'],
     GSW: ['Latrell Sprewell', 'Chris Mullin', 'Joe Smith', 'B.J. Armstrong', 'Bimbo Coles', 'Donyell Marshall', 'Todd Fuller', 'Joe Wolf', 'Ray Owes', 'Felton Spencer'],
     HOU: ['Hakeem Olajuwon', 'Charles Barkley', 'Clyde Drexler', 'Matt Maloney', 'Kevin Willis', 'Emanual Davis', 'Mario Elie', 'Charles Jones', 'Sedale Threatt', 'Tracy Moore'],
-    IND: ['Reggie Miller', 'Rik Smits', 'Dale Davis', 'Antonio Davis', 'Derrick McKey', 'Travis Best', 'Fred Hoiberg', 'Duane Ferrell', 'Eddie Johnson', 'Zan Tabak'],
+    IND: ['Reggie Miller', 'Rik Smits', 'Dale Davis', 'Antonio Davis', 'Derrick McKey', 'Travis Best', 'Fred Hoiberg', 'Duane Ferrell', 'Eddie Johnson'],
     LAC: ['Loy Vaught', 'Lamond Murray', 'Brent Barry', 'Darrick Martin', 'Malik Sealy', 'Rodney Rogers', 'Kevin Duckworth', 'Terry Dehere', 'Eric Piatkowski', 'Bo Outlaw'],
-    LAL: ["Shaquille O'Neal", 'Nick Van Exel', 'Eddie Jones', 'Elden Campbell', 'Derek Fisher', 'Kobe Bryant', 'Robert Horry', 'Travis Knight', 'Rick Fox', 'Jerome Kersey'],
+    LAL: ["Shaquille O'Neal", 'Nick Van Exel', 'Eddie Jones', 'Elden Campbell', 'Derek Fisher', 'Kobe Bryant', 'Robert Horry', 'Travis Knight', 'Jerome Kersey'],
     MEM: ['Bryant Reeves', 'Blue Edwards', 'Pooh Richardson', 'Lawrence Moten', 'Pete Chilcutt', 'George Lynch', 'Lee Mayberry', 'Anthony Avent', 'Roy Rogers', 'Kevin Edwards'],
     MIA: ['Tim Hardaway', 'Alonzo Mourning', 'Jamal Mashburn', 'P.J. Brown', 'Voshon Lenard', 'Keith Askins', 'Isaac Austin', 'Dan Majerle', 'Walt Williams', 'Kevin Gamble'],
     MIL: ['Vin Baker', 'Glenn Robinson', 'Sherman Douglas', 'Ray Allen', 'Armon Gilliam', 'Andrew Lang', 'Johnny Newman', 'Jeff Nordgaard', 'Jerald Honeycutt'],
@@ -956,7 +1021,7 @@ var ERA_ROSTERS = {
     ORL: ['Tracy McGrady', 'Tyronn Lue', 'Juwan Howard', 'Drew Gooden', 'Reece Gaines', 'Gordan Giricek', 'Pat Garrity', 'Steven Hunter', 'Keith Bogans', 'Zaza Pachulia'],
     PHI: ['Allen Iverson', 'Eric Snow', 'Aaron McKie', 'Samuel Dalembert', 'Glenn Robinson', 'Kenny Thomas', 'John Salmons', 'Marc Jackson', 'Kyle Korver', 'Willie Green'],
     PHX: ['Shawn Marion', 'Amare Stoudemire', 'Joe Johnson', 'Anfernee Hardaway', 'Antonio McDyess', 'Leandro Barbosa', 'Casey Jacobsen', 'Jake Voskuhl', 'Jahidi White', 'Zarko Cabarkapa'],
-    POR: ['Zach Randolph', 'Darius Miles', 'Damon Stoudamire', 'Shareef Abdur-Rahim', 'Theo Ratliff', 'Ruben Patterson', 'Dale Davis', 'Derek Anderson', 'Vladimir Stepania', 'Travis Outlaw'],
+    POR: ['Zach Randolph', 'Darius Miles', 'Damon Stoudamire', 'Shareef Abdur-Rahim', 'Ruben Patterson', 'Dale Davis', 'Derek Anderson', 'Vladimir Stepania', 'Travis Outlaw'],
     SAC: ['Chris Webber', 'Mike Bibby', 'Peja Stojakovic', 'Brad Miller', 'Doug Christie', 'Bobby Jackson', 'Anthony Peeler', 'Darius Songaila', 'Tony Massenburg', 'Gerald Wallace'],
     SAS: ['Tim Duncan', 'Tony Parker', 'Manu Ginobili', 'Bruce Bowen', 'Rasho Nesterovic', 'Alex Garcia', 'Devin Brown', 'Robert Horry', 'Malik Rose', 'Hedo Turkoglu'],
     TOR: ['Vince Carter', 'Jalen Rose', 'Morris Peterson', 'Alvin Williams', 'Donyell Marshall', 'Chris Bosh', 'Lamond Murray', 'Michael Curry', 'Milt Palacio', 'Robert Archibald'],
@@ -1033,6 +1098,56 @@ function getEraTeamFoundedYear(team) {
 }
 
 // ==================== 时代名单构建 ====================
+// ★ 1984 时代之前（1979-1983 届）核心球星的选秀年份补充表：
+//   HISTORICAL_DRAFT_CLASSES 从 1984 届才开始，1984 时代开局里的年轻球星
+//   （沃西/滑翔机/威尔金斯/伊塞亚/萨姆森等）需要靠此表推算“入盟第几年”，
+//   从而走年轻成长曲线（并在 eraPlayerAgeByDraft 中修正真实年龄）。
+var ERA_PRE_DRAFT_YEARS = {
+  'James Worthy': 1982, 'Byron Scott': 1983, 'Mike McGee': 1981, 'Larry Spriggs': 1981,
+  'Dominique Wilkins': 1982, 'Doc Rivers': 1983, 'Randy Wittman': 1983, 'Eddie Johnson': 1981,
+  'Antoine Carr': 1983, 'Cliff Levingston': 1982,
+  'Clyde Drexler': 1983, 'Darnell Valentine': 1981,
+  'Ralph Sampson': 1983, 'Rodney McCray': 1983, 'Mitchell Wiggins': 1983,
+  'Isiah Thomas': 1981, 'Kelly Tripucka': 1981, 'David Thirdkill': 1982,
+  'Mark Aguirre': 1981, 'Rolando Blackman': 1981, 'Derek Harper': 1983, 'Jay Vincent': 1981,
+  'Dale Ellis': 1983, 'Kurt Nimphius': 1981,
+  'Clark Kellogg': 1982, 'Herb Williams': 1981, 'Bill Garnett': 1982, 'Steve Stipanovich': 1983, 'Jim Thomas': 1983,
+  'Terry Cummings': 1982, 'Paul Pressey': 1982, 'Craig Hodges': 1982, 'Alton Lister': 1981, 'Randy Breuer': 1983,
+  'Buck Williams': 1981, 'Albert King': 1981,
+  'Orlando Woolridge': 1981, 'Quintin Dailey': 1982, 'Steve Johnson': 1981, 'Sidney Green': 1983,
+  'Ennis Whatley': 1983, 'Gene Banks': 1981,
+  'Roy Hinson': 1983, 'Mark West': 1983, 'John Bagley': 1982, 'Kevin Williams': 1983, 'Dirk Minniefield': 1983,
+  'Fat Lever': 1982, 'Elston Turner': 1981,
+  'Sleepy Floyd': 1982, 'Lester Conner': 1982,
+  'Derek Smith': 1982, 'Roy White': 1982,
+  'Tom Chambers': 1981, 'Sedale Threatt': 1983, 'Al Wood': 1981, 'Frank Brickowski': 1981,
+  'Danny Vranes': 1981, 'John Greig': 1982,
+  'Larry Nance': 1981, 'Charles Jones': 1983, 'Rod Foster': 1982, 'Mike Sanders': 1982,
+  'LaSalle Thompson': 1982,
+  'Sam Williams': 1981, 'Marc Iavaroni': 1982, 'Ed Nealy': 1982,
+  'Thurl Bailey': 1983, 'Mark Eaton': 1982, 'Bob Hansen': 1983, 'Pace Mannion': 1983,
+  'Jeff Malone': 1983, 'Jeff Ruland': 1981, 'Frank Johnson': 1981, 'Darren Daye': 1983,
+  'Darrell Walker': 1983, 'Trent Tucker': 1982, 'Danny Ainge': 1981, 'Carlos Clark': 1983
+};
+
+// ★ 特定球星的巅峰曲线：peakPro = 入盟第几年到达巅峰（1 = 新秀季）。
+//   现实 NBA 球员普遍 4-5 季进巅峰（巅峰 26-28 岁），此处登记“大器晚成”的慢热球星，
+//   evolveLeague 会按他们的真实巅峰年放宽成长窗口并放缓前期成长（如纳什 9 年、约基奇 7 年）。
+var ERA_STAR_CURVES = {
+  'Steve Nash': { peakPro: 9 },
+  'Chauncey Billups': { peakPro: 6 },
+  'Tracy McGrady': { peakPro: 6 },
+  'Dirk Nowitzki': { peakPro: 5 },
+  'Stephen Curry': { peakPro: 6 },
+  'James Harden': { peakPro: 5 },
+  'Jimmy Butler': { peakPro: 5 },
+  'Kawhi Leonard': { peakPro: 5 },
+  'Paul George': { peakPro: 5 },
+  'Giannis Antetokounmpo': { peakPro: 6 },
+  'Nikola Jokic': { peakPro: 7 },
+  'Victor Wembanyama': { peakPro: 5 }
+};
+
 /** 查找球员基础信息：优先历史模板，其次新秀库，最后补充表 */
 function lookupEraPlayer(en) {
   if (typeof ERA_EXTRA_PLAYERS !== 'undefined' && ERA_EXTRA_PLAYERS[en]) {
@@ -1074,6 +1189,7 @@ function buildEraCorePlayer(era, team, en, capRatio) {
   if (!info) return null;
   var d = info.data;
   var ovr = parseInt(d.ovr, 10) || (info.src === 'template' ? 85 : 75);
+  var _peakOvr = ovr; // 模板/补充表的“巅峰”综评：年轻球员成长曲线的目标值
   var pos = d.pos || 'SF';
   var height = d.height || '';
   var cn = d.cn || en;
@@ -1083,7 +1199,6 @@ function buildEraCorePlayer(era, team, en, capRatio) {
     attrs = JSON.parse(JSON.stringify(d.attrs));
   }
   if (!d.attrs && typeof getEraPlayerAttrs === 'function') {
-    // ★ 无精确属性的核心球员：按位置 + 综评生成合理能力值（替代纯随机 ±7）
     attrs = getEraPlayerAttrs(pos, ovr);
   }
   attrKeys.forEach(function(k) {
@@ -1093,6 +1208,76 @@ function buildEraCorePlayer(era, team, en, capRatio) {
   //   避免历史核心球员被 OVR 档位误判为 27-30 岁导致提前退役；无选秀数据退回 OVR 档位
   var _age0 = (typeof eraPlayerAgeByDraft === 'function') ? eraPlayerAgeByDraft(era, en) : null;
   if (_age0 == null) _age0 = ovr >= 95 ? 27 + Math.floor(Math.random() * 4) : ovr >= 90 ? 24 + Math.floor(Math.random() * 5) : ovr >= 84 ? 23 + Math.floor(Math.random() * 5) : 22 + Math.floor(Math.random() * 8);
+  // ★ 选秀年份：优先 HISTORICAL_DRAFT_CLASSES，其次 ERA_PRE_DRAFT_YEARS（1984 时代之前的 79-83 届球星）
+  var _draftY = null;
+  try { _draftY = (typeof getEraPlayerDraftYear === 'function') ? getEraPlayerDraftYear(en) : null; } catch(e) {}
+  if (_draftY == null && typeof ERA_PRE_DRAFT_YEARS !== 'undefined' && ERA_PRE_DRAFT_YEARS[en] != null) _draftY = ERA_PRE_DRAFT_YEARS[en];
+  var _isEraRookie = (_draftY != null && String(_draftY) === String(era));
+  var _proYear = (_draftY != null) ? (parseInt(era, 10) - parseInt(_draftY, 10) + 1) : null; // 入盟第 N 年（1=新秀季）
+  // ★ 特定球星巅峰曲线：慢热球星按真实巅峰年放缓成长
+  var _curve = (typeof ERA_STAR_CURVES !== 'undefined' && ERA_STAR_CURVES[en]) ? ERA_STAR_CURVES[en] : null;
+  var _peakPro = (_curve && _curve.peakPro) ? parseInt(_curve.peakPro, 10) : 4;
+  // ★ 新秀/年轻球星的“新秀 OVR + 潜力”来源：本人真实选秀届条目（KG 1995 届 87/98、詹姆斯 2003 届 91/99）
+  var _rookOvr = null;   // 该球员新秀赛季综评
+  var _rookPot = null;   // 该球员巅峰潜力（选秀类，通常即真实巅峰）
+  var _rookClsAttrs = false;
+  if (_draftY != null && typeof HISTORICAL_DRAFT_CLASSES !== 'undefined' && HISTORICAL_DRAFT_CLASSES[String(_draftY)]) {
+    try {
+      var _clsS = HISTORICAL_DRAFT_CLASSES[String(_draftY)] || [];
+      var _enN2 = String(en).normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      for (var _cS = 0; _cS < _clsS.length; _cS++) {
+        var _ceS = _clsS[_cS];
+        if (!_ceS || !_ceS.en) continue;
+        var _ceN2 = String(_ceS.en).normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        if (_ceN2 !== _enN2) continue;
+        if (_ceS.ovr != null) _rookOvr = parseInt(_ceS.ovr, 10) || null;
+        if (_ceS._potential != null) _rookPot = parseInt(_ceS._potential, 10);
+        if (_ceS.attrs) _rookClsAttrs = true;
+        break;
+      }
+    } catch(e) {}
+  }
+  // ★ 当季新秀：用选秀类“新秀 OVR/潜力”覆盖巅峰模板 OVR（否则科比 96 时代直接 97，18 岁新秀比巅峰还强），
+  //   并打 _rookieSeason 标记，使其被 MVP/DPOY 等评选按“新秀赛季不参与”规则排除。
+  var _rookiePot = null;
+  if (_isEraRookie && typeof HISTORICAL_DRAFT_CLASSES !== 'undefined' && HISTORICAL_DRAFT_CLASSES[String(era)]) {
+    try {
+      var _cls2 = HISTORICAL_DRAFT_CLASSES[String(era)] || [];
+      var _enN = String(en).normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      for (var _c2 = 0; _c2 < _cls2.length; _c2++) {
+        var _ce = _cls2[_c2];
+        if (!_ce || !_ce.en) continue;
+        var _ceN = String(_ce.en).normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        if (_ceN !== _enN) continue;
+        if (_ce.ovr != null) { ovr = parseInt(_ce.ovr, 10) || ovr; }
+        if (_ce.pos) pos = String(_ce.pos).split('/')[0].trim();
+        if (_ce.height) height = _ce.height;
+        if (_ce._potential != null) { var _pot = parseInt(_ce._potential, 10); if (_pot > ovr) { _rookiePot = _pot; } }
+        if (_ce.attrs) { attrs = JSON.parse(JSON.stringify(_ce.attrs)); _rookClsAttrs = true; }
+        break;
+      }
+    } catch(e) {}
+  }
+  // ★ 年轻非新秀球星成长曲线：入盟第 2-4 年、年龄 ≤ 28 的球星，
+  //   从本人“新秀 OVR”向“巅峰潜力”按现实“4-5 赛季进巅峰”曲线插值
+  //   （加内特 96 时代 ≈ 91、97 时代 ≈ 95；麦迪/姚明/帕克等同理），
+  //   之后每赛季由 evolveLeague 沿 _potential 继续逼近巅峰。
+  var _inYoungWindow = (!_isEraRookie && _draftY != null && _proYear != null && _proYear >= 2 && _proYear <= 4 && _age0 <= 28);
+  var _isYoungStar = false;
+  if (_inYoungWindow) {
+    var _rookStart = (_rookOvr != null && _rookOvr > 0) ? _rookOvr : Math.max(60, _peakOvr - 6); // 无选秀条目兜底：巅峰-6
+    var _targetPeak = (_rookPot != null) ? _rookPot : _peakOvr;
+    var _tRamp = Math.min(1, (_proYear - 1) / Math.max(1, (_peakPro - 1)));
+    var _newOvr = Math.round(_rookStart + (_targetPeak - _rookStart) * _tRamp) + (Math.random() < 0.6 ? 0 : 1);
+    _newOvr = Math.max(_rookStart, Math.min(_targetPeak, _newOvr));
+    if (_newOvr !== ovr) { ovr = _newOvr; _isYoungStar = true; }
+  }
+  // ★ 属性同步：新秀/年轻球星的 OVR 被调低后，13 项属性按比例同步下调，
+  //   避免“86 OVR 却带着 99 巅峰属性”的数据失真（如新秀科比、1996 时代加内特）。
+  if ((_isEraRookie || _isYoungStar) && ovr < _peakOvr && !_rookClsAttrs) {
+    var _ratioA = ovr / _peakOvr;
+    attrKeys.forEach(function(k) { attrs[k] = Math.max(25, Math.min(99, Math.round(attrs[k] * _ratioA))); });
+  }
   var p = {
     name: 'Era' + era + '_' + en.replace(/[^A-Za-z0-9]+/g, ''),
     nameEN: en,
@@ -1105,8 +1290,15 @@ function buildEraCorePlayer(era, team, en, capRatio) {
     _tier: ovr >= 90 ? 'star' : (ovr >= 82 ? 'allstar' : 'role'),
     _age: _age0,
   };
+  if (_isEraRookie) p._rookieSeason = 0; // 当季新秀：不参与首季 MVP/DPOY 等评选
+  if (_draftY != null) { p._draftYear = _draftY; p._proYear = _proYear; }
+  if (_peakPro > 4) p._peakPro = _peakPro; // 慢热球星标记：evolveLeague 按真实巅峰年成长
   attrKeys.forEach(function(k) { p[k] = attrs[k]; });
-  if (ovr >= 88) p._potential = Math.min(99, ovr + 1 + Math.floor(Math.random() * 3));
+  if (_isEraRookie && _rookiePot != null) p._potential = _rookiePot;
+  else if (_inYoungWindow && _rookPot != null) p._potential = _rookPot;
+  else if (_inYoungWindow) p._potential = Math.min(99, _peakOvr + (Math.random() < 0.5 ? 0 : 1));
+  else if (_rookPot != null && _age0 <= 28) p._potential = _rookPot; // 已过成长窗口但仍年轻的球星（24-28岁）继续沿真实潜力升到巅峰
+  else if (ovr >= 88) p._potential = Math.min(99, ovr + 1 + Math.floor(Math.random() * 3));
   // ★ 历史真实合同：核心球星优先使用真实年薪/年限（无锚点回退时代公式）
   var realC = (typeof getHistoricalRealContract === 'function') ? getHistoricalRealContract(era, en) : null;
   if (realC && (realC.salary != null || realC.years != null)) {
@@ -1124,6 +1316,32 @@ function buildEraCorePlayer(era, team, en, capRatio) {
   return p;
 }
 
+/** 历史球员成长元数据：选秀年 / 入盟第几年 / 新秀OVR / 潜力 / 慢热巅峰年（核心、角色、补位球员共用） */
+function getEraPlayerGrowthMeta(en, era) {
+  var draftY = null;
+  try { draftY = (typeof getEraPlayerDraftYear === 'function') ? getEraPlayerDraftYear(en) : null; } catch(e) {}
+  if (draftY == null && typeof ERA_PRE_DRAFT_YEARS !== 'undefined' && ERA_PRE_DRAFT_YEARS[en] != null) draftY = ERA_PRE_DRAFT_YEARS[en];
+  var meta = { draftY: draftY, proYear: (draftY != null) ? (parseInt(era, 10) - parseInt(draftY, 10) + 1) : null, rookOvr: null, pot: null, tier: null, peakPro: 4 };
+  if (draftY != null && typeof HISTORICAL_DRAFT_CLASSES !== 'undefined' && HISTORICAL_DRAFT_CLASSES[String(draftY)]) {
+    try {
+      var cls = HISTORICAL_DRAFT_CLASSES[String(draftY)] || [];
+      var enN = String(en).normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      for (var i = 0; i < cls.length; i++) {
+        var ce = cls[i];
+        if (!ce || !ce.en) continue;
+        if (String(ce.en).normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase() !== enN) continue;
+        if (ce.ovr != null) meta.rookOvr = parseInt(ce.ovr, 10) || null;
+        if (ce._potential != null) meta.pot = parseInt(ce._potential, 10);
+        if (ce.tier) meta.tier = ce.tier;
+        break;
+      }
+    } catch(e) {}
+  }
+  var curve = (typeof ERA_STAR_CURVES !== 'undefined' && ERA_STAR_CURVES[en]) ? ERA_STAR_CURVES[en] : null;
+  if (curve && curve.peakPro) meta.peakPro = parseInt(curve.peakPro, 10);
+  return meta;
+}
+
 /** 角色球员生成（假人名，按时代水平） */
 function buildEraRolePlayer(era, team, usedPos, capRatio, activeTeams, preReal) {
   var posPool = ['PG','SG','SF','PF','C'];
@@ -1138,35 +1356,57 @@ function buildEraRolePlayer(era, team, usedPos, capRatio, activeTeams, preReal) 
   }
   if (usedPos) usedPos[pos] = (usedPos[pos] || 0) + 1;
   var range = ERA_ROLE_RANGES[era] || [60, 76];
-  var ovr = (_real && _real[4]) ? _real[4] : (range[0] + Math.floor(Math.random() * (range[1] - range[0] + 1)));
-  // ★ 本地修改：历史阵容不再用假人填充——从真实球员池按位置取人；池耗尽返回 null（调用方保留真实名单规模）
+  // ★ 修复：先从池取真实球员（替补池/角色池条目自带 OVR），再决定初始 OVR；修复原先 ovr 在 _real 赋值前引用的顺序 bug
   var _real = preReal || takeEraRoleFromPool(era, pos, team);
   if (!_real) return null;
+  var ovr = (_real && _real[4] != null) ? parseInt(_real[4], 10) : (range[0] + Math.floor(Math.random() * (range[1] - range[0] + 1)));
+  // ★ 修复：池子条目带真实位置/身高，必须覆盖之前随机/按队内最少位置算出的 pos，
+  //   否则会出现“补的 PF 进队变成 SG”导致球队仍缺位置（阵容只有 4 个首发）
+  if (_real[2]) {
+    var _rp = String(_real[2]).toUpperCase().split('/')[0].trim();
+    if (['PG', 'SG', 'SF', 'PF', 'C'].indexOf(_rp) >= 0) pos = _rp;
+  }
   var en = _real[0], cn = _real[1], height = _real[3] || '';
   var attrKeys = (typeof SIM_CONFIG !== 'undefined' && SIM_CONFIG.ATTR_LIST) || ['threePT','MID','FIN','DNK','HAN','PAS','PDEF','IDEF','BLK','REB','ATH','STR','CLU'];
-  // 年龄按真实选秀年推导：入联盟 19-21 岁 + 到当前时代年数；查不到选秀年则随机 22-31
+  // ★ 成长曲线：真实选秀届/补充表有数据的球员同样按“新秀→巅峰”成长（含 1984 时代之前的 79-83 届）
+  var _gm = (typeof getEraPlayerGrowthMeta === 'function') ? getEraPlayerGrowthMeta(en, era) : null;
+  var _eraY = (parseInt(era, 10) || 1984) + ((STATE && STATE.career && STATE.career.seasonCount) || 0);
+  // 年龄：优先用替补池条目自带的出生年（第 7 字段），其次按选秀年推导，再次随机 22-31
   var _ageR = 22 + Math.floor(Math.random() * 10);
-  if (typeof HISTORICAL_DRAFT_CLASSES !== 'undefined') {
-    var _eraY = (parseInt(era, 10) || 1984) + ((STATE && STATE.career && STATE.career.seasonCount) || 0);
-    var _foundY = null;
-    Object.keys(HISTORICAL_DRAFT_CLASSES).forEach(function(_y) {
-      if (_foundY != null) return;
-      var _cl = HISTORICAL_DRAFT_CLASSES[_y] || [];
-      for (var _i2 = 0; _i2 < _cl.length; _i2++) {
-        if (_cl[_i2] && _cl[_i2].en === en) { _foundY = parseInt(_y, 10); break; }
-      }
-    });
-    if (_foundY != null) {
-      _ageR = _eraY - _foundY + 19 + Math.floor(Math.random() * 3);
-      _ageR = Math.max(21, Math.min(40, _ageR));
+  if (_real && _real[6] != null) {
+    var _byR = parseInt(_real[6], 10);
+    if (_byR >= 1930 && _byR <= _eraY) _ageR = Math.max(18, Math.min(45, _eraY - _byR));
+  }
+  if (_gm && _gm.draftY != null) {
+    _ageR = _eraY - _gm.draftY + 19 + Math.floor(Math.random() * 3);
+    _ageR = Math.max(21, Math.min(40, _ageR));
+  }
+  // ★ 有名角色/轮换/第六人/二轮秀同样走成长曲线：有潜力数据的年轻球员从新秀值向巅峰成长
+  var _rolePot = (_gm && _gm.pot != null) ? _gm.pot : null;
+  if (_gm && _gm.draftY != null && _gm.proYear != null && _gm.proYear >= 2 && _gm.proYear <= 4 && _ageR <= 28) {
+    if (_gm.pot != null && _gm.rookOvr != null) {
+      var _tR3 = Math.min(1, (_gm.proYear - 1) / Math.max(1, (_gm.peakPro - 1)));
+      var _cv3 = Math.round(_gm.rookOvr + (Math.max(_gm.rookOvr, Math.min(99, _gm.pot)) - _gm.rookOvr) * _tR3);
+      _cv3 = Math.max(_gm.rookOvr, Math.min(99, _cv3));
+      if (_cv3 !== ovr) ovr = _cv3;
+    } else if (_rolePot == null) {
+      // 无选秀潜力数据的年轻轮换：给温和上限，避免一直停在 70 出头
+      _rolePot = Math.min(86, Math.max(ovr + 3, 82));
     }
   }
+  // ★ 替补/角色球员当前 OVR 按时代合理封顶（保留 _potential，让年轻球员在赛季演化中逐步打出来）
+  var _roleCap = { '1984': 78, '1996': 80, '2003': 82 }[String(era)] || 82;
+  if (ovr > _roleCap) ovr = _roleCap;
   var p = {
     name: 'EraRole_' + era + '_' + team + '_' + (usedPos ? Object.keys(usedPos).length : 0) + '_' + Math.floor(Math.random() * 9999),
     nameEN: en, cname: cn, pos: pos, height: height,
     type: ovr >= 80 ? '主力' : '角色球员',
     ovr: ovr, _eraRoster: true, _tier: 'role',
     _age: _ageR,
+    _draftYear: (_gm && _gm.draftY != null) ? _gm.draftY : undefined,
+    _proYear: (_gm && _gm.draftY != null) ? _gm.proYear : undefined,
+    _potential: (_rolePot != null) ? _rolePot : undefined,
+    _peakPro: (_gm && _gm.peakPro > 4) ? _gm.peakPro : undefined,
     contract: (typeof eraNpcContractYears === 'function') ? eraNpcContractYears(era, ovr, _ageR, false) : (1 + Math.floor(Math.random() * 3)),
     salary: (typeof eraSalaryByOvr === 'function') ? eraSalaryByOvr(era, ovr, _ageR) : Math.max(25, Math.round(600 * capRatio / 50) * 50),
     contractType: 'veteran', _awardStreak: {},
@@ -1206,7 +1446,7 @@ function buildEraRosters(era) {
   }
   // 活跃队优先，非活跃队（该时代尚未成立的队）用剩余真实球员兜底建名单，避免残留现役名单
   var allTeams = active.concat(NBA2K_TEAMS.filter(function(t) { return active.indexOf(t) < 0; }));
-  // 第一遍：核心 + 各队真实同队球员（先确保每队拿到自己人）；非活跃队先清空，避免残留现役名单
+  // 第一遍：仅核心名单（不在此处用池补人）；非活跃队先清空，避免残留现役名单
   allTeams.forEach(function(t) {
     if (active.indexOf(t) < 0) { NBA2K_DATA[t] = []; return; }
     var roster = [];
@@ -1216,6 +1456,47 @@ function buildEraRosters(era) {
       if (p) roster.push(p);
     });
     NBA2K_DATA[t] = roster;
+  });
+  // ★ 位置覆盖优先：先确保每支活跃队五个位置（PG/SG/SF/PF/C）都至少 1 人，
+  //   再批量补人，避免先处理的球队把某位置池耗尽导致后续球队“缺一个队友”（阵容只有 4 个位置）。
+    // bench-pool fill: per-team real bench (no overlap with core / current draft class)
+  allTeams.forEach(function(t) {
+    if (active.indexOf(t) < 0) return;
+    var roster = NBA2K_DATA[t] || [];
+    var _guardBch = 0;
+    while (roster.length < ERA_ROSTER_SIZE && _guardBch++ < 40) {
+      var _bch = takeEraBenchPlayer(era, neededPos(roster), t, true);
+      if (!_bch) break;
+      var _bp = buildEraRolePlayer(era, t, null, capRatio, active, _bch);
+      if (!_bp) break;
+      roster.push(_bp);
+    }
+  });
+  function teamMissingPos(roster) {
+    var used = {};
+    roster.forEach(function(p) { var m = String(p.pos || 'SF').split('/')[0].trim(); used[m] = true; });
+    var miss = [];
+    ['PG', 'SG', 'SF', 'PF', 'C'].forEach(function(pp) { if (!used[pp]) miss.push(pp); });
+    return miss;
+  }
+  active.forEach(function(t) {
+    var roster = NBA2K_DATA[t] || [];
+    var _guardC = 0;
+    while (_guardC++ < 30) {
+      if (roster.length >= ERA_ROSTER_SIZE) break; // 已达目标人数则不再加人，避免挤占兜底池
+      var miss = teamMissingPos(roster);
+      if (!miss.length) break;
+      var pos = miss[0];
+      var cand = takeEraBenchPlayer(era, pos, t, false) || takeEraRoleFromPool(era, pos, t, false);
+      if (!cand) break;
+      var p = buildEraRolePlayer(era, t, null, capRatio, active, cand);
+      if (!p) break;
+      roster.push(p);
+    }
+  });
+  // 第二遍（原第一遍）：同队真实球员补足（先确保每队拿到自己人）
+  allTeams.forEach(function(t) {
+    var roster = NBA2K_DATA[t] || [];
     var _guardA = 0;
     while (roster.length < ERA_ROSTER_SIZE && _guardA++ < 40) {
       if (!addRole(t, roster, true)) break;
@@ -1603,6 +1884,9 @@ function buildEraTeamRoster(era, team) {
   if (typeof NBA2K_DATA === 'undefined') return;
   var capRatio = (typeof getEraSalaryCap === 'function') ? getEraSalaryCap(era) / 15464.7 : 1;
   var roster = [];
+  // ★ 修复：建队初始就把队伍挂回联盟（先保留原队伍），让补位防重能看到本队已加入的球员，避免同一人反复入队
+  if (NBA2K_DATA[team]) roster = NBA2K_DATA[team];
+  else NBA2K_DATA[team] = roster;
   var core = (ERA_ROSTERS[era] && ERA_ROSTERS[era][team]) || [];
   core.forEach(function(en) {
     var p = buildEraCorePlayer(era, team, en, capRatio);
@@ -1613,10 +1897,39 @@ function buildEraTeamRoster(era, team) {
     var main = String(p.pos || 'SF').split('/')[0].trim();
     if (usedPos[main] != null) usedPos[main]++;
   });
+  // 扩张队同样先用独立替补池按队补足；本队无替补时可跨队取用未使用的真实替补（类似扩张选秀，不影响已确定的赛季初名单）
+  var _guardF1 = 0;
+  while (roster.length < ERA_ROSTER_SIZE && _guardF1++ < 40) {
+    var _mnPos = (function() { var _mn='PG',_mc=99; ['PG','SG','SF','PF','C'].forEach(function(pp){ var c=usedPos[pp]||0; if(c<_mc){_mc=c;_mn=pp;} }); return _mn; })();
+    var _bch2 = takeEraBenchPlayer(era, _mnPos, team, true) || takeEraBenchPlayer(era, _mnPos, team, false);
+    if (!_bch2) break;
+    var _bp2 = buildEraRolePlayer(era, team, usedPos, capRatio, null, _bch2);
+    if (!_bp2) break;
+    roster.push(_bp2);
+  }
+  var _localSeen = {};
+  function _lsSeen(en) {
+    var _k = String(en || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, ' ').replace(/\s+/g, ' ').trim();
+    if (_localSeen[_k]) return true;
+    _localSeen[_k] = true;
+    return false;
+  }
   var _guardF2 = 0;
   while (roster.length < ERA_ROSTER_SIZE && _guardF2++ < 40) {
     var _rp2 = buildEraRolePlayer(era, team, usedPos, capRatio, null);
-    if (!_rp2) break;
+    if (!_rp2) {
+      // ★ 全真实：时代角色池耗尽时，从历史真实球员池补位（绝不产出假人）
+      if (typeof generateEraRoleRefill === 'function') {
+        var _rf2 = generateEraRoleRefill();
+        if (_rf2) {
+          // 本地去重：构建中阵容未写回 NBA2K_DATA，防重检查看不到本队，需单独记录已用名字
+          if (_lsSeen(_rf2.nameEN)) continue;
+          roster.push(_rf2); continue;
+        }
+      }
+      break;
+    }
+    if (_lsSeen(_rp2.nameEN)) { continue; }
     roster.push(_rp2);
   }
   NBA2K_DATA[team] = roster;

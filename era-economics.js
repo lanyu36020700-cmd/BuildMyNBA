@@ -282,14 +282,18 @@ function getCalendarYearForSeasonNum(n) {
 
 /** 历史球员选秀年份（从 HISTORICAL_DRAFT_CLASSES 按 en 查找；找不到返回 null） */
 function getEraPlayerDraftYear(en) {
-  if (!en || typeof HISTORICAL_DRAFT_CLASSES === 'undefined') return null;
-  var years = Object.keys(HISTORICAL_DRAFT_CLASSES);
-  for (var i = 0; i < years.length; i++) {
-    var list = HISTORICAL_DRAFT_CLASSES[years[i]] || [];
-    for (var j = 0; j < list.length; j++) {
-      if (list[j].en === en) return parseInt(years[i], 10);
+  if (!en) return null;
+  if (typeof HISTORICAL_DRAFT_CLASSES !== 'undefined') {
+    var years = Object.keys(HISTORICAL_DRAFT_CLASSES);
+    for (var i = 0; i < years.length; i++) {
+      var list = HISTORICAL_DRAFT_CLASSES[years[i]] || [];
+      for (var j = 0; j < list.length; j++) {
+        if (list[j].en === en) return parseInt(years[i], 10);
+      }
     }
   }
+  // ★ 1984 时代之前的补充表（79-83 届球星）：HISTORICAL_DRAFT_CLASSES 从 1984 届才开始
+  if (typeof ERA_PRE_DRAFT_YEARS !== 'undefined' && ERA_PRE_DRAFT_YEARS[en] != null) return ERA_PRE_DRAFT_YEARS[en];
   return null;
 }
 

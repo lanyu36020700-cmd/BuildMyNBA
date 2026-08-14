@@ -204,6 +204,8 @@ const SIM_CONFIG = {
     /** ★ 模块三：使用率上限与当家球星球权加成 */
     USAGE_CAP: 2.2,
     ROLE_FACTOR: 1.18,
+    /** ★ 新秀赛季球权加成：第一年 87 OVR 也能打出 15-20 分（现实顶级新秀第一年即高球权） */
+    ROOKIE_USAGE: 1.35,
 
     /** ★ 模块三/四：年龄数据曲线（巅峰加成） */
     PEAK: { young: 0.94, primeStart: 26, primeEnd: 31, primeFactor: 1.08, midStart: 32, midEnd: 34, midFactor: 0.99, lateFactor: 0.88 },

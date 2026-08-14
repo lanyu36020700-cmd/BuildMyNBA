@@ -297,6 +297,25 @@ function randomContractByAge(age, p) {
 
 function assignFreeAgents() {
   var pool = STATE._freeAgentPool || [];
+  // ★ 修复：自由市场池内退役球员不再被签约（退役名单/真实退役年/超龄）
+  if (pool.length) {
+    var _yrF = (STATE && STATE.eraStart && typeof getEraSeasonYear === 'function') ? getEraSeasonYear(parseInt(STATE.eraStart, 10), (STATE.career ? STATE.career.seasonCount : 0) || 0) : null;
+    pool = pool.filter(function(fa) {
+      if (!fa) return false;
+      try {
+        var _fEN = fa.nameEN || fa.name || '';
+        var _fN = String(_fEN).normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9\u4e00-\u9fa5]/g, ' ').replace(/\s+/g, ' ').trim();
+        if (STATE.career && Array.isArray(STATE.career.retiredPlayers) && STATE.career.retiredPlayers.indexOf(_fN) >= 0) return false;
+        if (_yrF != null && typeof getHistoricalRetireYear === 'function') {
+          var _ry = getHistoricalRetireYear(fa);
+          if (_ry != null && _yrF >= _ry) return false;
+        }
+        if (typeof getLeaguePlayerAge === 'function' && getLeaguePlayerAge(fa) >= 40) return false;
+      } catch(e) {}
+      return true;
+    });
+    STATE._freeAgentPool = pool;
+  }
   if (pool.length === 0) return;
 
   if (!STATE._leagueChanges) STATE._leagueChanges = {};
@@ -342,6 +361,7 @@ function assignFreeAgents() {
       if (posCount < 2) {
         try { ensureDualPos(fa); } catch(e) {}
         roster.push(fa);
+        fa._faSigned = true;
         fa._justSigned = true;
         fa._justSignedSeason = STATE.career ? (STATE.career.seasonCount || 0) : 0;
         if (fa.ovr > 86) starSignedTeams[t] = true;
@@ -369,6 +389,7 @@ function assignFreeAgents() {
       var fbRoster = NBA2K_DATA[fb];
       if (fbRoster && fbRoster.length < 18) {
         fbRoster.push(fa);
+        fa._faSigned = true;
         fa._justSigned = true;
         fa._justSignedSeason = STATE.career ? (STATE.career.seasonCount || 0) : 0;
         if (fa.ovr > 86) starSignedTeams[fb] = true;
@@ -378,5 +399,21 @@ function assignFreeAgents() {
     }
   });
 
-  STATE._freeAgentPool = [];
+  // ★ 保留未签约自由球员（被裁/合同到期未签可跨赛季等待），仅清理已签约与超龄球员
+  STATE._freeAgentPool = (STATE._freeAgentPool || []).filter(function(fa) {
+    if (!fa) return false;
+    if (fa._faSigned) return false;
+    try { if (typeof getLeaguePlayerAge === 'function' && getLeaguePlayerAge(fa) >= 40) return false; } catch(e) {}
+    return true;
+  });
+  // 上限：自由市场最多保留 120 人（正常赛季稳态约 78-83 人，120 留足缓冲；对运行/存档影响极小），超出丢弃最低 OVR（公告记录）
+  if (STATE._freeAgentPool.length > 120) {
+    STATE._freeAgentPool.sort(function(a, b) { return (parseInt(b.ovr, 10) || 0) - (parseInt(a.ovr, 10) || 0); });
+    var _faDrop = STATE._freeAgentPool.slice(120);
+    STATE._freeAgentPool = STATE._freeAgentPool.slice(0, 120);
+    if (_faDrop.length && STATE._leagueChanges) {
+      STATE._leagueChanges.faDropped = STATE._leagueChanges.faDropped || [];
+      _faDrop.forEach(function(d) { STATE._leagueChanges.faDropped.push({ name: d.cname || d.name, ovr: d.ovr }); });
+    }
+  }
 }

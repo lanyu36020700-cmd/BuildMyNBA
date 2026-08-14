@@ -32,18 +32,28 @@ function getAnchorYear() {
 }
 
 /** 按名字查找联盟内球员（nameEN/name/cname 三种键） */
+var _anchorIdxCache = null;
+var _anchorIdxSeason = null;
 function findAnchorPlayer(nameKey) {
   if (!nameKey) return null;
-  for (var _t in NBA2K_DATA) {
-    var _r = NBA2K_DATA[_t];
-    if (!Array.isArray(_r)) continue;
-    for (var _i = 0; _i < _r.length; _i++) {
-      var p = _r[_i];
-      if (!p) continue;
-      if (p.nameEN === nameKey || p.name === nameKey || p.cname === nameKey) return p;
+  // ★ 性能优化：每赛季只建一次名字索引，避免每次全联盟遍历
+  var _sig = STATE && STATE.career ? STATE.career.seasonCount : 0;
+  if (_anchorIdxSeason !== _sig || !_anchorIdxCache) {
+    _anchorIdxCache = {};
+    _anchorIdxSeason = _sig;
+    for (var _t in NBA2K_DATA) {
+      var _r = NBA2K_DATA[_t];
+      if (!Array.isArray(_r)) continue;
+      for (var _i = 0; _i < _r.length; _i++) {
+        var p = _r[_i];
+        if (!p) continue;
+        if (p.nameEN) _anchorIdxCache[p.nameEN] = p;
+        if (p.name && p.name !== p.nameEN) _anchorIdxCache[p.name] = p;
+        if (p.cname && p.cname !== p.nameEN && p.cname !== p.name) _anchorIdxCache[p.cname] = p;
+      }
     }
   }
-  return null;
+  return _anchorIdxCache[nameKey] || null;
 }
 
 /** 锚定率：星级(OVR>=88 或 tier=star) 85%，其余 60%（可被 game-config 覆盖） */
@@ -171,7 +181,7 @@ HISTORICAL_SEASON_ANCHORS = {
     'LAL': ['Magic Johnson', 'Kareem Abdul-Jabbar', 'James Worthy', 'Byron Scott', 'Michael Cooper'],
     'MIL': ['Sidney Moncrief', 'Terry Cummings', 'Paul Pressey', 'Marques Johnson', 'Craig Hodges'],
     'NYK': ['Bernard King', 'Bill Cartwright', 'Rory Sparrow', 'Trent Tucker', 'Louis Orr'],
-    'OKC': ['Tom Chambers', 'Jack Sikma', 'Gus Williams', 'Al Wood', 'Danny Vranes'],
+    'OKC': ['Tom Chambers', 'Jack Sikma', 'Al Wood', 'Danny Vranes', 'Frank Brickowski'], // ★ 修复：威廉姆斯 84-85 在奇才
     'PHI': ['Julius Erving', 'Moses Malone', 'Charles Barkley', 'Maurice Cheeks', 'Andrew Toney'],
     'PHX': ['Larry Nance', 'Walter Davis', 'Maurice Lucas', 'Alvan Adams', 'Kyle Macy'],
     'POR': ['Clyde Drexler', 'Jim Paxson', 'Kiki Vandeweghe', 'Mychal Thompson', 'Sam Bowie'],
