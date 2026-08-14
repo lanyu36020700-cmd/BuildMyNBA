@@ -3,6 +3,81 @@
 // BRANCH_EVENTS + STAGED_BRANCH_EVENTS; loaded before main logic
 // ============================================================
 
+/** ★ 球队延续性判定：合同在期内（≥1）且未被裁时，才可触发“留队型”休赛期事件（球队合练/球队线等）。
+ *  跳出合同、合同到期、自由市场待签约期间不触发，避免“刚跳出合同还在自由市场却队友约合练”的违和 */
+function canRunTeamContinuityEvent() {
+  var c = STATE.career;
+  if (!c || c.retired) return false;
+  if ((c.contract || 0) < 1) return false;
+  if (c.flags && c.flags.waived) return false;
+  return true;
+}
+
+// ==================== 轩尼诗：换队次数 + 商业价值 触发 ====================
+function getWanderCount() {
+  var m = getMobility ? getMobility() : null;
+  var fa = (m && m.freeAgencyTeams) ? m.freeAgencyTeams.length : 0;
+  var trades = (m && (m.teamInitiatedTrades || m.trades)) || 0;
+  var waived = (m && m.waived) || 0;
+  return fa + trades + waived;
+}
+function isHennessyEligible() {
+  var c = STATE.career;
+  if (!c) return false;
+  if (c.flags && c.flags.hennessyDone) return false;
+  var n = getWanderCount();
+  if (n < 2) return false;
+  // 换 2 次小概率，换 4 次概率最大；商业价值越高概率越大（上限 +35%）
+  var p = n >= 4 ? 0.60 : n >= 3 ? 0.32 : 0.16;
+  var biz = (c.profile && c.profile.businessValue) || 0;
+  p += Math.min(0.35, biz * 0.004);
+  return Math.random() < Math.min(0.95, p);
+}
+
+// ==================== 读书 / 心理压力系统 ====================
+const READING_BOOKS = [
+  { key: 'godfather', title: '《教父》', weight: 5, scene: '你翻开第一页，看见那句“一个人只有一个命运”。窗外新闻还在吵，你忽然想明白：舆论只负责制造声音，不负责替你决定人生。', effects: ['领导力+1', '媒体压力-1'], apply: function() { addProfileDelta('leadership', 1); addSeasonMod('mediaPressure', -1, -10, 10); } },
+  { key: 'public_opinion', title: '《舆论的力量》', weight: 14, scene: '这本书把“被所有人注视”写得比球场更累。读到一半，你关掉了手机推送，第一次觉得那些解说词只是背景音。', effects: ['媒体好感+1', '媒体压力-2'], apply: function() { addProfileDelta('mediaTrust', 1); addSeasonMod('mediaPressure', -2, -10, 10); } },
+  { key: 'alive', title: '《活着》', weight: 9, scene: '福贵的一生比任何一场失利都沉。合上书时你愣了很久，然后给家里打了个电话：我很好，只是突然想听听你的声音。', effects: ['媒体压力-2', '忠诚+1', '状态波动-1'], apply: function() { addSeasonMod('mediaPressure', -2, -10, 10); addProfileDelta('loyalty', 1); addSeasonMod('formVariance', -1, -10, 10); } },
+  { key: 'old_man_and_sea', title: '《老人与海》', weight: 9, scene: '圣地亚哥和那条大鱼搏斗了三天三夜。你想起自己上一次加时赛，也是这样一个人扛着，没有放弃。', effects: ['关键球+1', '状态波动-1'], apply: function() { addAttrDelta('CLU', 1); STATE.finalOVR = calcOVR(STATE.attrs); addSeasonMod('formVariance', -1, -10, 10); } },
+  { key: 'thinking_fast_slow', title: '《思考，快与慢》', weight: 13, scene: '书里说，人在疲惫时更容易相信第一个跳出来的答案。你开始复盘自己的每一次勉强出手，发现很多球根本不该投。', effects: ['传球+1', '媒体好感+1'], apply: function() { addAttrDelta('PAS', 1); STATE.finalOVR = calcOVR(STATE.attrs); addProfileDelta('mediaTrust', 1); } },
+  { key: 'silent_majority', title: '《沉默的大多数》', weight: 13, scene: '王小波说，沉默不是没有态度，是不想和噪音共用一套语言。你合上书，把发布会要说的话删到只剩两句。', effects: ['媒体压力-2', '媒体好感+1'], apply: function() { addSeasonMod('mediaPressure', -2, -10, 10); addProfileDelta('mediaTrust', 1); } },
+  { key: 'three_body', title: '《三体》', weight: 5, scene: '你读到“降维打击”时笑了。第二天训练，你把对手的战术想象成二维平面，忽然觉得一切都没那么可怕。', effects: ['关键球+1', '人气+1'], apply: function() { addAttrDelta('CLU', 1); STATE.finalOVR = calcOVR(STATE.attrs); addProfileDelta('fame', 1); } },
+  { key: 'dragon_hero', title: '《天龙八部》', weight: 8, scene: '你最喜欢扫地僧。他不出手，不是因为不会，而是因为没必要。你决定下一场也试着少说、多做、深藏不露。', effects: ['状态波动-1', '更衣室信任+1', '媒体压力-1'], apply: function() { addSeasonMod('formVariance', -1, -10, 10); addProfileDelta('lockerRoomTrust', 1); addSeasonMod('mediaPressure', -1, -10, 10); } }
+];
+
+function isReadingPressureEligible() {
+  var mods = STATE.career.nextSeasonMods || {};
+  var profile = STATE.career.profile || {};
+  if ((mods.mediaPressure || 0) >= 2) return true;
+  if ((profile.controversy || 0) >= 3) return true;
+  if ((mods.formVariance || 0) >= 2) return true;
+  try { return getMentalPressure() >= 6; } catch(e) { return false; }
+}
+
+function pickReadingBook() {
+  var mods = STATE.career.nextSeasonMods || {};
+  var profile = STATE.career.profile || {};
+  var pool = READING_BOOKS.map(function(b) {
+    var w = b.weight || 10;
+    if ((b.key === 'public_opinion' || b.key === 'silent_majority' || b.key === 'alive') && ((mods.mediaPressure || 0) >= 2 || (profile.controversy || 0) >= 3)) w += 4;
+    if ((b.key === 'alive' || b.key === 'dragon_hero' || b.key === 'old_man_and_sea') && (mods.formVariance || 0) >= 2) w += 3;
+    return { book: b, weight: w };
+  });
+  var total = 0;
+  pool.forEach(function(p) { total += p.weight; });
+  var roll = Math.random() * total;
+  for (var i = 0; i < pool.length; i++) {
+    roll -= pool[i].weight;
+    if (roll <= 0) return pool[i].book;
+  }
+  return pool[pool.length - 1].book;
+}
+
+function applyReadingBookEffects(book) {
+  if (!book || !book.apply) return;
+  try { book.apply(); } catch(e) {}
+}
 const BRANCH_EVENTS = [
   {
     id: 'national_team',
@@ -188,7 +263,7 @@ const BRANCH_EVENTS = [
     slot: 'main',
     weight: 9,
     // ★ 防重复：球队合练只允许在球队线尚未开启时出现一次（DAG 版提前合练接管后续）
-    requires: function() { return getBranchNode('team_practice') === 'start' && getBranchStage('team_practice') === 0; },
+    requires: function() { return canRunTeamContinuityEvent() && getBranchNode('team_practice') === 'start' && getBranchStage('team_practice') === 0; },
     title: '球队合练',
     body: '队友们约你提前回到训练馆合练。教练组认为这能让球队更快进入状态。',
     choices: [
@@ -317,6 +392,170 @@ const BRANCH_EVENTS = [
         addAttrDelta('STA', 1);
         STATE.finalOVR = calcOVR(STATE.attrs);
         return '你婉拒了球局，把那一整天留给训练馆。助教说你可能错过了一些人脉，但你只回了一句：球会替我介绍自己。<br><br>效果：中投+1，耐力+1。';
+      }}
+    ]
+  },
+  {
+    id: 'brand_offer',
+    branch: 'brand',
+    phase: 'offseason',
+    slot: 'main',
+    weight: 12,
+    title: '品牌邀约：轩尼诗',
+    scenes: [
+      '晚宴订在市中心的私人包间，品牌方没有先谈钱，先聊你小时候看比赛的故事。',
+      '最后他们把合同推过来：轩尼诗想请你做新一季广告。'
+    ],
+    body: '这杯酒端不端起来，不只是钱的问题。',
+    requires: function() {
+      var c = STATE.career;
+      if (!c) return false;
+      if (getBranchNode('brand') !== 'start') return false;
+      if (c.flags && c.flags.hennessyDone) return false;
+      return isHennessyEligible();
+    },
+    choices: [
+      { label: '接下广告', hint: '进入广告拍摄', apply: function() {
+        setBranchNode('brand', 'offer_accepted', { status: 'accepted' });
+        // ★ 经济层：广告签约金（按商业价值）
+        var _cfgA = (typeof getEconCfg === 'function') ? getEconCfg() : {};
+        var _emA = _cfgA.eventMoney || {};
+        var _bizA = (STATE.career && STATE.career.profile && STATE.career.profile.businessValue) || 0;
+        var _adFeeRaw = Math.min((_emA.adBase || 300) + _bizA * (_emA.adPerBiz || 30), _emA.adCap || 1000);
+        var _adFee = (typeof eraMoney === 'function') ? eraMoney(_adFeeRaw) : _adFeeRaw;
+        if (typeof addMoney === 'function') addMoney(_adFee, '广告签约金');
+        return '你在合同上签下名字。品牌方说：接下来三个月，镜头会跟着你。<br><br>💰 签约金 ' + fmtMoney(_adFee) + ' 入账。<br><br>效果：进入广告拍摄。';
+      }},
+      { label: '先看创意再决定', hint: '更谨慎，媒体好感上升', apply: function() {
+        setBranchNode('brand', 'offer_creative', { status: 'creative' });
+        addProfileDelta('mediaTrust', 1);
+        addProfileDelta('businessValue', 1);
+        return '你要求先看创意脚本。品牌方欣赏你的认真，改了两稿后才签。<br><br>效果：媒体好感+1；商业价值+1；进入广告拍摄。';
+      }},
+      { label: '婉拒', hint: '不为钱低头', apply: function() {
+        setBranchNode('brand', 'declined', { status: 'declined' });
+        STATE.career.flags = STATE.career.flags || {};
+        STATE.career.flags.hennessyDone = true;
+        addProfileDelta('businessValue', -1);
+        addProfileDelta('mediaTrust', 1);
+        return '你说：酒很好，但我只接自己相信的东西。品牌方没有生气，反而约了下次。<br><br>效果：商业价值-1；媒体好感+1。';
+      }}
+    ]
+  },
+  {
+    id: 'brand_shoot',
+    branch: 'brand',
+    phase: 'offseason',
+    slot: 'main',
+    weight: 14,
+    title: '广告拍摄',
+    scenes: ['拍摄棚里，导演要求你对着镜头说一句“敬所有赢下自己的人”。现场围了十几个人，灯光很烫，你忽然觉得自己像在打总决赛罚球。'],
+    body: '广告怎么拍，会影响广告播出后别人怎么看你。',
+    requires: function() {
+      var n = getBranchNode('brand');
+      return n === 'offer_accepted' || n === 'offer_creative';
+    },
+    choices: [
+      { label: '完全按剧本配合', hint: '专业、稳妥', apply: function() {
+        setBranchNode('brand', 'shoot_script', { shoot: 'script' });
+        STATE.career.flags = STATE.career.flags || {};
+        STATE.career.flags.hennessyShoot = 'script';
+        addProfileDelta('businessValue', 2);
+        addProfileDelta('mediaTrust', 1);
+        addProfileDelta('controversy', -1);
+        return '你每个镜头都做到位，导演提前收工。品牌方很满意，新闻稿里的形容词是“专业”。<br><br>效果：商业价值+2；媒体好感+1；争议-1。';
+      }},
+      { label: '加入自己的创意', hint: '有概率出圈，也有概率翻车', apply: function() {
+        setBranchNode('brand', 'shoot_creative', { shoot: 'creative' });
+        STATE.career.flags = STATE.career.flags || {};
+        STATE.career.flags.hennessyShoot = 'creative';
+        var good = Math.random() < 0.6;
+        STATE.career.flags.hennessyCreativeGood = good;
+        if (good) {
+          addProfileDelta('fame', 2);
+          addProfileDelta('mediaTrust', 1);
+          return '你在片场临时改了句台词，导演愣了两秒，然后笑了。这条素材被剪进正片，播出后出圈了。<br><br>效果：人气+2；媒体好感+1。';
+        }
+        addProfileDelta('controversy', 2);
+        addProfileDelta('mediaTrust', -1);
+        return '你的临场发挥没有踩准品牌方的节奏，现场气氛一度很僵。事后品牌方改回了原稿，但有人在网上说你“不专业”。<br><br>效果：争议+2；媒体好感-1。';
+      }}
+    ]
+  },
+  {
+    id: 'brand_launch',
+    branch: 'brand',
+    phase: 'offseason',
+    slot: 'main',
+    weight: 14,
+    title: '广告上线',
+    scenes: ['广告首播那天，你在客队酒店里刷到自己的镜头。评论区一半在夸质感，一半在玩梗。'],
+    body: '广告已经不属于你了，它属于所有看见它的人。',
+    requires: function() {
+      var n = getBranchNode('brand');
+      return n === 'shoot_script' || n === 'shoot_creative' || n === 'shoot_efficient';
+    },
+    choices: [
+      { label: '看评论区', hint: '直面反馈', apply: function() {
+        var c = STATE.career;
+        c.flags = c.flags || {};
+        c.flags.hennessyAd = true;
+        c.flags.hennessyEchoSeason = (c.seasonCount || 0) + 1;
+        c.flags.hennessyEchoAt = 10 + Math.floor(Math.random() * 11);
+        if (c.profile && (c.profile.chinaPopularity || 0) >= 50) c.flags.hennessyChina = true;
+        setBranchNode('brand', 'launched', { launched: true });
+        var shoot = c.flags.hennessyShoot;
+        // ★ 经济层：轩尼诗代言费（按商业价值）
+        var _cfgH = (typeof getEconCfg === 'function') ? getEconCfg() : {};
+        var _emH = _cfgH.eventMoney || {};
+        var _bizH = (c.profile && c.profile.businessValue) || 0;
+        var _henFeeRaw = Math.min((_emH.hennessyBase || 500) + _bizH * (_emH.hennessyPerBiz || 50), _emH.hennessyCap || 1500);
+        var _henFee = (typeof eraMoney === 'function') ? eraMoney(_henFeeRaw) : _henFeeRaw;
+        if (typeof addMoney === 'function') addMoney(_henFee, '轩尼诗代言费');
+        var _feeNote = '<br><br>💰 代言费 ' + fmtMoney(_henFee) + ' 入账。';
+        if (shoot === 'creative') {
+          addProfileDelta('fame', 1);
+          addProfileDelta('mediaTrust', 1);
+          return '广告上线后，你的创意镜头被剪成无数版本。评论从玩梗变成讨论：他是真的会拍。<br><br>效果：人气+1；媒体好感+1。' + _feeNote;
+        }
+        if (shoot === 'script') {
+          addProfileDelta('mediaTrust', 1);
+          addProfileDelta('controversy', -1);
+          return '广告质感被夸得体面，连平时挑刺的评论都只说了句：可以。<br><br>效果：媒体好感+1；争议-1。';
+        }
+        addProfileDelta('businessValue', 1);
+        return '广告没怎么出圈，但品牌方的续约意向已经提前到桌面上。<br><br>效果：商业价值+1。';
+      }}
+    ]
+  },
+  {
+    id: 'brand_echo',
+    branch: 'brand',
+    phase: 'season',
+    slot: 'main',
+    weight: 14,
+    title: '广告回响',
+    scenes: ['一个月后，有人把广告截图配文做成段子。品牌方问你要不要下场回应。'],
+    body: '热度没有消失，它只是在等你接住。',
+    requires: function() {
+      var c = STATE.career;
+      if (!c || !c.flags) return false;
+      return !!c.flags.hennessyAd && !c.flags.hennessyEchoDone && getBranchNode('brand') === 'launched';
+    },
+    choices: [
+      { label: '幽默自嘲', hint: '和球迷一起玩', apply: function() {
+        addProfileDelta('fame', 1);
+        addProfileDelta('mediaTrust', 1);
+        return '你转发了那条段子，配文：导演说这条不能删。<br><br>效果：人气+1；媒体好感+1。';
+      }},
+      { label: '不回应', hint: '让热度自己散', apply: function() {
+        addProfileDelta('businessValue', 1);
+        return '你没有下场，几天后热度自己散了。品牌方觉得你稳。<br><br>效果：商业价值+1。';
+      }},
+      { label: '认真回应创作理念', hint: '把广告当作品解释', apply: function() {
+        addProfileDelta('mediaTrust', 2);
+        addProfileDelta('controversy', -1);
+        return '你发了一段长文，讲这条广告想表达什么。评论从段子变成了讨论。<br><br>效果：媒体好感+2；争议-1。';
       }}
     ]
   }
@@ -1505,7 +1744,7 @@ const STAGED_BRANCH_EVENTS = [
     title: '球队线：提前合练',
     scenes: ['休赛期刚过一半，你在群里发了一条消息：想提前合练的，后天早上训练馆见。你知道这能让球队更快进入状态。'],
     body: '你要组织球队合练，还是把夏天留给个人恢复？',
-    requires: function() { return getBranchNode('team_practice') === 'start'; },
+    requires: function() { return canRunTeamContinuityEvent() && getBranchNode('team_practice') === 'start'; },
     choices: [
       { label: '组织球队合练', hint: '默契提升，开启领袖线', apply: function() { var mods = getNextSeasonMods(); setBranchNode('team_practice', 'practice_start', { status: 'organized' }); mods.teamChemistry = Math.min(5, (mods.teamChemistry || 0) + 2); mods.formVariance = Math.max(-3, (mods.formVariance || 0) - 1); addAttrDelta('PAS', 1); STATE.finalOVR = calcOVR(STATE.attrs); return '你把队友一个个叫回训练馆。没人说这是领袖投票，但所有人都在用行动投票。<br><br>效果：传球+1；球队默契提升；球队线进入回应阶段。'; }},
       { label: '个人恢复优先', hint: '降低伤病风险', apply: function() { var mods = getNextSeasonMods(); setBranchNode('team_practice', 'practice_start', { status: 'recovery' }); mods.injuryRiskBonus = Math.max(-4, (mods.injuryRiskBonus || 0) - 1); return '你选择把身体修好。教练理解这个决定，但队友们也会记住这个夏天你没有出现。<br><br>效果：下赛季伤病风险略降；球队线进入回应阶段。'; }}
@@ -1517,7 +1756,7 @@ const STAGED_BRANCH_EVENTS = [
     title: '球队线：队内回应',
     scenes: ['第二年夏天，合练邀请变得微妙。年轻球员期待你开口，核心队友也在观察你的态度。'],
     body: '你要把自己推向更衣室领袖的位置吗？',
-    requires: function() { return getBranchNode('team_practice') === 'practice_start'; },
+    requires: function() { return canRunTeamContinuityEvent() && getBranchNode('team_practice') === 'practice_start'; },
     choices: [
       { label: '主动承担领袖责任', hint: '球队默契和传球提升', apply: function() { var mods = getNextSeasonMods(); setBranchNode('team_practice', 'practice_response', { leadership: 'vocal' }); mods.teamChemistry = Math.min(5, (mods.teamChemistry || 0) + 2); addAttrDelta('PAS', 1); STATE.finalOVR = calcOVR(STATE.attrs); return '你不再只是参加合练的人，而是安排训练内容、提醒年轻队友站位的人。<br><br>效果：传球+1；球队默契提升；球队线进入队魂阶段。'; }},
       { label: '保持低调，只做好自己', hint: '降低波动，不争队内话语权', apply: function() { var mods = getNextSeasonMods(); setBranchNode('team_practice', 'practice_response', { leadership: 'quiet' }); mods.formVariance = Math.max(-3, (mods.formVariance || 0) - 1); return '你没有演讲，也没有喊口号，只是每天第一个到训练馆。久而久之，这也成了一种声音。<br><br>效果：下赛季状态波动略降；球队线进入队魂阶段。'; }},
@@ -1530,7 +1769,7 @@ const STAGED_BRANCH_EVENTS = [
     title: '球队线：队魂雏形',
     scenes: ['这一次，合练不再需要你发消息。年轻球员已经提前到了。教练看着你，像是在看这支球队的秩序。'],
     body: '球队线收束。你要留下怎样的队内标签？',
-    requires: function() { return getBranchNode('team_practice') === 'practice_response' || getBranchNode('team_practice') === 'practice_mentor'; },
+    requires: function() { return canRunTeamContinuityEvent() && (getBranchNode('team_practice') === 'practice_response' || getBranchNode('team_practice') === 'practice_mentor'); },
     choices: [
       { label: '成为更衣室领袖', hint: '退役球衣队史分倾向提升', apply: function() { setBranchNode('team_practice', 'practice_identity', { identity: 'locker_room_leader' }); STATE.career.flags.lockerRoomLeader = true; return '你说话不一定最多，但关键时刻所有人都会看你。<br><br>结果：获得“更衣室领袖”长期标签。'; }},
       { label: '成为训练馆标杆', hint: '身体管理更稳定', apply: function() { var mods = getNextSeasonMods(); setBranchNode('team_practice', 'practice_identity', { identity: 'gym_standard' }); mods.injuryRiskBonus = Math.max(-4, (mods.injuryRiskBonus || 0) - 1); return '你的训练方式成了队内年轻人的模板。没有海报，没有口号，只有每天重复。<br><br>结果：获得“训练馆标杆”长期标签；下赛季伤病风险略降。'; }},
@@ -2840,7 +3079,7 @@ const STAGED_BRANCH_EVENTS = [
       }},
       { label: '先回应家长的质疑', hint: '把训练安排讲清楚', apply: function() {
         setBranchNode('training_camp', 'crisis_parent', { crisis: 'parent' });
-        addProfileDelta('mediaPressure', 1, -10, 10);
+        addSeasonMod('mediaPressure', 1, -10, 10);
         return '有家长在群里质疑训练强度。你没有删消息，只发了一条长回复，把每堂课的内容列出来。<br><br>效果：媒体压力+1。';
       }},
       { label: '先顶住赞助商的要求', hint: '坚持训练营的纯粹', apply: function() {
@@ -2986,7 +3225,13 @@ const STAGED_BRANCH_EVENTS = [
         setBranchNode('charity', 'charity_school', { project: 'school' });
         STATE.career.flags.charitySchool = true;
         addProfileDelta('legacyBonus', 1);
-        return '你资助了一所学校的篮球课程，也补上了体育老师的工资。校长说，孩子们比以前更愿意上学了。<br><br>效果：flag charitySchool = true；历史评价+1。';
+        // ★ 经济层：资助学校扣款（80 万）
+        var _don = (typeof getEconCfg === 'function') ? getEconCfg() : {};
+        var _em = _don.eventMoney || {};
+        var _amtRaw = _em.schoolDonation || 80;
+        var _amt = (typeof eraMoney === 'function') ? eraMoney(_amtRaw) : _amtRaw;
+        var _ok = (typeof addMoney === 'function') ? addMoney(-_amt, '资助学校篮球课程') : true;
+        return '你资助了一所学校的篮球课程，也补上了体育老师的工资（' + fmtMoney(_amt) + '）。校长说，孩子们比以前更愿意上学了。<br><br>效果：flag charitySchool = true；历史评价+1。' + (_ok ? '' : '<br><br>⚠️ 余额不足，资助暂缓。');
       }},
       { label: '成立基金会', hint: '商业价值上升', apply: function() {
         setBranchNode('charity', 'charity_foundation', { project: 'foundation' });
@@ -3054,7 +3299,7 @@ const STAGED_BRANCH_EVENTS = [
       }},
       { label: '先回应作秀质疑', hint: '舆论压力上升', apply: function() {
         setBranchNode('charity', 'crisis_show', { crisis: 'show' });
-        addProfileDelta('mediaPressure', 1, -10, 10);
+        addSeasonMod('mediaPressure', 1, -10, 10);
         return '热搜词条变成“球员作秀”。你没有急着发声明，因为你知道，解释可能让事情更糟。<br><br>效果：媒体压力+1。';
       }},
       { label: '先排查合作品牌', hint: '争议大幅上升', apply: function() {
@@ -4160,6 +4405,8 @@ const STAGED_BRANCH_EVENTS = [
         var tn = getTeamName ? getTeamName(team) : team;
         if ((c.contract || 0) >= 2) {
           c.flags.kdJoinTeam = team; // 合同未到期 → 休赛期交易（合同随队转移）
+          // ★ 标记休赛期交易：事件结果弹窗关闭后由休赛期流程执行转会（含“交易官宣+新闻发布会”原版弹窗），合同年限不变
+          try { STATE._kdPendingJoin = team; } catch(e) {}
           return '你给经纪人发了四个字：去谈吧。消息在自由市场开启前夜炸开：你将通过交易加盟刚刚在总决赛击败你的' + tn + '。球迷烧掉你的球衣，社交媒体把你和"投敌"两个字绑在一起，但你清楚自己要什么——一枚戒指。<br><br>效果：休赛期将被交易至' + tn + '（合同年限不变）；争议+3；球迷支持-3；媒体压力+2。';
         }
         c.flags.kdChampionFA = team; // 合同到期/球员选项年 → 休赛期直接加盟（不弹自由市场选队）
@@ -4347,52 +4594,6 @@ const STAGED_BRANCH_EVENTS = [
   },
 
   {
-    id: 'wanderer_endorsement',
-    branch: 'wanderer',
-    phase: 'offseason',
-    slot: 'main',
-    weight: 40,
-    recordHistory: true,
-    title: '游子代言：换队四次的商业邀请',
-    scenes: [
-      '你的职业履历上已经写下了四支球队。休赛期刚开始，一间广告公司把方案送到了经纪人桌上：他们想拍一支短片，主题就叫“流浪者”。',
-      '拍摄那天，导演让你站在四个城市的地标前。你忽然意识到，这支片子说的不只是篮球。'
-    ],
-    body: '你愿意把自己的故事卖给品牌吗？',
-    requires: function() {
-      var c = STATE.career;
-      if (!c) return false;
-      c.flags = c.flags || {};
-      if (c.flags.wandererEndorsementDone) return false;
-      var m = getMobility ? getMobility() : null;
-      var fa = (m && m.freeAgencyTeams) ? m.freeAgencyTeams.length : 0;
-      var trades = (m && (m.teamInitiatedTrades || m.trades)) || 0;
-      var waived = (m && m.waived) || 0;
-      return (fa + trades + waived) >= 4;
-    },
-    choices: [
-      { label: '接下代言，讲好流浪故事', hint: '商业价值+3，人气+2；忠诚-1，争议+1', apply: function() {
-        var c = STATE.career; c.flags = c.flags || {};
-        c.flags.wandererEndorsementDone = true;
-        setBranchNode('wanderer', 'signed', { status: 'signed' });
-        addProfileDelta('businessValue', 3);
-        addProfileDelta('fame', 2);
-        addProfileDelta('loyalty', -1);
-        addProfileDelta('controversy', 1);
-        return '广告上线那周，你的球衣销量翻了一倍。海报上的文案只有一句话：不是没有根，是每个城市都长过根。<br><br>效果：商业价值+3；人气+2；忠诚-1；争议+1。';
-      }},
-      { label: '拒绝，篮球不该被包装', hint: '媒体好感+1，状态更稳；商业扩张放缓', apply: function() {
-        var c = STATE.career; c.flags = c.flags || {};
-        c.flags.wandererEndorsementDone = true;
-        setBranchNode('wanderer', 'declined', { status: 'declined' });
-        addProfileDelta('mediaTrust', 1);
-        addProfileDelta('loyalty', 1);
-        addSeasonMod('formVariance', -1, -10, 10);
-        return '你回绝了广告公司，说篮球是我的工作，不是我的故事。记者后来问起，你只答了一句：等我想讲的时候，我自己会讲。<br><br>效果：媒体好感+1；忠诚+1；状态波动略降。';
-      }}
-    ]
-  },
-  {
     id: 'scrimmage_bench_uprising',
     branch: 'scrimmage',
     phase: 'season',
@@ -4416,9 +4617,9 @@ const STAGED_BRANCH_EVENTS = [
     choices: [
       { label: '认真带主力赢下训练赛', hint: '教练信任+1，队内氛围稳定', apply: function() {
         setBranchNode('scrimmage', 'main_wins', { status: 'main' });
-        addProfileDelta('coachTrust', 1);
+        addProfileDelta('coachTrust', 2);
         addSeasonMod('teamChemistry', 1, -10, 10);
-        return '你按正规比赛的强度打了整场，主力队赢下对抗。替补们虽然输了，但态度明显认真了。教练赛后说：这才像一支要夺冠的球队。<br><br>效果：教练信任+1；球队默契+1。';
+        return '你按正规比赛的强度打了整场，主力队赢下对抗。替补们虽然输了，但态度明显认真了。教练赛后说：这才像一支要夺冠的球队。<br><br>效果：教练信任+2；球队默契+1。';
       }},
       { label: '故意放水，让替补赢', hint: '士气波动；可能被视为不认真', apply: function() {
         var r = Math.random();
@@ -4670,10 +4871,20 @@ const STAGED_BRANCH_EVENTS = [
     ],
     body: '要不要去打一场？',
     requires: function() {
+      // ★ 德鲁联赛只在巅峰窗口出现：26-34 岁、OVR≥88、至少第3季，且整生涯只出现一次
+      var c = STATE.career;
+      if (!c) return false;
+      c.flags = c.flags || {};
+      if (c.flags.drewLeagueDone) return false;
+      var age = c.currentAge || 22;
+      if (age < 26 || age > 34) return false;
+      if ((STATE.finalOVR || 0) < 88) return false;
+      if ((c.seasonCount || 0) < 3) return false;
       return true;
     },
     choices: [
       { label: '空降德鲁联赛', hint: '人气+、球迷好感+；伤病风险略升', apply: function() {
+        var c = STATE.career || {}; c.flags = c.flags || {}; c.flags.drewLeagueDone = true;
         addProfileDelta('fame', 2);
         addProfileDelta('fanSupport', 1);
         addSeasonMod('injuryRiskBonus', 1, -4, 8);
@@ -4803,7 +5014,7 @@ const STAGED_BRANCH_EVENTS = [
     phase: 'offseason',
     slot: 'main',
     weight: 16,
-    recordHistory: false,
+    recordHistory: true, // ★ 补记录：写进休赛期纪事
     title: '凌晨四点半',
     scenes: [
       '休赛期的训练馆凌晨四点就亮了一盏灯。你见过它，但还没走进去过。',
@@ -4811,16 +5022,19 @@ const STAGED_BRANCH_EVENTS = [
     ],
     body: '这个休赛期，你要怎么练？',
     requires: function() {
-      return true;
+      var c = STATE.career;
+      return !!(c && !(c.flags && c.flags.dawnWorkoutDone)); // ★ 生涯一次，避免每季必出/反复叠加关键球
     },
     choices: [
-      { label: '凌晨特训', hint: '关键球+1；体能负担+', apply: function() {
+      { label: '凌晨特训', hint: '关键球+1；体能负担+；仅一次', apply: function() {
+        if (STATE.career) { STATE.career.flags = STATE.career.flags || {}; STATE.career.flags.dawnWorkoutDone = true; }
         addAttrDelta('CLU', 1);
         STATE.finalOVR = calcOVR(STATE.attrs);
         addSeasonMod('staminaLoad', 1, -10, 10);
         return '四点的球馆很安静，你投到手腕发酸。赛季开始后，那些“原本会输”的关键球开始进了。<br><br>效果：关键球+1；体能负担+1。';
       }},
-      { label: '按计划科学训练', hint: '状态稳定', apply: function() {
+      { label: '按计划科学训练', hint: '状态稳定；仅一次', apply: function() {
+        if (STATE.career) { STATE.career.flags = STATE.career.flags || {}; STATE.career.flags.dawnWorkoutDone = true; }
         addSeasonMod('formVariance', -1, -10, 10);
         return '你请了新的体能师，把训练拆成科学计划。没有凌晨四点的故事，但赛季里你的状态像时钟一样稳。<br><br>效果：状态波动-1。';
       }}
@@ -4841,10 +5055,11 @@ const STAGED_BRANCH_EVENTS = [
     body: '要不要下场打一场？',
     requires: function() {
       var c = STATE.career;
-      return !!(c && (c.seasonCount || 0) >= 5);
+      return !!(c && (c.seasonCount || 0) >= 5 && (c.currentAge || 0) >= 30 && !(c.flags && c.flags.summerLeagueVeteranDone));
     },
     choices: [
-      { label: '下场教育新秀', hint: '人气+；表现好媒体好感+，表现差争议+；伤病风险略升', apply: function() {
+      { label: '下场教育新秀', hint: '人气+；表现好媒体好感+，表现差争议+；伤病风险略升；仅触发一次', apply: function() {
+        if (STATE.career) { STATE.career.flags = STATE.career.flags || {}; STATE.career.flags.summerLeagueVeteranDone = true; }
         addProfileDelta('fame', 1);
         addSeasonMod('injuryRiskBonus', 1, -4, 8);
         if (Math.random() < 0.6) {
@@ -4854,10 +5069,161 @@ const STAGED_BRANCH_EVENTS = [
         addProfileDelta('controversy', 1);
         return '你下场打了几个回合，脚步明显跟不上年轻人。看台上的声音变成：“老兵不死，只是凋零”。<br><br>效果：人气+1；争议+1；下赛季伤病风险+1。';
       }},
-      { label: '坐在场边指导', hint: '更衣室信任+', apply: function() {
+      { label: '坐在场边指导', hint: '更衣室信任+；仅触发一次', apply: function() {
+        if (STATE.career) { STATE.career.flags = STATE.career.flags || {}; STATE.career.flags.summerLeagueVeteranDone = true; }
         addProfileDelta('lockerRoomTrust', 1);
         return '你没有下场，但把年轻后卫叫到身边讲了十分钟防守站位。赛后他在社交媒体上感谢你——更衣室的人都看到了。<br><br>效果：更衣室信任+1。';
       }}
     ]
+  }
+
+  ,{
+    id: 'reading_open',
+    branch: 'reading',
+    phase: 'season',
+    slot: 'main',
+    weight: 12,
+    title: '读书：把手机放下',
+    scenes: [
+      '近一段时间，你身陷媒体营造的舆论漩涡之中，状态起伏不定，心态也极易受影响。',
+      '身边那个人把手机从你手里拿走，放下一摞书：选一本，看完之前，别碰手机。'
+    ],
+    body: '把噪音关在书外，是你先要完成的一次对抗。',
+    requires: function() {
+      var c = STATE.career;
+      if (!c || (c.seasonCount || 0) < 1) return false;
+      if (c.flags && c.flags.readingDone) return false;
+      return isReadingPressureEligible();
+    },
+    choices: [
+      { label: '随手抽出一本', hint: '看看今晚会读到什么', apply: function() {
+        var book = pickReadingBook();
+        applyReadingBookEffects(book);
+        var c = STATE.career;
+        c.flags = c.flags || {};
+        c.flags.readingBook = book.key;
+        c.flags.readingBookTitle = book.title;
+        c.flags.readingDone = true;
+        c.flags.readingDoneSeason = c.seasonCount || 0;
+        c.flags.readingDoneGameNum = STATE.season && STATE.season.games ? STATE.season.games.length : 0;
+        c.flags.readingEchoAt = c.flags.readingDoneGameNum + 10 + Math.floor(Math.random() * 11);
+        return book.scene + '<br><br>效果：' + book.effects.join('；') + '。';
+      }}
+    ]
+  },
+  {
+    id: 'reading_echo',
+    branch: 'reading',
+    phase: 'season',
+    slot: 'main',
+    weight: 12,
+    title: '读书回响',
+    scenes: [
+      '那一晚你输了一场不该输的比赛。更衣室安静时，书里那句话突然回到你脑子里，像有人替你按下了暂停键。'
+    ],
+    body: '书读过了，话也留下了。这一刻，你要怎么回应它？',
+    requires: function() {
+      var c = STATE.career;
+      if (!c || !c.flags) return false;
+      if (!c.flags.readingDone || c.flags.readingEchoDone) return false;
+      var gamesPlayed = STATE.season && STATE.season.games ? STATE.season.games.length : 0;
+      if ((c.seasonCount || 0) > (c.flags.readingDoneSeason || 0)) return true;
+      return gamesPlayed >= (c.flags.readingEchoAt || 0);
+    },
+    choices: [
+      { label: '想起书里的话，把手机交给队友', hint: '让身边的人替你保管一晚', apply: function() {
+        var c = STATE.career; c.flags = c.flags || {}; c.flags.readingEchoDone = true;
+        addSeasonMod('formVariance', -1, -10, 10);
+        addProfileDelta('mediaTrust', 1);
+        return '你第一次没有在深夜刷评论，睡了最近最完整的一觉。<br><br>效果：状态波动-1；媒体好感+1。';
+      }},
+      { label: '合上书，回训练馆加练', hint: '把情绪变成汗水', apply: function() {
+        var c = STATE.career; c.flags = c.flags || {}; c.flags.readingEchoDone = true;
+        var already = c.flags.readingBook === 'old_man_and_sea' || c.flags.readingBook === 'three_body';
+        if (already) {
+          addSeasonMod('formVariance', -1, -10, 10);
+          return '你回到训练馆，投到保洁阿姨来关灯。那句书里的话已经被你忘在篮筐后面。<br><br>效果：状态波动-1。';
+        }
+        addAttrDelta('CLU', 1);
+        STATE.finalOVR = calcOVR(STATE.attrs);
+        return '你回到训练馆，投到保洁阿姨来关灯。那句书里的话已经被你忘在篮筐后面。<br><br>效果：关键球+1。';
+      }},
+      { label: '把书收起来，当什么都没发生', hint: '今晚不处理情绪', apply: function() {
+        var c = STATE.career; c.flags = c.flags || {}; c.flags.readingEchoDone = true;
+        return '你把它放回书架，继续刷手机。书还在那里，等你下一次想起它。<br><br>效果：无额外效果，回响线收束。';
+      }}
+    ]
+  }
+
+,{
+    id: 'violence_open',
+    branch: 'violence_conflict',
+    phase: 'season',
+    slot: 'main',
+    weight: 10,
+    title: '暴力冲突：那一拳',
+    scenes: [
+      '这一晚，你被对方的刺头搞得心烦意乱。他不停地用垃圾话和小动作挑逗你的神经，你的怒火急剧攀升。',
+      '终于，他的一句垃圾话彻底攻破了你的心理防线——“{挑衅词}。”',
+      '你愤怒地将他撞倒，攥紧的拳头扬在了空中。'
+    ],
+    body: '这一拳落不落下去，决定今晚之后所有故事。',
+    requires: function(ctx) {
+      var c = STATE.career;
+      if (!c || (c.seasonCount || 0) < 1) return false;
+      if (c.flags && c.flags.violenceConflict && c.flags.violenceConflict.done) return false;
+      // ★ 升级入口：本季发生过替补席清空/恶意犯规冲突后，约 18% 概率升级为暴力冲突链
+      var _ev2 = STATE.season && STATE.season.events;
+      var _had = _ev2 && _ev2.triggeredIds && (_ev2.triggeredIds.indexOf('fight_bench_clearing') >= 0 || _ev2.triggeredIds.indexOf('fight_hard_foul') >= 0);
+      if (!_had) return false;
+      if (Math.random() < 0.82) return false;
+      var team = ctx && ctx.game && ctx.game.opponent;
+      if (team) {
+        STATE._violenceOpponent = { team: team, name: getViolenceOpponentNameFor(team) };
+      }
+      return true;
+    },
+    choices: [
+      { label: '一拳砸下去', hint: '彻底失控，把怒火交给拳头', _chain: { level: 3, startStep: 'league' }, apply: function() {
+        var games = 3 + Math.floor(Math.random() * 3);
+        STATE.season.events.suspensionGamesLeft = (STATE.season.events.suspensionGamesLeft || 0) + games;
+        STATE.season.events.suspensionReason = '球场斗殴冲突';
+        addProfileDelta('controversy', 3);
+        addProfileDelta('fame', 1);
+        addSeasonMod('mediaPressure', 3, -10, 10);
+        addSeasonMod('formVariance', 2, -10, 10);
+        return fillViolenceText('你把他撞倒，拳头停在半空后还是落了下去。全场混乱，裁判直接把你罚出场。{对手球员}被队友扶起来时还在笑，你第一次想让他闭嘴。<br><br>效果：禁赛' + games + '场；争议+3；媒体压力+3；人气+1；状态波动+2。');
+      }},
+      { label: '收住拳头，狠狠撞开他', hint: '失控一半，但还留着底线', _chain: { level: 2, startStep: 'locker', feudLevel: 1 }, apply: function() {
+        addAttrDelta('CLU', 1);
+        STATE.finalOVR = calcOVR(STATE.attrs);
+        addProfileDelta('controversy', 1);
+        addProfileDelta('mediaTrust', -1);
+        return '你没有挥拳，但用肩膀把他撞出两步。技术犯规，比赛继续，你的火气全烧进下一个回合。<br><br>效果：关键球+1；争议+1；媒体好感-1。';
+      }},
+      { label: '转身走开，不给他反应', hint: '让垃圾话掉在地上', _chain: { level: 1, startStep: 'locker' }, apply: function() {
+        addProfileDelta('mediaTrust', 1);
+        addProfileDelta('fanSupport', 1);
+        addProfileDelta('coachTrust', 1);
+        addProfileDelta('lockerRoomTrust', -1);
+        addSeasonMod('formVariance', -1, -10, 10);
+        return '你看了他一眼，转身走开。全场嘘你，但他那句脏话也没能进入回放。媒体开始讨论：这是成熟，还是软弱？<br><br>效果：媒体好感+1；球迷支持+1；状态波动-1；教练信任+1；更衣室信任-1。';
+      }},
+      { label: '用篮球回答他', hint: '把怒火放进进攻', _chain: { level: 2, startStep: 'locker', feudLevel: 1 }, apply: function() {
+        addAttrDelta('CLU', 1);
+        STATE.finalOVR = calcOVR(STATE.attrs);
+        var last = STATE.season && STATE.season.games ? STATE.season.games[STATE.season.games.length - 1] : null;
+        var won = !!(last && last.result && last.result.won);
+        if (won) addProfileDelta('fame', 1);
+        return '你没有说话，下一回合在他头上打成二加一，然后指了指地板。他安静了三分钟，又开始说话。<br><br>效果：关键球+1' + (won ? '；人气+1（赢球）。' : '。');
+      }}
+    ]
+  },
+
+  {
+    id: 'violence_family',
+    branch: 'violence_conflict',
+    title: '家庭变故',
+    phase: 'season'
   }
 ];

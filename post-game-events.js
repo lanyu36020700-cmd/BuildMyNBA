@@ -133,6 +133,15 @@ function recordChainMilestone(title, choiceLabel, msg) {
 
 function applyEventConsequence(d, ctx, opts) {
   if (!d) return null;
+  // ★ 经济层：事件加钱/扣钱（_money: { delta, reason, lockHint? }）
+  if (d._money) {
+    try {
+      if (typeof addMoney === 'function') {
+        var _mok = addMoney(d._money.delta, d._money.reason || '事件收支');
+        if (!_mok && typeof showMoneyToast === 'function') showMoneyToast('⚠️ ' + (d._money.lockHint || '余额不足，收支未生效'));
+      }
+    } catch(e) {}
+  }
   var o = opts || {};
   var _injGames = null, _injDays = null, _injSev = null, _injForbid = null;
   if (d._consequence === 'injury') {
@@ -165,6 +174,24 @@ function applyEventConsequence(d, ctx, opts) {
     };
     if (d._majorInjury || _injSev === 'major') {
       STATE.season.events.majorInjuryThisSeason = true;
+      // ★ 经济层：重伤手术费（年薪 × 2%）——余额充足则手术缩短恢复期 1/3；不足则保守治疗
+      try {
+        if (typeof addMoney === 'function' && typeof getEconCfg === 'function' && typeof getCurrentSalary === 'function') {
+          var _surgFee = Math.round(getCurrentSalary() * (getEconCfg().surgeryFeeRate || 0.02));
+          var _injuryObj = STATE.season.events.injury || {};
+          if (_surgFee > 0 && addMoney(-_surgFee, '伤病手术费')) {
+            var _cut = getEconCfg().surgeryRecoveryCut || (1 / 3);
+            var _reduced = Math.max(0, Math.round(_injGames * (1 - _cut)));
+            STATE.season.events.injuryGamesLeft = Math.max(0, STATE.season.events.injuryGamesLeft - (_injGames - _reduced));
+            _injuryObj.gamesLeft = _reduced;
+            _injuryObj.surgery = { fee: _surgFee, conservative: false };
+            if (typeof showMoneyToast === 'function') showMoneyToast('🏥 手术成功 · 费用 ' + fmtMoney(_surgFee) + '，恢复期缩短');
+          } else {
+            _injuryObj.surgery = { fee: _surgFee, conservative: true };
+            if (typeof showMoneyToast === 'function') showMoneyToast('🏥 手术费 ' + fmtMoney(_surgFee) + ' 不足，选择保守治疗（恢复期更长）');
+          }
+        }
+      } catch(e) {}
       // ★ 赛季级重伤 → 开启“恢复期抉择 → 复出”连锁（下一赛季推进）
       if (d._majorInjury) {
         var _flI = getChainFlags();
@@ -252,7 +279,15 @@ function showEventModal(data, callback) {
     bodyHtml += '<div style="font-size:13px;color:var(--text);line-height:1.7;margin-bottom:12px;">' + String(data.body || '').replace(/\n/g, '<br>') + '</div>';
     bodyHtml += '<div style="font-size:11px;color:var(--orange);font-weight:700;margin-bottom:6px;">选择</div>';
     data.choices.forEach(function(ch, ci) {
-      bodyHtml += '<button class="btn btn-secondary btn-sm" style="width:100%;margin-bottom:8px;justify-content:flex-start;text-align:left;" onclick="window.__choosePostGameEvent(' + ci + ')">' + ch.label + (ch.hint ? '<span style="display:block;font-size:11px;font-family:var(--font-body);font-weight:400;opacity:.75;margin-left:4px;">' + ch.hint + '</span>' : '') + '</button>';
+      // ★ 本地实装：选项锁定（余额不足/条件不满足 → 禁用 + lockHint），与分支事件同一套机制
+      var locked = false;
+      if (ch && typeof ch.requires === 'function') {
+        try { locked = !ch.requires(data._ctx || null); } catch(e) { locked = true; }
+      }
+      var lockHint = locked ? (ch.lockHint || '条件未满足，暂时无法选择') : '';
+      var btnStyle = 'width:100%;margin-bottom:8px;justify-content:flex-start;text-align:left;' + (locked ? 'opacity:.45;cursor:not-allowed;' : '');
+      var onclick = locked ? '' : 'onclick="window.__choosePostGameEvent(' + ci + ')"';
+      bodyHtml += '<button class="btn btn-secondary btn-sm" style="' + btnStyle + '" ' + onclick + (locked ? ' disabled' : '') + '>' + ch.label + (ch.hint ? '<span style="display:block;font-size:11px;font-family:var(--font-body);font-weight:400;opacity:.75;margin-left:4px;">' + (locked ? lockHint : ch.hint) + '</span>' : '') + '</button>';
     });
   } else {
     bodyHtml += '<div style="font-size:11px;color:var(--orange);font-weight:700;margin-bottom:6px;">重点</div>';
@@ -276,6 +311,12 @@ function showEventModal(data, callback) {
       var q = pending.data;
       var ch = q.choices && q.choices[ci];
       if (!ch) return;
+      // ★ 本地实装：点击二次校验（防止绕过锁定）
+      if (typeof ch.requires === 'function') {
+        var _ok = false;
+        try { _ok = !!ch.requires(q._ctx || null); } catch(e) { _ok = false; }
+        if (!_ok) return;
+      }
       var outcome = null;
       try { outcome = ch.apply ? ch.apply(q._ctx || null) : null; } catch(e) { outcome = null; }
       var showText = ch.resultText || (outcome && outcome._resultText) || '';
@@ -362,6 +403,11 @@ function scaleHurtStats(stats, severity) {
   out.fta = Math.max(0, out.fta || 0);
   out.ftm = Math.min(out.ftm || 0, out.fta);
   out.mins = Math.max(8, Math.round((stats.mins || 28) * minsFactor));
+  // ★ 带伤缩放后仍保持 得分 = 2×命中 + 三分命中 + 罚球命中
+  if (typeof syncScoreComponents === 'function') {
+    var _sy = syncScoreComponents(out.pts, out.fgm, out.fga, out.threeM, out.threeA, out.ftm, out.fta);
+    out.fgm = _sy.fgm; out.threeM = _sy.threeM; out.ftm = _sy.ftm;
+  }
   out.playedThroughInjury = true;
   out.injurySeverity = severity;
   return out;
@@ -442,6 +488,7 @@ function showPlayThroughInjuryModal(ctx, onRest, onPlay) {
         '<div style="font-size:13px;color:var(--text);line-height:1.7;margin-bottom:12px;">' +
           (ctx && ctx.desc ? ctx.desc : '球队马上要打一场关键比赛。') +
           '<br><br>当前伤情：' + label + '，预计还需休战 ' + (ev.injuryGamesLeft || 0) + ' 场。带伤出战会让本场表现下降约 ' + statDrop + '%，并且' + riskText + '。' +
+          ((ev.injury && ev.injury.surgery) ? '<br><br><span style="color:var(--gold);">💊 治疗方案：' + (ev.injury.surgery.conservative ? '保守治疗（免费，恢复期更长）' : ('手术治疗（费用 ' + fmtMoney(ev.injury.surgery.fee) + '，恢复期已缩短）')) + ' · 余额 ' + fmtMoney(ensureEconomyState().money) + '</span>' : '') +
         '</div>' +
         '<button class="btn btn-primary btn-sm" id="playInjuryBtn" style="width:100%;margin-bottom:8px;background:var(--red);">带伤出战</button>' +
         '<button class="btn btn-secondary btn-sm" id="restInjuryBtn" style="width:100%;">休战养伤</button>' +
@@ -505,7 +552,9 @@ function resolveEventVars(str, ctx, evData) {
 
 function getAgeBasedInjuryRate() {
   var age = (STATE.career && STATE.career.currentAge) ? STATE.career.currentAge : 22;
-  if (age <= 25) return 0;
+  // ★ H2：年轻球员不再“完全免疫伤病”，22-25 岁给低概率（约每季 12%-25% 受伤一次），26+ 保持原曲线
+  if (age <= 22) return 0.2;
+  if (age <= 25) return 0.35;
   if (age <= 28) return 0.4;
   if (age <= 31) return 0.8;
   if (age <= 34) return 1.4;
@@ -619,6 +668,8 @@ function checkRandomEvents(game, result, stats) {
     var e = EVENT_REGISTRY[i];
     try {
       if (!e.condition(ctx)) continue;
+      // ★ 年代门槛：现代梗事件（社媒/直播/2K/加密等）在旧年代不出现
+      if (typeof isEventAllowedInEra === 'function' && !isEventAllowedInEra(e)) continue;
       if (e.id.indexOf('injury_major_') === 0) pools.major.push(e);
       else if (e.id.indexOf('injury_') === 0) pools.injury.push(e);
       else if (e.id.indexOf('susp_') === 0) pools.suspension.push(e);
@@ -1160,7 +1211,7 @@ EVENT_REGISTRY.push({
   id: 'stephen_a',
   name: 'Stephen A.Smith狂吹你',
   weight: 2,
-  condition: (ctx) => true,
+  condition: (ctx) => { var _a = STATE.career && STATE.career.currentAge ? STATE.career.currentAge : 99; return _a <= 25; }, // “这个年轻人是联盟的未来”
   execute: (ctx) => {
     return { emoji:'🗣️', title:'Stephen A.Smith狂吹你', body:'Stephen A.Smith在《First Take》节目中用他标志性的咆哮风格大喊："我告诉过你们！我！早！就！说！过！这个年轻人是联盟的未来！如果你不同意——你就是个傻子！大傻子！"你坐在更衣室里看这段视频，嘴角忍不住上扬。这段视频被你的队友设为手机铃声。', desc:'Smith狂吹' };
   },
@@ -1177,7 +1228,8 @@ EVENT_REGISTRY.push({
   weight: 2,
   condition: (ctx) => true,
   execute: (ctx) => {
-    return { emoji:'🃏', title:'飞机扑克输钱', body:'球队包机上，你和三个队友围在一起打德州扑克。今晚你的运气差到了极点——两对碰上葫芦，葫芦碰上四条，四条碰上同花顺。当你在最后一局连底裤都快输掉的时候，你意识到他们三个在串通出千。但你已经输了半个月的工资了。', desc:'扑克输钱' };
+    var _pkAmt = Math.round((typeof getCurrentSalary === 'function' ? getCurrentSalary() : 0) / 24);
+    return { emoji:'🃏', title:'飞机扑克输钱', body:'球队包机上，你和三个队友围在一起打德州扑克。今晚你的运气差到了极点——两对碰上葫芦，葫芦碰上四条，四条碰上同花顺。当你在最后一局连底裤都快输掉的时候，你意识到他们三个在串通出千。但你已经输了半个月的工资（' + fmtMoney(_pkAmt) + '）。', desc:'扑克输钱', _money: { delta: -_pkAmt, reason: '飞机扑克输钱', lockHint: '余额不足，这局算你欠着' } };
   },
 });
 
@@ -1191,7 +1243,7 @@ EVENT_REGISTRY.push({
   weight: 2,
   condition: (ctx) => true,
   execute: (ctx) => {
-    return { emoji:'👔', title:'偷穿教练西装', body:'更衣室里没人，你好奇地穿上了主教练挂在衣架上的定制西装。你正对着镜子摆pose的时候——教练推门进来了。你穿着他那件明显小了两号、腋下已经崩线了的西装，尴尬地站在原地。教练看了你三秒钟："训练加罚100趟折返跑。还有——西装干洗费从你工资里扣。"', desc:'偷穿西装' };
+    return { emoji:'👔', title:'偷穿教练西装', body:'更衣室里没人，你好奇地穿上了主教练挂在衣架上的定制西装。你正对着镜子摆pose的时候——教练推门进来了。你穿着他那件明显小了两号、腋下已经崩线了的西装，尴尬地站在原地。教练看了你三秒钟："训练加罚100趟折返跑。还有——西装干洗费从你工资里扣。"', desc:'偷穿西装', _money: { delta: -(typeof eraMoney === 'function' ? eraMoney(2) : 2), reason: '西装干洗费' } };
   },
 });
 
@@ -1202,7 +1254,7 @@ EVENT_REGISTRY.push({
   weight: 2,
   condition: (ctx) => true,
   execute: (ctx) => {
-    return { emoji:'🍖', title:'请全队吃大餐', body:'你宣布今晚请全队去全城最贵的牛排馆吃饭。队友们欢呼着把你抛了起来——字面意义上的那种。账单来了，六位数。你看着账单数字，强装镇定地刷了卡。回到公寓你打开银行App，默默更新了手机壁纸："我会赚钱的。"', desc:'请客吃饭', _mods:{ games:5, chem:2, morale:2 } }; // ★ 短期效果：未来5场化学+2/士气+2
+    return { emoji:'🍖', title:'请全队吃大餐', body:'你宣布今晚请全队去全城最贵的牛排馆吃饭。队友们欢呼着把你抛了起来——字面意义上的那种。账单来了，六位数（' + fmtMoney(typeof eraMoney === 'function' ? eraMoney(50) : 50) + '）。你看着账单数字，强装镇定地刷了卡。回到公寓你打开银行App，默默更新了手机壁纸："我会赚钱的。"', desc:'请客吃饭', _mods:{ games:5, chem:2, morale:2 }, _money: { delta: -(typeof eraMoney === 'function' ? eraMoney(50) : 50), reason: '请全队吃大餐' } }; // ★ 短期效果：未来5场化学+2/士气+2
   },
 });
 
@@ -1211,7 +1263,7 @@ EVENT_REGISTRY.push({
   id: 'veteran_dinner',
   name: '老将请你回家吃饭',
   weight: 2,
-  condition: (ctx) => true,
+  condition: (ctx) => !!(STATE.career && STATE.career.seasonCount === 0), // 新秀赛季限定：文案明确“好好享受你的新秀赛季吧”
   execute: (ctx) => {
     return { emoji:'🍳', title:'老将请你回家吃饭', body:'球队的老将今天邀请你去他家吃晚饭。他的妻子做了一桌丰盛的家常菜，你们边吃边聊他年轻时的故事。"你知道吗，我当年也像你一样，觉得自己无所不能。"他喝了一口红酒，眼神有些迷离，"好好享受你的新秀赛季吧，它比你想象的要短得多。"', desc:'老将请客' };
   },
@@ -1247,7 +1299,7 @@ EVENT_REGISTRY.push({
   id: 'missing_shoes',
   name: '更衣室消失的球鞋',
   weight: 2,
-  condition: (ctx) => true,
+  condition: (ctx) => !!(STATE.career && STATE.career.seasonCount === 0), // 新秀限定：“新秀需要学会保护自己的东西”
   execute: (ctx) => {
     return { emoji:'👟', title:'更衣室消失的球鞋', body:'训练结束后你发现你新买的那双限量版球鞋不见了。你焦急地在更衣室里翻遍了每一个角落。最后你发现——球队的老将把它藏在了天花板的通风管道里，因为"新秀需要学会保护自己的东西"。你把鞋子拿出来的时候里面被塞了一双他脱下来的旧袜子。', desc:'球鞋失踪' };
   },
@@ -1299,7 +1351,7 @@ EVENT_REGISTRY.push({
   id: 'gamemom_call',
   name: '打电话庆祝',
   weight: 2,
-  condition: (ctx) => true,
+  condition: (ctx) => { var _s = STATE.career && STATE.career.seasonCount; return _s != null && _s <= 3; }, // “职业生涯的第一个绝杀球”
   execute: (ctx) => {
     return { emoji:'📞', title:'打电话庆祝', body:'你命中了职业生涯的第一个绝杀球。全场欢呼声中，你没有像其他人一样疯狂奔跑庆祝。你冷静地走到场边，拿起工作人员的手机——给你妈妈打了一个微信电话。电话接通了，屏幕那边你妈正在家里尖叫，背景里你爸在沙发上跳来跳去。"妈，看到了吗？""看到了看到了！我儿子！绝杀！"全场观众通过大屏幕看到了这一幕，欢呼声变成了温暖的掌声。赛后这段视频在社交媒体上获得了一千万播放量。', desc:'打电话庆祝' };
   },
@@ -1360,7 +1412,23 @@ EVENT_REGISTRY.push({
   weight: 2,
   condition: (ctx) => true,
   execute: (ctx) => {
-    return { emoji:'📉', title:'投资加密货币亏钱', body:'你的理财顾问推荐了一个"稳赚不赔"的加密货币项目。你把半个月的薪水投了进去——然后第二天那个币跌了80%。你盯着手机屏幕上血红色的数字，感觉心脏停跳了一拍。你的队友在更衣室里安慰你："没事兄弟，大家都亏过。"你默默决定以后只买国债。', desc:'加密币亏钱' };
+    var _crAmt = Math.round((typeof getCurrentSalary === 'function' ? getCurrentSalary() : 0) / 24 * 0.8);
+    return { emoji:'📉', title:'投资加密货币亏钱', body:'你的理财顾问推荐了一个"稳赚不赔"的加密货币项目。你把半个月的薪水投了进去——然后第二天那个币跌了80%，直接蒸发' + fmtMoney(_crAmt) + '。你盯着手机屏幕上血红色的数字，感觉心脏停跳了一拍。你的队友在更衣室里安慰你："没事兄弟，大家都亏过。"你默默决定以后只买国债。', desc:'加密币亏钱', _money: { delta: -_crAmt, reason: '投资加密货币亏钱', lockHint: '余额不足，只能眼睁睁看着币归零' } };
+  },
+});
+
+// ── 100b. 投资回报到账（平衡加密币亏钱） ──
+EVENT_REGISTRY.push({
+  id: 'investment_return',
+  name: '投资回报到账',
+  weight: 1,
+  condition: (ctx) => true,
+  execute: (ctx) => {
+    var cfg = (typeof getEconCfg === 'function') ? getEconCfg() : {};
+    var em = cfg.eventMoney || {};
+    var amt = Math.round(em.investmentWin || 200);
+    if (typeof eraMoney === 'function') amt = eraMoney(amt);
+    return { emoji:'📈', title:'投资回报到账', body:'去年你随手投的一笔项目今年突然开花结果。理财顾问的电话听起来比平时热情了十倍："先生，你的账户多了 ' + fmtMoney(amt) + '。"你挂了电话，默默把理财顾问的名字存成了"财神爷"。', desc:'投资回报', _money: { delta: amt, reason: '投资回报' } };
   },
 });
 
@@ -1376,14 +1444,20 @@ EVENT_REGISTRY.push({
 });
 
 
-// ── 103. 赞助商送豪车 ──
+// ── 103. 赞助商递上代言定金（原送豪车改造：车是试驾车，不发资产） ──
 EVENT_REGISTRY.push({
   id: 'sponsor_car',
-  name: '赞助商送豪车',
+  name: '赞助商递上代言定金',
   weight: 1,
   condition: (ctx) => true,
   execute: (ctx) => {
-    return { emoji:'🏎️', title:'赞助商送豪车', body:'一家知名运动品牌在你连续爆发的第三场比赛后联系了你的经纪人——他们想送一辆定制版的保时捷Taycan作为"合作关系的第一步"。车送到公寓楼下的时候你掐了自己一下确认不是在做梦。你在车里坐了一个小时，捣鼓着那个巨大的中控屏幕，像个小孩子一样兴奋。', desc:'赞助商送车' };
+    var cfg = (typeof getEconCfg === 'function') ? getEconCfg() : {};
+    var em = cfg.eventMoney || {};
+    var biz = (STATE.career && STATE.career.profile) ? (STATE.career.profile.businessValue || 0) : 0;
+    var amt = Math.min((em.sponsorDepositBase || 300) + biz * (em.sponsorDepositPerBiz || 20), em.sponsorDepositCap || 600);
+    if (typeof eraMoney === 'function') amt = eraMoney(amt);
+    if (STATE.career && STATE.career.profile) STATE.career.profile.businessValue += 1;
+    return { emoji:'🏎️', title:'赞助商递上代言定金', body:'一家知名运动品牌在你连续爆发的第三场比赛后联系了你的经纪人——他们约你在品牌中心见面，门口停着一辆定制版保时捷Taycan。你坐进车里捣鼓着那块巨大的中控屏幕，像个孩子一样兴奋。但车是试驾车，真正递到你面前的是一份合作意向书和一笔 ' + fmtMoney(amt) + ' 的代言定金。<br><br>效果：代言定金入账；商业价值+1。', desc:'赞助商代言定金', _money: { delta: amt, reason: '代言合作定金' } };
   },
 });
 
@@ -1588,7 +1662,7 @@ EVENT_REGISTRY.push({
   weight: 15,
   condition: (ctx) => !!(ctx.result && ctx.result.won === false),
   execute: (ctx) => {
-    return { emoji:'🚫', title:'赛后拒绝接受采访', body:'输掉关键比赛后你心情糟糕透顶。场边记者拦住你要求赛后采访，你一把推开麦克风冷冷地说了一句"没什么好说的"然后径直走回更衣室。联盟规定球员必须接受赛后采访，你因此被罚款25,000美元并禁赛{n}场。', desc:'罢采禁赛', _consequence:'suspension', _games:1 };
+    return { emoji:'🚫', title:'赛后拒绝接受采访', body:'输掉关键比赛后你心情糟糕透顶。场边记者拦住你要求赛后采访，你一把推开麦克风冷冷地说了一句"没什么好说的"然后径直走回更衣室。联盟规定球员必须接受赛后采访，你因此被罚款25,000美元（' + fmtMoney(typeof eraMoney === 'function' ? eraMoney(2.5) : 2.5) + '）并禁赛{n}场。', desc:'罢采禁赛', _consequence:'suspension', _games:1, _money: { delta: -(typeof eraMoney === 'function' ? eraMoney(2.5) : 2.5), reason: '联盟罚款（罢采）' } };
   },
 });
 
@@ -2248,9 +2322,9 @@ EVENT_REGISTRY.push({
             return { emoji: '🌪️', title: '冲突升级：奥本山时刻', body: '你冲上去推开对手，两边替补席瞬间清空。混战持续了四分钟，安保把你和队友拽开时，你发现自己的手指肿了。赛后联盟开出重罚：你被禁赛5场，另有多名队友被禁赛，对方也有球员被禁赛；你手指伤势要休战几天。<br><br>效果：禁赛5场；队友多人禁赛2-3场；对手多人禁赛2-3场；手指伤缺阵；球队化学-4；士气-3。', _consequence: 'suspension', _games: 5, _mods: { games: 8, chem: -4, morale: -3 }, _npcOuts: [ { team: 'self', games: (2 + Math.floor(Math.random() * 2)), penalty: 4, label: '队友多人禁赛' }, { team: 'opponent', games: (2 + Math.floor(Math.random() * 2)), penalty: 3.5, label: '对手多人禁赛' } ], _chain:{ key:'conflictChain', data:function(_ctx){ return { team:(_ctx && _ctx.game && _ctx.game.opponent) || '', step:'brawl', season:(STATE.career && STATE.career.seasonCount) || 0, pending:true }; } } };
           }
           addProfileDelta('lockerRoomTrust', 2);
-          addProfileDelta('coachTrust', 1);
+          addProfileDelta('coachTrust', 2);
           var boost = { games: 5, chem: 2, morale: 1 };
-          return { emoji: '🛡️', title: '冲突：挺身而出', body: '你挡在队友面前，和对方主力顶牛了几秒，然后被裁判拉开。赛后队友在更衣室站起来说：这赛季，我们为他拼命。教练什么都没说，只是拍了拍你的肩膀。<br><br>效果：更衣室信任+2；教练信任+1；球队化学+2、士气+1（未来5场）。', _mods: boost };
+          return { emoji: '🛡️', title: '冲突：挺身而出', body: '你挡在队友面前，和对方主力顶牛了几秒，然后被裁判拉开。赛后队友在更衣室站起来说：这赛季，我们为他拼命。教练什么都没说，只是拍了拍你的肩膀。<br><br>效果：更衣室信任+2；教练信任+2；球队化学+2、士气+1（未来5场）。', _mods: boost };
         }}
       ]
     };
@@ -2849,6 +2923,9 @@ EVENT_REGISTRY.push({
     var _fl = STATE.career && STATE.career.flags;
     var sc = _fl && _fl.suspChain;
     if (!sc || sc.returnPending !== true) return false;
+    // ★ 修复：禁赛必须发生在当季，避免上赛季被禁赛、下赛季才出现“复出”事件
+    var _curS = (STATE.career && STATE.career.seasonCount) || 0;
+    if ((sc.season || 0) !== _curS) return false;
     var ev = STATE.season && STATE.season.events;
     if (!ev || ev.suspensionGamesLeft > 0) return false;
     if (STATE.season && STATE.season.isPlayoffs) return false;
@@ -2876,6 +2953,7 @@ EVENT_REGISTRY.push({
     var _fl = STATE.career && STATE.career.flags;
     var sc = _fl && _fl.suspChain;
     if (!sc || sc.count < 2 || sc.warningGiven) return false;
+    if (((sc.season || 0) !== ((STATE.career && STATE.career.seasonCount) || 0))) return false;
     if (!STATE.season || STATE.season.isPlayoffs) return false;
     return true;
   },
