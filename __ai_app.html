@@ -16093,7 +16093,8 @@ function processDraft() {
     else rookie.contract = 1 + Math.floor(rngNext() * 3);
 
     // ★ 顺位归属：账本持有者优先（交易来的选秀权给新球队）
-    var owner = (_pickLedger && _pickLedger[idx + 1]) ? _pickLedger[idx + 1] : t;
+    var owner = t;
+    if (_pickLedger && _pickLedger[idx + 1] && Array.isArray(_pickLedger._base) && _pickLedger._base[idx] !== _pickLedger[idx + 1]) owner = _pickLedger[idx + 1]; // ★ 修复：仅交易转移的顺位才覆盖战绩归属
     var roster = NBA2K_DATA[owner];
     if (!roster) return;
     var lowestIdx = -1, lowestOvr = 999;
@@ -16123,8 +16124,19 @@ function initDraftPicks() {
   var yr = getDraftYearNow();
   if (STATE._draftPicks[yr]) return;
   var teams = (typeof getEraTeamPool === 'function') ? getEraTeamPool() : NBA2K_TEAMS;
+  // ★ 修复：顺位账本按战绩排序（差队在前），与 processDraft 的 draftOrder 一致；
+  //   乐透前 4 顺位由 processDraft 抽签决定（owner 优先用战绩顺位，仅交易转移才覆盖）
+  var st = STATE._prevStandings;
+  var sorted = teams.slice().sort(function(a, b) {
+    var aw = (st && st[a] && st[a].wins) || 0, al = (st && st[a] && st[a].losses) || 0;
+    var bw = (st && st[b] && st[b].wins) || 0, bl = (st && st[b] && st[b].losses) || 0;
+    var ap = aw + al > 0 ? aw / (aw + al) : 0.5;
+    var bp = bw + bl > 0 ? bw / (bw + bl) : 0.5;
+    return ap - bp;
+  });
   var ledger = {};
-  for (var i = 1; i <= teams.length; i++) ledger[i] = teams[i - 1];
+  for (var i = 1; i <= sorted.length; i++) ledger[i] = sorted[i - 1];
+  ledger._base = sorted.slice(); // 基准（未交易时的战绩顺位归属）
   STATE._draftPicks[yr] = ledger;
 }
 /** ★ 交易选秀权：把 fromTeam 未来最早的一个首轮顺位转移给 toTeam（成功返回 true） */
@@ -16134,7 +16146,7 @@ function transferDraftPick(fromTeam, toTeam) {
   var yr = years[0] || String(getDraftYearNow());
   var led = STATE._draftPicks && STATE._draftPicks[yr];
   if (!led) return false;
-  var nums = Object.keys(led).map(Number).sort(function(a, b) { return a - b; });
+  var nums = Object.keys(led).filter(function(k) { return k !== '_base'; }).map(Number).sort(function(a, b) { return a - b; });
   for (var i = 0; i < nums.length; i++) {
     if (led[nums[i]] === fromTeam) { led[nums[i]] = toTeam; return true; }
   }
@@ -17302,6 +17314,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <!-- ====== 随机事件系统 — EVENT REGISTRY ====== -->
 <script src="./post-game-events.js?v=4"></script>
+<script src="./iconic-events.js?v=1"></script>
 <script src="./clutch-events.js?v=2"></script>
 <script>
 // ── 比赛关键时刻：弹窗 + 结果应用（数据与判定在 clutch-events.js） ──

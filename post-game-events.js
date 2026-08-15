@@ -721,6 +721,13 @@ function checkRandomEvents(game, result, stats) {
   }
 
   if (picked) {
+      // ★ NBA 名场面：重大腿部伤病被选中时，优先弹出“跟腱/背伤罚球”抉择（iconic-events.js 提供）
+      try {
+        if (typeof window.__wrapLegInjuryEvent === 'function') {
+          var _legWrap = window.__wrapLegInjuryEvent(picked, ctx);
+          if (_legWrap) picked = _legWrap;
+        }
+      } catch(e) {}
       var d = picked.execute(ctx);
       if (d) {
         d.id = d.id || picked.id;
@@ -850,64 +857,19 @@ EVENT_REGISTRY.push({
   },
 });
 
-// ── 18. 替补席跳舞嘲讽 ──
-EVENT_REGISTRY.push({
-  id: 'trash_bench_dance',
-  name: '替补席跳舞嘲讽',
-  weight: 2,
-  condition: (ctx) => true,
-  execute: (ctx) => {
-    return { emoji:'💃', title:'替补席跳舞嘲讽', body:'你命中了一记反超三分后，在回防的路上突然即兴跳了一段舞——你甚至不知道自己跳的是什么，大概是TikTok上最近流行的那个扭胯动作。对面的替补席有人站起来为你打分："6/10，创意不错，执行一般。"你愣了一下，然后对他抱拳致谢。赛后这段视频在推特上被转了十万次，标题："这可能NBA史上最尴尬的庆祝。"', desc:'跳舞嘲讽' };
-  },
-});
 
 
 
 
 
-// ── 21. "你打得像我的早餐" ──
-EVENT_REGISTRY.push({
-  id: 'trash_baby',
-  name: '"你打得像我的早餐"',
-  weight: 2,
-  condition: (ctx) => true,
-  execute: (ctx) => {
-    return { emoji:'🍼', title:'"你打得像我的早餐"', body:'你在防守端成功限制住了对手后心血来潮地喷了一句："你打得像我的早餐——又软又冷。"对手沉默了两秒，然后问："你的早餐吃什么？"你说："麦片。"对手说："麦片是泡牛奶吃的——你甚至不会吃麦片。你的垃圾话就像你的防守一样，漏洞百出。"你发现自己被反杀了。', desc:'早餐垃圾话' };
-  },
-});
 
-// ── 22. "你的鞋好丑" ──
-EVENT_REGISTRY.push({
-  id: 'trash_sneaker',
-  name: '"你的鞋好丑"',
-  weight: 2,
-  condition: (ctx) => true,
-  execute: (ctx) => {
-    return { emoji:'👟', title:'"你的鞋好丑"', body:'你低头看了一眼对手的球鞋——那是一双荧光绿配亮粉色的配色，丑到令人发指。你忍不住说："你这鞋是哪家赞助商给你配的？他们是不是恨你？"对手低头看了一眼自己的鞋，然后抬头说："这是我自己的签名鞋。你要不要来一双？我送你。"你的脸涨得通红。赛后更衣室里果然出现了一个鞋盒，里面装着一双同款丑鞋，附着一张纸条："穿上试试。签名版。"', desc:'吐槽球鞋' };
-  },
-});
 
-// ── 23. "你会说中文吗？" ──
-EVENT_REGISTRY.push({
-  id: 'trash_korean',
-  name: '"你会说中文吗？"',
-  weight: 2,
-  condition: (ctx) => true,
-  execute: (ctx) => {
-    return { emoji:'🌏', title:'"你会说中文吗？"', body:'你对着对面的亚洲球员喷了一句中文垃圾话——然后他用同样流利的中文回了一句："我姥姥是上海人，你还有什么想说的？"你愣在原地，他用上海话又说了一遍，你一个字都没听懂。替补席的队友们笑到岔气。赛后他在IG上发了一段用上海话接受采访的视频，配文："今晚学了一句新的中文脏话，谢谢哥们。"', desc:'中文被反杀' };
-  },
-});
 
-// ── 24. "发型不错" ──
-EVENT_REGISTRY.push({
-  id: 'trash_bald',
-  name: '"发型不错"',
-  weight: 2,
-  condition: (ctx) => true,
-  execute: (ctx) => {
-    return { emoji:'🧑‍🦲', title:'"发型不错"', body:'你在一次对抗后对光头队友说："你的发型真不错。"他没有接话。比赛结束后他在更衣室门口拦住你，递给你一瓶生发液："送你的，我感觉你发际线也不太行了。"你接过生发液不知道该说什么。第二天训练你戴了帽子。', desc:'发型调侃' };
-  },
-});
+
+
+
+
+
 
 
 
@@ -926,16 +888,7 @@ EVENT_REGISTRY.push({
 
 
 
-// ── 29. 和裁判拉家常 ──
-EVENT_REGISTRY.push({
-  id: 'trash_referee_chat',
-  name: '和裁判拉家常',
-  weight: 2,
-  condition: (ctx) => true,
-  execute: (ctx) => {
-    return { emoji:'🎙️', title:'和裁判拉家常', body:'等待罚球的时候你闲着没事和旁边的裁判聊了起来："你这赛季吹了多少场了？"裁判没想到你会跟他聊天，愣了一下说："大概五六十场吧。"你说："辛苦啊，飞来飞去的。"裁判说："还行，比你们轻松——你们还要打球。"你觉得这个裁判人不错，直到他在下一个回合吹了你一个走步。', desc:'和裁判聊天' };
-  },
-});
+
 
 
 
