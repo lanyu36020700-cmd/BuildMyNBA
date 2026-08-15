@@ -1,4 +1,23 @@
-# 测试/开发探针（不纳入版本管理）
+# 测试/开发工具（不纳入版本管理）
 dev-tools/
 hupu-original-20260809/
 team_logos_full/
+zyz-original-20260816/
+
+# 本地说明与本地工具（GitHub 仓库只保留运行游戏的必要文件）
+README-本地版说明.md
+server.ps1
+测试游戏.bat
+启动游戏.bat
+
+# 通用忽略
+*.log
+*.bak
+*.tmp
+*.pyc
+__pycache__/
+.DS_Store
+Thumbs.db
+
+# 已删除的第三方埋点 SDK（防止误恢复后重新上传）
+colorbox-ai_v2.1.63.js

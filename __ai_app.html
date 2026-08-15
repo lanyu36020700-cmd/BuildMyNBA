@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -10,6 +10,9 @@
    ============================================================ */
 
 @font-face { font-family: 'Fredoka'; src: url('./fonts/Fredoka.woff2') format('woff2'); font-weight: 400 700; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'Oswald'; src: url('./fonts/oswald/Oswald-500.woff2') format('woff2'); font-weight: 500; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'Oswald'; src: url('./fonts/oswald/Oswald-600.woff2') format('woff2'); font-weight: 600; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'Oswald'; src: url('./fonts/oswald/Oswald-700.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
     @font-face { font-family: 'Nunito'; src: url('./fonts/Nunito.woff2') format('woff2'); font-weight: 400 800; font-style: normal; font-display: swap; }
     @font-face {
   font-family: 'Noto Sans SC';
@@ -26,7 +29,7 @@
   --red: #e63946;--gold: #f7a600;--green: #2ec4b6;
   --shadow: 0 2px 12px rgba(45,31,14,0.08);--shadow-lg: 0 4px 24px rgba(45,31,14,0.12);
   --radius: 16px;--radius-sm: 10px;--radius-xs: 6px;
-  --font-display: 'Fredoka','Noto Sans SC',sans-serif;--font-body: 'Nunito','Noto Sans SC',sans-serif;
+  --font-display: 'Fredoka','Noto Sans SC',sans-serif;--font-body: 'Nunito','Noto Sans SC',sans-serif;--font-athletic: 'Oswald','Noto Sans SC',sans-serif;
   --safe-t: env(safe-area-inset-top,0px);--safe-b: env(safe-area-inset-bottom,0px);
   --safe-l: env(safe-area-inset-left,0px);--safe-r: env(safe-area-inset-right,0px);
 }
@@ -52,14 +55,14 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .feature-card .fc-tag.gold{background:var(--orange-dim);color:var(--orange)}.feature-card .fc-tag.new{background:rgba(46,196,182,0.12);color:var(--green)}
 .feature-card .fc-title{font-family:var(--font-display);font-size:26px;font-weight:700;margin-bottom:4px}
 .feature-card .fc-sub{font-size:14px;color:var(--text-dim);margin-bottom:16px;line-height:1.5}
-.feature-card .fc-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 24px;background:var(--orange);color:#fff;border:none;border-radius:12px;font-family:var(--font-display);font-size:15px;font-weight:600;cursor:pointer;transition:all .1s;width:100%;box-shadow:0 4px 0 #c94d1e,0 6px 12px rgba(255,107,53,0.25)}
-.feature-card .fc-btn:active{transform:translateY(3px);box-shadow:0 1px 0 #c94d1e,0 3px 8px rgba(255,107,53,0.2)}
+.feature-card .fc-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 24px;background:var(--orange);color:#fff;border:none;border-radius:12px;font-family:var(--font-display);font-size:15px;font-weight:600;cursor:pointer;transition:all .1s;width:100%;box-shadow:0 4px 0 var(--orange-deep),0 6px 12px rgba(255,107,53,0.25)}
+.feature-card .fc-btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--orange-deep),0 3px 8px rgba(255,107,53,0.2)}
 .feature-card .fc-btn:disabled{opacity:.4;box-shadow:none;transform:none}
 .fc-footer{margin-top:10px;font-size:12px;color:var(--text-muted);text-align:center}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:14px 24px;border:none;border-radius:12px;font-family:var(--font-display);font-size:15px;font-weight:600;cursor:pointer;transition:all .1s;min-height:48px;width:100%}
 .btn:active{transform:scale(0.96)}.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
-.btn-primary{background:var(--orange);color:#fff;box-shadow:0 4px 0 #c94d1e,0 6px 12px rgba(255,107,53,0.2)}
-.btn-primary:active{transform:translateY(3px);box-shadow:0 1px 0 #c94d1e,0 3px 8px rgba(255,107,53,0.15)}
+.btn-primary{background:var(--orange);color:#fff;box-shadow:0 4px 0 var(--orange-deep),0 6px 12px rgba(255,107,53,0.2)}
+.btn-primary:active{transform:translateY(3px);box-shadow:0 1px 0 var(--orange-deep),0 3px 8px rgba(255,107,53,0.15)}
 .btn-secondary{background:var(--bg-card);color:var(--text);border:2px solid var(--border);box-shadow:0 3px 0 var(--border)}
 .btn-secondary:active{transform:translateY(2px);box-shadow:0 1px 0 var(--border)}
 .btn-sm{padding:10px 16px;font-size:13px;width:auto;min-height:40px;border-radius:10px}
@@ -175,8 +178,10 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 #screen-reveal .btn{max-width:280px;margin:12px auto 0}
 .debug-btn{text-align:center;margin-top:16px}
 .debug-btn button{background:var(--bg-card);border:none;color:var(--text-dim);padding:10px 18px;border-radius:12px;font-family:var(--font-display);font-size:12px;cursor:pointer}
+/* ★ 征服联盟已禁用（2026-08-16）
 .btn-conquest{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#d4af37;color:#1a1a2e;border:none;padding:12px 20px;border-radius:12px;font-family:var(--font-display);font-size:13px;cursor:pointer;font-weight:700;letter-spacing:1px;box-shadow:0 4px 0 #b8962e,0 6px 12px rgba(212,175,55,0.25);transition:all .1s ease;position:relative;top:0;min-height:44px}
 .btn-conquest:active{transform:translateY(3px);box-shadow:0 1px 0 #b8962e,0 3px 8px rgba(212,175,55,0.15)}
+*/
 .btn-help{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--bg-card);color:var(--text);border:2px solid var(--border);padding:12px 16px;border-radius:12px;font-family:var(--font-display);font-size:13px;cursor:pointer;font-weight:600;box-shadow:0 3px 0 var(--border);transition:all .1s ease;position:relative;top:0;min-height:44px}
 .btn-help:hover{border-color:var(--orange);color:var(--orange)}
 .btn-help:active{transform:translateY(2px);box-shadow:0 1px 0 var(--border)}
@@ -216,8 +221,8 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .cal-nav{background:var(--bg-card);border:2px solid var(--border);border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .1s;color:var(--text)}
 .cal-nav:active{transform:scale(0.9)}.cal-nav:disabled{opacity:.2;cursor:default}
 .cal-title{flex:1;font-family:var(--font-display);font-size:clamp(16px,4vw,20px);letter-spacing:1px;text-align:center}
-.cal-standings-btn{background:var(--orange);color:#fff;border:none;border-radius:8px;padding:6px 10px;font-family:var(--font-display);font-size:10px;font-weight:600;cursor:pointer;white-space:nowrap;letter-spacing:.5px;min-height:32px;box-shadow:0 2px 0 #c94d1e}
-.cal-standings-btn:active{transform:translateY(1px);box-shadow:0 1px 0 #c94d1e}
+.cal-standings-btn{background:var(--orange);color:#fff;border:none;border-radius:8px;padding:6px 10px;font-family:var(--font-display);font-size:10px;font-weight:600;cursor:pointer;white-space:nowrap;letter-spacing:.5px;min-height:32px;box-shadow:0 2px 0 var(--orange-deep)}
+.cal-standings-btn:active{transform:translateY(1px);box-shadow:0 1px 0 var(--orange-deep)}
 .cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:2px 0;margin-bottom:3px}
 .cal-weekdays span{text-align:center;font-family:var(--font-display);font-size:10px;color:var(--text-muted);padding:2px 0}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
@@ -380,8 +385,8 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
     .awards-winner-name.hl{background:linear-gradient(135deg,var(--orange),#ff8a5c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
     .awards-team-line{font-size:13px;color:var(--text-dim);font-weight:600;margin-bottom:4px;letter-spacing:.5px}
     .awards-divider{width:40px;height:2px;background:linear-gradient(90deg,transparent,var(--orange),transparent);margin:10px auto;border-radius:2px}
-    .awards-next{display:inline-flex;align-items:center;justify-content:center;padding:12px 36px;background:linear-gradient(135deg,var(--orange),var(--orange-light));color:#fff;border:none;border-radius:14px;font-family:var(--font-display);font-size:15px;font-weight:700;cursor:pointer;transition:all .12s;box-shadow:0 4px 0 #c94d1e,0 6px 16px rgba(255,107,53,0.3);min-width:140px;letter-spacing:.5px}
-    .awards-next:active{transform:translateY(3px);box-shadow:0 1px 0 #c94d1e,0 3px 8px rgba(255,107,53,0.15)}
+    .awards-next{display:inline-flex;align-items:center;justify-content:center;padding:12px 36px;background:linear-gradient(135deg,var(--orange),var(--orange-light));color:#fff;border:none;border-radius:14px;font-family:var(--font-display);font-size:15px;font-weight:700;cursor:pointer;transition:all .12s;box-shadow:0 4px 0 var(--orange-deep),0 6px 16px rgba(255,107,53,0.3);min-width:140px;letter-spacing:.5px}
+    .awards-next:active{transform:translateY(3px);box-shadow:0 1px 0 var(--orange-deep),0 3px 8px rgba(255,107,53,0.15)}
     .awards-next:disabled{opacity:.4;transform:none;box-shadow:none}
     .awards-stage{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100svh - 120px);position:relative;text-align:center;padding:16px 24px 20px}
     .awards-stage::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(255,107,53,0.06) 0%,transparent 60%);pointer-events:none;z-index:0}
@@ -476,21 +481,106 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
     .tp-val{font-family:var(--font-display);font-size:14px;font-weight:700;min-width:26px;text-align:center}
     .tp-val.tp-preview{color:var(--gold)}
     .tp-grade{font-size:10px;min-width:20px;text-align:center;color:var(--text-dim);font-weight:600}
-    .tp-btn{width:36px;height:32px;border:none;border-radius:8px;background:var(--orange);color:#fff;cursor:pointer;font-size:16px;font-weight:700;transition:all .1s;flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 0 #c94d1e}
-    .tp-btn:active{transform:translateY(1px);box-shadow:0 1px 0 #c94d1e}
+    .tp-btn{width:36px;height:32px;border:none;border-radius:8px;background:var(--orange);color:#fff;cursor:pointer;font-size:16px;font-weight:700;transition:all .1s;flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 0 var(--orange-deep)}
+    .tp-btn:active{transform:translateY(1px);box-shadow:0 1px 0 var(--orange-deep)}
     .tp-btn:disabled{opacity:.3;transform:none;box-shadow:none;cursor:default}
     .tp-actions{display:flex;gap:8px;margin-top:10px}
     .tp-actions .btn{max-width:200px}
     .tp-age-info{background:var(--bg-card);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:var(--text-dim);line-height:1.6}
     .tp-age-info strong{color:var(--text)}
   </style>
+  <!-- ★ 时代主题层（现代混搭默认 + 1984/1996/2003 覆盖），纯视觉 -->
+  <link rel="stylesheet" href="./assets/css/theme-eras.css">
+<script>
+/* ============================================================
+   Era Theme Runtime — 时代主题切换 + 冠军光谱庆祝强调色
+   纯视觉层：只改 body[data-era] 与弹窗 CSS 变量，不影响逻辑
+   ============================================================ */
+(function () {
+  // 冠军光谱：赛季年份 -> 该年真实冠军球队主色 [A, B]
+  // 用于夺冠/60胜/全99/生涯之夜/爆炸赛季弹窗顶部强调线
+  var CHAMPION_SPECTRUM = {
+    1984:['#552583','#FDB927'], 1985:['#552583','#FDB927'], 1986:['#007A33','#BA9653'],
+    1987:['#552583','#FDB927'], 1988:['#552583','#FDB927'], 1989:['#1D428A','#C8102E'],
+    1990:['#1D428A','#C8102E'], 1991:['#CE1141','#000000'], 1992:['#CE1141','#000000'],
+    1993:['#CE1141','#000000'], 1994:['#CE1141','#FDB927'], 1995:['#CE1141','#FDB927'],
+    1996:['#CE1141','#000000'], 1997:['#CE1141','#000000'], 1998:['#CE1141','#000000'],
+    1999:['#C4CED4','#061922'], 2000:['#552583','#FDB927'], 2001:['#552583','#FDB927'],
+    2002:['#552583','#FDB927'], 2003:['#C4CED4','#061922'], 2004:['#1D428A','#C8102E'],
+    2005:['#C4CED4','#061922'], 2006:['#98002E','#F9A01B'], 2007:['#C4CED4','#061922'],
+    2008:['#007A33','#BA9653'], 2009:['#552583','#FDB927'], 2010:['#552583','#FDB927'],
+    2011:['#00538C','#B8C4CA'], 2012:['#98002E','#000000'], 2013:['#98002E','#000000'],
+    2014:['#C4CED4','#061922'], 2015:['#FFC72C','#1D428A'], 2016:['#860038','#FDBB30'],
+    2017:['#FFC72C','#1D428A'], 2018:['#FFC72C','#1D428A'], 2019:['#CE1141','#000000'],
+    2020:['#552583','#FDB927'], 2021:['#00471B','#EEE1C6'], 2022:['#FFC72C','#1D428A'],
+    2023:['#0E2240','#FEC524'], 2024:['#007A33','#BA9653'], 2025:['#007AC1','#EF3B24']
+  };
+  window.CHAMPION_SPECTRUM = CHAMPION_SPECTRUM;
+
+  function eraYear() {
+    try {
+      if (typeof getCurrentSeasonYear === 'function') return parseInt(getCurrentSeasonYear(), 10) || 0;
+    } catch (e) {}
+    try {
+      if (STATE && STATE.draftMode === 'historical' && STATE.eraStart) {
+        var sc = (STATE.career && STATE.career.seasonCount) || 0;
+        return (parseInt(STATE.eraStart, 10) || 0) + sc;
+      }
+    } catch (e) {}
+    return 2025;
+  }
+
+  // 设置 body[data-era]：现代删除属性；历史按赛季年份演化
+  window.setEraTheme = function () {
+    var era = '';
+    try {
+      var isH = STATE && STATE.draftMode === 'historical';
+      if (isH) {
+        var y = eraYear();
+        if (y < 1996) era = '1984';
+        else if (y < 2003) era = '1996';
+        else if (y < 2025) era = '2003';
+        else era = '';
+      }
+    } catch (e) {}
+    if (era) document.body.setAttribute('data-era', era);
+    else document.body.removeAttribute('data-era');
+  };
+
+  // 给庆祝弹窗设置冠军光谱强调色
+  function applySpectrum(node) {
+    var y = eraYear();
+    var colors = CHAMPION_SPECTRUM[y] || ['#EF3B24', '#FFC72C'];
+    node.style.setProperty('--celebrate-a', colors[0]);
+    node.style.setProperty('--celebrate-b', colors[1]);
+  }
+
+  // 自动监听新增的庆祝弹窗，免改各弹窗函数
+  function startObserver() {
+    if (!document.body) { setTimeout(startObserver, 100); return; }
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) {
+        if (!m.addedNodes) return;
+        m.addedNodes.forEach(function (n) {
+          if (n && n.nodeType === 1 && n.matches &&
+              n.matches('.champion-celebration-overlay, .sixty-win-overlay, .all99-overlay, .career-night-overlay')) {
+            applySpectrum(n);
+          }
+        });
+      });
+    }).observe(document.body, { childList: true });
+    setEraTheme();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', startObserver);
+  else startObserver();
+})();
+</script>
   <!-- 本地离线版：已移除未使用的 OSS / 激励视频 / 错误监控 SDK -->
-<script src="./colorbox-ai_v2.1.63.js" crossorigin="anonymous"></script>
 <script>
 (function () {
   window.__COLORBOX_AI_CONFIG__ = {
     projectId: "project-ai-1783761934042",
-    settings: {"ownerId":402116,"projectId":"project-ai-1783761934042","title":"我创造的完美球员","trackingCode":"PHBS7947","bizCategory":"match","isGamePlay":true,"postTopicId":"152165","shareInviteParams":"1783761934042","rewardVideoIncomeId":"16899","shareTitle":"","shareSubtitle":"","shareCover":"","theme":{"webviewBackground":"#ffffff","skeletonColor":"#edeef0","containerBackground":"#ffffff"},"dayNightMode":"auto"},
+    settings: {"ownerId":402116,"projectId":"project-ai-1783761934042","title":"我创造的完美球员","trackingCode":"PHBS7947","bizCategory":"match","isGamePlay":true,"postTopicId":"152165","shareInviteParams":"1783761934042","rewardVideoIncomeId":"16899","shareTitle":"","shareSubtitle":"","shareCover":"","theme":{"webviewBackground":"#ffffff","skeletonColor":"#edeef0","containerBackground":"#ffffff"},"dayNightMode":"light"},
     pagePi: "activity_match_project-ai-1783761934042"
   };
   "use strict";
@@ -1393,7 +1483,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
     <div class="fc-footer"></div>
 
     <div class="debug-btn" style="margin-top:6px">
-      <button onclick="trackEvent({act:'click',blk:'BMC098',pos:'TC17',label:'征服联盟'});if(window.CONQUEST_API)CONQUEST_API.show();else alert('成就系统未加载')" class="btn-conquest">🏆 征服联盟</button>
+      <!-- ★ 征服联盟已禁用（2026-08-16） -->
       <button onclick="trackEvent({act:'click',blk:'BMC098',pos:'TC20',label:'球员档案库'});showCareerArchive()" class="btn-help">📂 球员档案库</button>
       <button onclick="trackEvent({act:'click',blk:'BMC098',pos:'TC18',label:'玩法说明'});showHelpModal()" class="btn-help">📖 玩法说明</button>
 
@@ -1423,7 +1513,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
       <div style="font-size:48px;margin-bottom:16px;">🏀</div>
       <div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--text);margin-bottom:8px;">请在虎扑App内打开</div>
       <div style="font-size:13px;color:var(--text-dim);line-height:1.6;margin-bottom:24px;">游戏需要虎扑App环境<br>下载后即可开始建模</div>
-      <button onclick="alert('本地离线版无需下载虎扑App')" style="display:block;width:100%;padding:14px 0;background:var(--orange);color:#fff;border:none;border-radius:12px;font-family:var(--font-display);font-size:16px;font-weight:700;text-decoration:none;box-shadow:0 4px 0 #c94d1e,0 6px 12px rgba(255,107,53,0.25);cursor:pointer;">📲 下载虎扑</button>
+      <button onclick="alert('本地离线版无需下载虎扑App')" style="display:block;width:100%;padding:14px 0;background:var(--orange);color:#fff;border:none;border-radius:12px;font-family:var(--font-display);font-size:16px;font-weight:700;text-decoration:none;box-shadow:0 4px 0 var(--orange-deep),0 6px 12px rgba(255,107,53,0.25);cursor:pointer;">📲 下载虎扑</button>
       <button onclick="document.getElementById('downloadModal').style.display='none'" style="margin-top:16px;padding:10px 0;width:100%;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;background:var(--bg-card);color:var(--text-dim);border:2px solid var(--border);font-family:var(--font-body);">关闭</button>
     </div>
   </div>
@@ -1528,10 +1618,12 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
     <div id="results-content"></div>
   </div>
 
-  <!-- ====== 成就墙（由 achievements.js 驱动）====== -->
+  <!-- ★ 征服联盟已禁用（2026-08-16）-->
+  <!-- 成就墙（由 achievements.js 驱动）
   <div class="screen" id="screen-achievements">
     <div id="ach-wall-content"></div>
   </div>
+  -->
 
   <!-- ====== 生涯数据 ====== -->
   <div class="screen" id="screen-career-stats">
@@ -1692,8 +1784,8 @@ function getPlayerHeadshotStyle(playerName, displaySize) {
 <script src="./economy-core.js?v=6"></script>
   <script src="./copy-data.js?v=1"></script>
 <script src="./player-styles.js?v=2"></script>
-<script src="./historical-players.js?v=8"></script>
-<script src="./draft-classes.js?v=16"></script>
+<script src="./historical-players.js?v=10"></script>
+<script src="./draft-classes.js?v=17"></script>
 
     <script src="./story-events.js?v=6"></script>
 
@@ -1704,8 +1796,9 @@ function getPlayerHeadshotStyle(playerName, displaySize) {
 <script src="./contracts.js?v=4"></script>
 
 <script src="./era-config.js?v=2"></script>
-<script src="./era-economics.js?v=5"></script>
-<script src="./era-rosters.js?v=11"></script>
+<script src="./era-economics.js?v=6"></script>
+  <script src="./era-births.js?v=2"></script>
+<script src="./era-rosters.js?v=13"></script>
   <script src="./era-bench-pools.js?v=3"></script>
   <script src="./era-season-anchors.js?v=6"></script>
   <script src="./team-logos.js?v=3"></script>
@@ -2669,7 +2762,9 @@ var _helpPages = [
   { title: '赛季', content: '抽签决定我的生涯球队后进入赛季。系统根据我与队内同位置球员的总评比较判定首发或替补。开赛后一键模拟完整常规赛，赛季结束后可随时查看我的数据与场均表现。' },
   { title: '季后赛', content: (typeof isPlayInEraEnabled === 'function' && !isPlayInEraEnabled()) ? '常规赛结束后前八名进入季后赛。季后赛每轮七场四胜，我的系列赛会一场一场模拟，每场生成简报。一路赢下去直到总冠军。' : '常规赛结束后根据排名决定季后赛或附加赛资格。附加赛在七到十名之间进行，逐场淘汰。季后赛每轮七场四胜，我的系列赛会一场一场模拟，每场生成简报。点击简报可展开查看详细比分、我的数据和全队数据。一路赢下去直到总冠军。' },
   { title: '海报分享', content: '生涯结束后生成生涯传记与退役特刊，将整个职业生涯整理为可存档的终章图文。' },
+  /* ★ 征服联盟已禁用（2026-08-16）
   { title: '征服联盟', content: '荣誉墙支持我挑战带领全部30支NBA球队夺冠的终极目标。每次我赢得总冠军，系统会自动记录该球队、赛季数据、季后赛数据以及我的最终属性和模板。已夺冠的球队会在荣誉墙上以金色边框和队标展示，点击可查看历次夺冠详情。' },
+  */
 ];
 
 function showHelpModal() {
@@ -2826,17 +2921,18 @@ function renderModeSelect() {
     }
   }
   var realBtnEl = document.getElementById('draft-mode-real');
-  if (realBtnEl) realBtnEl.onclick = function() { STATE.draftMode = 'real'; STATE.eraStart = null; saveDraftMode('real'); saveEraStart(null); paintDraftMode(); };
+  if (realBtnEl) realBtnEl.onclick = function() { STATE.draftMode = 'real'; STATE.eraStart = null; saveDraftMode('real'); saveEraStart(null); paintDraftMode(); if (typeof setEraTheme === 'function') setEraTheme(); };
   ERA_LIST.forEach(function(e) {
     var el = document.getElementById('draft-mode-historical-' + e.start);
     if (!el) return;
-    el.onclick = function() { STATE.draftMode = 'historical'; STATE.eraStart = String(e.start); saveDraftMode('historical'); saveEraStart(String(e.start)); paintDraftMode(); };
+    el.onclick = function() { STATE.draftMode = 'historical'; STATE.eraStart = String(e.start); saveDraftMode('historical'); saveEraStart(String(e.start)); paintDraftMode(); if (typeof setEraTheme === 'function') setEraTheme(); };
   });
   paintDraftMode();
     STATE.mode = 'current';
 }
 
 function startGame() {
+  if (typeof setEraTheme === 'function') setEraTheme();
   ensureHupuUser(true);
   // ★ 新开局：按当前选择重建联盟名单/赛程（防止上一个时代球员泄漏）
   try { rebuildLeagueForDraftMode(); } catch(e) {}
@@ -4689,7 +4785,8 @@ function toggleTeamLogos() {
   else if (id === 'screen-playoffs' && typeof renderPlayoffs === 'function') renderPlayoffs();
   else if (id === 'screen-results' && typeof showSeasonResults === 'function') showSeasonResults();
   else if (id === 'screen-awards' && typeof showAwardsScreen === 'function') showAwardsScreen();
-  else if (id === 'screen-achievements' && window.CONQUEST_API && typeof CONQUEST_API.show === 'function') CONQUEST_API.show();
+  /* ★ 征服联盟已禁用（2026-08-16）*/
+  // else if (id === 'screen-achievements' && window.CONQUEST_API && typeof CONQUEST_API.show === 'function') CONQUEST_API.show();
 }
 
 /** 获取球队在联盟中的种子排名（1-15） */
@@ -9431,10 +9528,28 @@ function selectFinalsMVP(teamCode, userStats) {
   };
   var roster = (NBA2K_DATA && NBA2K_DATA[teamCode]) || [];
   var candidates = [];
-  if (userStats) {
+  // ★ F1 修复：FMVP 必须总决赛有实际出场且当季未赛季报销/重伤缺阵
+  var _userOut = false;
+  if (userStats && (!userStats.games || userStats.games <= 0)) _userOut = true;
+  try {
+    var _seEv2 = STATE.season && STATE.season.events ? STATE.season.events : {};
+    if (_seEv2.majorInjuryThisSeason || (_seEv2.injuryGamesLeft || 0) > 0) _userOut = true;
+  } catch(e) {}
+  if (userStats && !_userOut) {
     candidates.push({ name: getHupuDisplayName(), player: null, isUser: true });
   }
-  var sorted = roster.slice().filter(function(p) { return !p._isUser; })
+  function _fmvpOut(p) {
+    if (!p) return true;
+    try {
+      if (p._isUser) return false;
+      if (p._majorInjury) return true;
+      if (p.injuryGamesLeft > 0) return true;
+      if (p._outGames > 0) return true;
+      if (p._seasonOut) return true;
+    } catch(e) {}
+    return false;
+  }
+  var sorted = roster.slice().filter(function(p) { return !p._isUser && !_fmvpOut(p); })
     .sort(function(a, b) { return (parseInt(b.ovr) || 0) - (parseInt(a.ovr) || 0); });
   sorted.slice(0, 6).forEach(function(p) {
     candidates.push({ name: p.cname || p.name, player: p, isUser: false });
@@ -9675,9 +9790,10 @@ function simPlayoffSeries(round, seriesIdx) {
             STATE.season.awards.push({ act: 'fmvp', label: '👑 总决赛MVP', winner: fmvpPick.name, winnerEN: fmvpPick.player ? (fmvpPick.player.nameEN || fmvpPick.player.name || '') : '', team: STATE.careerTeam, isUser: !!fmvpPick.isUser });
           }
           // ★ 成就系统：记录夺冠
-          if (window.CONQUEST_API) {
-            setTimeout(function() { CONQUEST_API.recordChampionship(); }, 100);
-          }
+          /* ★ 征服联盟已禁用（2026-08-16）*/
+          // if (window.CONQUEST_API) {
+          //   setTimeout(function() { CONQUEST_API.recordChampionship(); }, 100);
+          // }
           setTimeout(function() {
             try { showChampionshipCelebration(function(){ try { showSeasonResults(); } catch(e) { safeShowSeasonResults(); } }); }
             catch(e) { try { safeShowSeasonResults(); } catch(e2) {} }
@@ -10944,9 +11060,20 @@ function saveCurrentSeasonToCareer() {
 
   c.seasonCount++;
   if (typeof updateSeasonBadge === 'function') updateSeasonBadge();
+  // ★ P0：赛季战绩回填（防止 0 胜 0 负写入生涯；以 standings/赛程为准）
+  var _recW0 = STATE.season.wins || 0, _recL0 = STATE.season.losses || 0;
+  if (_recW0 + _recL0 === 0 && STATE.season.schedule && STATE.season.schedule.length) {
+    var _simGames = STATE.season.schedule.filter(function(_g0){ return _g0 && _g0.result && typeof _g0.result.won === 'boolean'; });
+    _recW0 = _simGames.filter(function(_g1){ return _g1.result.won; }).length;
+    _recL0 = _simGames.length - _recW0;
+  }
+  if (_recW0 + _recL0 === 0 && STATE.season.standings && STATE.season.standings[STATE.careerTeam]) {
+    var _st0 = STATE.season.standings[STATE.careerTeam];
+    _recW0 = parseInt(_st0.wins) || 0; _recL0 = parseInt(_st0.losses) || 0;
+  }
   var seasonRecord = {
     seasonNum: c.seasonCount, team: STATE.careerTeam, ovr: STATE.finalOVR,
-    wins: STATE.season.wins || 0, losses: STATE.season.losses || 0,
+    wins: _recW0, losses: _recL0,
     playerStats: JSON.parse(JSON.stringify(sp)),
     playoffs: JSON.parse(JSON.stringify(STATE.season.playoffStats || {})),
     playoffResult: playoffResult || (STATE.season.playoffBracket ? '季后赛' : '未晋级'),
@@ -11203,6 +11330,7 @@ function applyAnnualAttributeDrift() {
 }
 
 function beginOffseason() {
+  if (typeof setEraTheme === 'function') setEraTheme();
   if (STATE.career && STATE.career.retired) {
     showCareerStats(1);
     return;
@@ -13117,6 +13245,13 @@ function resetTraining() {
 }
 
 function confirmTraining() {
+  // ★ 读档兜底：新赛季已就绪（旧存档/异常路径回到训练营）时直接开始新赛季，
+  //   禁止再次执行 saveCurrentSeasonToCareer/年龄+1/休赛期流水线，避免重复推进
+  if (typeof isNewSeasonReady === 'function' && isNewSeasonReady()) {
+    try { showSaveToast('赛季已就绪，直接开始新赛季'); } catch(e) {}
+    if (typeof startSeason === 'function') { startSeason(); }
+    return;
+  }
   var pending = STATE._tpPending || {};
   // ★ 记录加点倾向（Build 定位）：当季点数最多的前 2 项属性 → 影响奖项评选小加成
   try {
@@ -13130,9 +13265,9 @@ function confirmTraining() {
     }
   } catch(e) {}
   for (var k in pending) {
-    if (pending.hasOwnProperty(k)) STATE.attrs[k] = (STATE.attrs[k] || 50) + pending[k];
+    if (pending.hasOwnProperty(k)) STATE.attrs[k] = Math.max(40, Math.min(99, (STATE.attrs[k] || 50) + pending[k]));
   }
-  STATE.finalOVR = calcOVR(STATE.attrs);
+  STATE.finalOVR = Math.min(99, calcOVR(STATE.attrs));
   try { maybeNotifyAll99(); } catch(e) {}
 
   // 合同扣减（球员选项跳出后 contract 已为 0，避免减成负数）
@@ -15404,7 +15539,8 @@ function showRosterReview() {
   var c = STATE.career;
   var changes = STATE._leagueChanges || { retired: [], rookies: [], teamChanges: {} };
   var teamName = getTeamName ? getTeamName(STATE.careerTeam) : STATE.careerTeam;
-  var prevRecord = (c.seasons.length > 0) ? (c.seasons[c.seasons.length - 1].wins + '-' + c.seasons[c.seasons.length - 1].losses) : '新赛季';
+  var _lastRec0 = (c.seasons && c.seasons.length > 0) ? c.seasons[c.seasons.length - 1] : null;
+  var prevRecord = (_lastRec0 && ((_lastRec0.wins || 0) + (_lastRec0.losses || 0)) > 0) ? (_lastRec0.wins + '-' + _lastRec0.losses) : '新赛季';
   var displayName = getHupuDisplayName();
 
   var lineup = calcTeamLineup(STATE.careerTeam);
@@ -15708,6 +15844,7 @@ function closeOtherTeamsModal() {
 }
 
 function startNewSeason() {
+  if (typeof setEraTheme === 'function') setEraTheme();
   try { flushPendingAll99Notice(); } catch(e) {}
   // 移植虎扑最新版：每个休赛期开始新赛季前自动存档
   if (STATE.career && !STATE.career.retired && STATE._autoSaveSeason !== STATE.career.seasonCount) {
@@ -15815,7 +15952,7 @@ function applyDraftClass2026() {
         height: pk.height,
         type: '新秀',
         ovr: ovr,
-        _age: 19 + Math.floor(Math.random() * 3),
+        _age: (pk.birth != null && parseInt(pk.birth,10) > 1900) ? (parseInt(year,10) - parseInt(pk.birth,10)) : (19 + Math.floor(Math.random() * 3)),
         _rookieSeason: (STATE && STATE.career && STATE.career.seasonCount) || 0,
         _draftPick: pk.pick,
         // ★ 真实合同：2026 届首轮 4 年新秀合同，按顺位取真实年薪
@@ -15883,7 +16020,7 @@ function applyEraDraftClass(year) {
         height: pk.height,
         type: '新秀',
         ovr: ovr,
-        _age: 19 + Math.floor(Math.random() * 3),
+        _age: (pk.birth != null && parseInt(pk.birth,10) > 1900) ? (parseInt(year,10) - parseInt(pk.birth,10)) : (19 + Math.floor(Math.random() * 3)),
         _rookieSeason: 0,
         _draftPick: pk.pick,
         contract: (typeof eraRookieYears === 'function') ? eraRookieYears(year, pk.pick) : (pk.pick <= 14 ? 4 : (pk.pick <= 30 ? 3 : 2)),
@@ -15901,8 +16038,26 @@ function applyEraDraftClass(year) {
       if (typeof ERA_STAR_CURVES !== 'undefined' && ERA_STAR_CURVES[pk.en] && ERA_STAR_CURVES[pk.en].peakPro > 4) {
         rookie._peakPro = parseInt(ERA_STAR_CURVES[pk.en].peakPro, 10);
       }
-      // ★ 历史新秀属性：按位置 + 综评生成合理能力值（替代纯随机 ±8）
-      var genAttrs = (typeof getEraPlayerAttrs === 'function') ? getEraPlayerAttrs(rookiePosToCode(pk.pos), ovr) : null;
+      // ★ 历史新秀属性：优先使用选秀表手调 attrs（2K 风格校准）；
+      //   其次用历史模板巅峰属性按“新秀 OVR / 巅峰 OVR”比例缩放（如乔丹新秀 90→巅峰 99）；
+      //   最后才回退位置模板生成（避免新秀属性模板化雷同/失真）。
+      var genAttrs = null;
+      if (pk.attrs) { genAttrs = pk.attrs; }
+      else if (typeof lookupEraPlayer === 'function') {
+        try {
+          var _lp = lookupEraPlayer(pk.en);
+          if (_lp && _lp.data && _lp.data.attrs && _lp.data.ovr) {
+            var _peakO = parseInt(_lp.data.ovr, 10) || 85;
+            var _ratioA = Math.max(0.72, Math.min(1, (parseInt(ovr, 10) || 80) / Math.max(_peakO, 1)));
+            genAttrs = {};
+            attrKeys.forEach(function(k) {
+              var _pv = _lp.data.attrs[k];
+              genAttrs[k] = _pv == null ? null : Math.max(25, Math.min(99, Math.round(_pv * _ratioA)));
+            });
+          }
+        } catch(e) {}
+      }
+      if (!genAttrs && typeof getEraPlayerAttrs === 'function') { genAttrs = getEraPlayerAttrs(rookiePosToCode(pk.pos), ovr); }
       attrKeys.forEach(function(k) {
         rookie[k] = genAttrs && genAttrs[k] != null ? genAttrs[k] : Math.max(25, Math.min(99, ovr + Math.floor(Math.random() * 16) - 8));
       });
@@ -16284,13 +16439,13 @@ function calcOVR(attrs, pos) {
     ATTR_KEYS.forEach(function(k) {
       weighted += ((attrs && attrs[k] != null) ? attrs[k] : 50) * (weights[k] || 0.07);
     });
-    return Math.round(weighted);
+    return Math.min(99, Math.round(weighted));
   }
   var sum = 0, count = 0;
   ATTR_KEYS.forEach(function(k) {
     if (attrs && attrs[k] != null) { sum += attrs[k]; count++; }
   });
-  return count > 0 ? Math.round(sum / count) : 50;
+  return count > 0 ? Math.min(99, Math.round(sum / count)) : 50;
 }
 
 // ==================== 联盟演变 ====================
@@ -16483,6 +16638,9 @@ function evolveLeague() {
       if ((p._talent === 'star' || (p._potential && p.ovr < p._potential)) && age <= _potAgeCap) {
         // ★ 本地修改：有潜力的年轻球员“向潜力逼近”成长（缺口越大成长越快），低起点黑马也能长成 92+
         var targetPot = p._potential || 99;
+        // ★ F2 修复：替补/角色球员（_tier==='role'）成长目标封顶，避免长成 90+；
+        //   即使替补带高潜力进入联赛也压到合理上限（历史模式再按精英密度收敛）
+        if (p._tier === 'role' && targetPot >= 88) targetPot = 87;
         // ★ 历史模式密度上限：联盟 92+ 已达 ELITE_CAP 时，历史新星成长目标压到 91，防止精英泛滥
         if (STATE.draftMode === 'historical' && targetPot >= 92 && countLeagueElite() >= ELITE_CAP) targetPot = 91;
         var gap = Math.max(0, targetPot - p.ovr);
@@ -16497,6 +16655,13 @@ function evolveLeague() {
         });
         p.ovr = Math.round(newOvr);
       }
+      // ★ P1：历史模式 NPC 年薪随时代帽逐年演化（新赛季按当年帽重算，签约/展示一致）
+      try {
+        if (STATE.draftMode === 'historical' && typeof isEraEconomyActive === 'function' && isEraEconomyActive() && typeof eraSalaryByOvr === 'function' && !p._isUser) {
+          var _eraYr = (typeof getEraEconomyYear === 'function') ? getEraEconomyYear() : 0;
+          if (_eraYr) p.salary = eraSalaryByOvr(_eraYr, p.ovr, getLeaguePlayerAge(p));
+        }
+      } catch(e) {}
       var retireChance = 0;
       // ★ 历史时代真实退役年份（接受 ±1-2 年波动）：加内特应打到 2015-16，而非 03-04 退役
       var _realRetireY = (STATE.draftMode === 'historical' && typeof getHistoricalRetireYear === 'function') ? getHistoricalRetireYear(p) : null;
@@ -16790,7 +16955,7 @@ function generateEraRoleRefill() {
       _peakPro: (_gm && _gm.peakPro > 4) ? _gm.peakPro : undefined,
       _rookieSeason: (STATE && STATE.career && STATE.career.seasonCount) || 0, // ★ H3：补位球员也带新秀标记，避免入盟首季直接拿 MVP/数据王
       contract: (typeof eraNpcContractYears === 'function') ? eraNpcContractYears(parseInt(era,10), ovr || 75, _age0, false) : (1 + Math.floor(Math.random() * 3)),
-      salary: (typeof eraSalaryByOvr === 'function') ? eraSalaryByOvr(parseInt(era,10), ovr || 75, _age0) : 500,
+      salary: (typeof eraSalaryByOvr === 'function') ? eraSalaryByOvr((typeof getEraEconomyYear === 'function' && getEraEconomyYear()) || parseInt(era,10), ovr || 75, _age0) : 500,
     };
   }
   // ★ 补位池：优先时代角色池（ERA_ROLE_POOLS），其次时代独立替补池（ERA_BENCH_POOLS），两池合计才够 30 队多赛季消耗
@@ -17313,7 +17478,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <!-- ====== 随机事件系统 — EVENT REGISTRY ====== -->
-<script src="./post-game-events.js?v=4"></script>
+<script src="./post-game-events.js?v=5"></script>
 <script src="./iconic-events.js?v=1"></script>
 <script src="./clutch-events.js?v=2"></script>
 <script>
@@ -17468,9 +17633,12 @@ function showClutchEventModal(result, callback, phaseHint, gameNum, winsA, winsB
       try { CLUTCH_EVENTS.applyClutchResult(ctx.result, hit, ctx.ev.id, text, ch.key); } catch(e) {}
       try { applyClutchSettlement(hit, ctx.result); } catch(e) {}
       try { if (STATE._clutchUsedIds && STATE._clutchUsedIds.indexOf(ctx.ev.id) < 0) STATE._clutchUsedIds.push(ctx.ev.id); } catch(e) {}
+      // ★ P1：结果文案以实际结算分支为准（命中但差一分/失手但守住胜利/被反绝杀等），避免与最终胜负不符
+      var resultMsg = text;
+      try { var _ke = ctx.result.keyEvents; if (_ke && _ke.length) resultMsg = _ke[_ke.length - 1]; } catch(e) {}
       var resultHtml =
         "<div style=\"font-size:11px;color:var(--orange);font-weight:700;margin-bottom:6px;\">结果</div>" +
-        "<div style=\"font-size:13px;color:var(--text);line-height:1.7;margin-bottom:6px;\">" + text + "</div>" +
+        "<div style=\"font-size:13px;color:var(--text);line-height:1.7;margin-bottom:6px;\">" + resultMsg + "</div>" +
         "<div style=\"font-size:11px;color:var(--text-muted);margin-bottom:12px;\">选项命中率约 " + Math.round(rate * 100) + "%" + (hit ? " · 成功" : " · 失手") + "</div>" +
         "<button class=\"btn btn-primary btn-sm\" id=\"clutchOkBtn\" style=\"width:100%;\">我知道了</button>";
       overlay.innerHTML = "<div class=\"team-picker-modal\"><div class=\"team-picker-header\"><span>⚡ " + (ctx.ev.title || "关键时刻") + "</span></div><div style=\"padding:14px 14px 12px;max-height:62vh;overflow-y:auto;\">" + resultHtml + "</div></div>";
@@ -17908,7 +18076,7 @@ function generateBuildPlayerPoster() {
   ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
   ctx.fillStyle = C.textMuted;
   ctx.font = '400 9px ' + C.fb;
-  ctx.fillText('我的完美建模球员  JRs出品  Cr3aM修改', cx, H - 6);
+  ctx.fillText('我的完美建模球员  Cr3aM修改', cx, H - 6);
 
   canvas._corsSafe = true;
   var dataURL = canvas.toDataURL('image/png');
@@ -19632,7 +19800,7 @@ function generateCareerPoster() {
   ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
   ctx.fillStyle = C.textMuted;
   ctx.font = '400 9px ' + C.fb;
-  ctx.fillText('我的完美建模球员  JRs出品  Cr3aM修改', cx, H - 6);
+  ctx.fillText('我的完美建模球员  Cr3aM修改', cx, H - 6);
 
   canvas._corsSafe = true;
   var dataURL = canvas.toDataURL('image/png');
@@ -19868,7 +20036,7 @@ function generateRetirementStoryPosterDataURL(r) {
   ctx.textBaseline = 'bottom';
   ctx.fillStyle = C.textMuted;
   ctx.font = '400 9px ' + C.fb;
-  ctx.fillText('我的完美建模球员  JRs出品  Cr3aM修改', cx, H - 10);
+  ctx.fillText('我的完美建模球员  Cr3aM修改', cx, H - 10);
 
   canvas._corsSafe = true;
   return canvas.toDataURL('image/png');
@@ -20185,8 +20353,8 @@ function uploadToOSS(file, filename) {
 
 </script>
 
-<!-- ====== 成就系统模块（热拔插：移除本行即卸载）====== -->
-<script src="./achievements.js?v=2"></script>
+<!-- ====== 成就系统模块（征服联盟，2026-08-16 已禁用）====== -->
+<!-- script src="./achievements.js?v=2"></script> -->
 <script>
 (function(){
   var _g = window.getTeamLogoHTML;
@@ -20247,6 +20415,18 @@ function buildManualFingerprint(st) {
   return { seasonCount: c.seasonCount || 0, currentAge: c.currentAge || 0, finalOVR: st.finalOVR || 0, careerTeam: st.careerTeam || '', games: sp.games || 0, pts: sp.pts || 0, wins: (st.season && st.season.wins) || 0, honors: (c.honors || []).length };
 }
 
+/** ★ 判断“新赛季已就绪”：自动存档点（startNewSeason 开头）状态。
+ *  读档后应直接继续赛季模拟，跳过训练营/确认加点，防止 seasonCount/年龄/合同
+ *  重复变化与休赛期流水线（演化/选秀/自由市场/交易）重复执行。 */
+function isNewSeasonReady() {
+  var _c = STATE && STATE.career ? STATE.career : {};
+  var _s = STATE && STATE.season ? STATE.season : {};
+  return STATE._autoSaveSeason === (_c.seasonCount || 0)
+    && Array.isArray(_s.schedule) && _s.schedule.length > 0
+    && !(_s.day || 0)
+    && !((_s.wins || 0) + (_s.losses || 0));
+}
+
 /** 整局快照（自动存档/手动存档） */
 function buildManualSaveSnapshot() {
   if (typeof loadPlayerAges === 'function') { try { loadPlayerAges(); } catch(e) {} }
@@ -20258,11 +20438,11 @@ function buildManualSaveSnapshot() {
   var screen = '';
   try { var act = document.querySelector('.screen.active'); screen = act ? act.id : ''; } catch(e) {}
   return {
-    v: 1, savedAt: Date.now(), label: label, screen: screen,
+    v: 1, savedAt: Date.now(), label: label, screen: screen, resume: (typeof isNewSeasonReady === 'function' && isNewSeasonReady()) ? 'season' : '',
     state: rawState,
     league: JSON.parse(JSON.stringify(typeof NBA2K_DATA !== 'undefined' ? NBA2K_DATA : {})),
-    ages: JSON.parse(JSON.stringify(typeof _playerAges !== 'undefined' ? _playerAges : {})),
-    genes: JSON.parse(JSON.stringify(typeof _playerGenes !== 'undefined' ? _playerGenes : {})),
+    ages: JSON.parse(JSON.stringify(_playerAges || {})),
+    genes: JSON.parse(JSON.stringify(_playerGenes || {})),
     rookieState: { starQueue: JSON.parse(JSON.stringify(typeof _starRookieQueue !== 'undefined' ? _starRookieQueue : [])), usedCandidateNames: JSON.parse(JSON.stringify(typeof _usedRookieCandidateNames !== 'undefined' ? _usedRookieCandidateNames : {})), rookieNameSeq: (typeof _rookieNameSeq !== 'undefined') ? _rookieNameSeq : 0 },
     rng: JSON.parse(JSON.stringify(_rngState || null)),
     fingerprint: buildManualFingerprint(STATE || {})
@@ -20323,9 +20503,9 @@ function manualLoadGame(slot) {
         if (STATE.season && STATE.season._processedDays && !(STATE.season._processedDays instanceof Set)) STATE.season._processedDays = new Set((Array.isArray(STATE.season._processedDays) ? STATE.season._processedDays : []).map(Number));
         // ★ 读档后清除挂起的关键时刻弹窗状态（防止旧会话残留导致卡死/错乱；保留 _clutchUsedIds 维持生涯去重）
         delete STATE._clutchResumeGame; delete STATE._clutchResumePO; delete STATE._clutchResumePI; delete STATE._clutchCtx;
-        if (snap.league && typeof NBA2K_DATA !== 'undefined') { Object.keys(NBA2K_DATA).forEach(function(k) { delete NBA2K_DATA[k]; }); Object.assign(NBA2K_DATA, snap.league); }
-        if (snap.ages && typeof _playerAges !== 'undefined') { Object.keys(_playerAges).forEach(function(k){ delete _playerAges[k]; }); Object.assign(_playerAges, snap.ages); }
-        if (snap.genes && typeof _playerGenes !== 'undefined') { Object.keys(_playerGenes).forEach(function(k){ delete _playerGenes[k]; }); Object.assign(_playerGenes, snap.genes); }
+        if (snap.league && NBA2K_DATA) { Object.keys(NBA2K_DATA).forEach(function(k) { delete NBA2K_DATA[k]; }); Object.assign(NBA2K_DATA, snap.league); }
+        if (snap.ages && _playerAges) { Object.keys(_playerAges).forEach(function(k){ delete _playerAges[k]; }); Object.assign(_playerAges, snap.ages); }
+        if (snap.genes && _playerGenes) { Object.keys(_playerGenes).forEach(function(k){ delete _playerGenes[k]; }); Object.assign(_playerGenes, snap.genes); }
         if (snap.rookieState) {
           if (typeof _starRookieQueue !== 'undefined') _starRookieQueue = JSON.parse(JSON.stringify(snap.rookieState.starQueue || []));
           if (typeof _usedRookieCandidateNames !== 'undefined') _usedRookieCandidateNames = Object.assign({}, snap.rookieState.usedCandidateNames || {});
@@ -20333,7 +20513,7 @@ function manualLoadGame(slot) {
         }
         if (typeof _rngState !== 'undefined') _rngState = snap.rng || null;
         ['player-retirement-choice','contract-modal','contract-retirement-choice','legacy-modal','offseason-event-modal','offseason-result-modal','countdown-legacy-modal','countdown-legacy-result-modal','load-menu-modal','save-load-overlay','archive-detail-modal','archive-readonly-modal','archive-list-overlay'].forEach(function(id) { var el = document.getElementById(id); if (el) el.remove(); });
-        renderAfterSaveLoad(snap.screen);
+        renderAfterSaveLoad(snap.screen, snap.resume);
         renderMenuSavePanel();
         showSaveToast('✅ 已恢复上局游戏');
       } catch(e) { showSaveToast('读档失败：' + e.message); }
@@ -20360,9 +20540,11 @@ function manualClearSave(slot) {
   });
 }
 
-function renderAfterSaveLoad(targetScreen) {
+function renderAfterSaveLoad(targetScreen, resumeFlag) {
   try {
     if (STATE.career && STATE.career.retired) { showCareerStats(1); return; }
+    // ★ 读档修复：自动存档点为“新赛季已就绪”，直接继续赛季模拟（不再进入训练营重复确认加点）
+    if (resumeFlag === 'season' && typeof startSeason === 'function') { startSeason(); return; }
     if (targetScreen === 'screen-roster-review' && typeof showRosterReview === 'function') { showRosterReview(); return; }
     if (typeof renderTrainingCamp === 'function') { renderTrainingCamp(); return; }
   } catch(e) {}
@@ -20619,6 +20801,92 @@ function deleteArchiveEntry(idx) {
   @keyframes archivePaperIn{from{opacity:0;transform:translateY(18px) scale(0.96)}to{opacity:1;transform:none}}
   @keyframes archiveOverlayIn{from{opacity:0}to{opacity:1}}
 </style>
+  <!-- ★ 时代主题层（现代混搭默认 + 1984/1996/2003 覆盖），纯视觉 -->
+  <link rel="stylesheet" href="./assets/css/theme-eras.css">
+<script>
+/* ============================================================
+   Era Theme Runtime — 时代主题切换 + 冠军光谱庆祝强调色
+   纯视觉层：只改 body[data-era] 与弹窗 CSS 变量，不影响逻辑
+   ============================================================ */
+(function () {
+  // 冠军光谱：赛季年份 -> 该年真实冠军球队主色 [A, B]
+  // 用于夺冠/60胜/全99/生涯之夜/爆炸赛季弹窗顶部强调线
+  var CHAMPION_SPECTRUM = {
+    1984:['#552583','#FDB927'], 1985:['#552583','#FDB927'], 1986:['#007A33','#BA9653'],
+    1987:['#552583','#FDB927'], 1988:['#552583','#FDB927'], 1989:['#1D428A','#C8102E'],
+    1990:['#1D428A','#C8102E'], 1991:['#CE1141','#000000'], 1992:['#CE1141','#000000'],
+    1993:['#CE1141','#000000'], 1994:['#CE1141','#FDB927'], 1995:['#CE1141','#FDB927'],
+    1996:['#CE1141','#000000'], 1997:['#CE1141','#000000'], 1998:['#CE1141','#000000'],
+    1999:['#C4CED4','#061922'], 2000:['#552583','#FDB927'], 2001:['#552583','#FDB927'],
+    2002:['#552583','#FDB927'], 2003:['#C4CED4','#061922'], 2004:['#1D428A','#C8102E'],
+    2005:['#C4CED4','#061922'], 2006:['#98002E','#F9A01B'], 2007:['#C4CED4','#061922'],
+    2008:['#007A33','#BA9653'], 2009:['#552583','#FDB927'], 2010:['#552583','#FDB927'],
+    2011:['#00538C','#B8C4CA'], 2012:['#98002E','#000000'], 2013:['#98002E','#000000'],
+    2014:['#C4CED4','#061922'], 2015:['#FFC72C','#1D428A'], 2016:['#860038','#FDBB30'],
+    2017:['#FFC72C','#1D428A'], 2018:['#FFC72C','#1D428A'], 2019:['#CE1141','#000000'],
+    2020:['#552583','#FDB927'], 2021:['#00471B','#EEE1C6'], 2022:['#FFC72C','#1D428A'],
+    2023:['#0E2240','#FEC524'], 2024:['#007A33','#BA9653'], 2025:['#007AC1','#EF3B24']
+  };
+  window.CHAMPION_SPECTRUM = CHAMPION_SPECTRUM;
+
+  function eraYear() {
+    try {
+      if (typeof getCurrentSeasonYear === 'function') return parseInt(getCurrentSeasonYear(), 10) || 0;
+    } catch (e) {}
+    try {
+      if (STATE && STATE.draftMode === 'historical' && STATE.eraStart) {
+        var sc = (STATE.career && STATE.career.seasonCount) || 0;
+        return (parseInt(STATE.eraStart, 10) || 0) + sc;
+      }
+    } catch (e) {}
+    return 2025;
+  }
+
+  // 设置 body[data-era]：现代删除属性；历史按赛季年份演化
+  window.setEraTheme = function () {
+    var era = '';
+    try {
+      var isH = STATE && STATE.draftMode === 'historical';
+      if (isH) {
+        var y = eraYear();
+        if (y < 1996) era = '1984';
+        else if (y < 2003) era = '1996';
+        else if (y < 2025) era = '2003';
+        else era = '';
+      }
+    } catch (e) {}
+    if (era) document.body.setAttribute('data-era', era);
+    else document.body.removeAttribute('data-era');
+  };
+
+  // 给庆祝弹窗设置冠军光谱强调色
+  function applySpectrum(node) {
+    var y = eraYear();
+    var colors = CHAMPION_SPECTRUM[y] || ['#EF3B24', '#FFC72C'];
+    node.style.setProperty('--celebrate-a', colors[0]);
+    node.style.setProperty('--celebrate-b', colors[1]);
+  }
+
+  // 自动监听新增的庆祝弹窗，免改各弹窗函数
+  function startObserver() {
+    if (!document.body) { setTimeout(startObserver, 100); return; }
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) {
+        if (!m.addedNodes) return;
+        m.addedNodes.forEach(function (n) {
+          if (n && n.nodeType === 1 && n.matches &&
+              n.matches('.champion-celebration-overlay, .sixty-win-overlay, .all99-overlay, .career-night-overlay')) {
+            applySpectrum(n);
+          }
+        });
+      });
+    }).observe(document.body, { childList: true });
+    setEraTheme();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', startObserver);
+  else startObserver();
+})();
+</script>
 <script>
 // ==================== 球员档案库（虎扑风格） ====================
 function showCareerArchive() {

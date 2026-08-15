@@ -235,6 +235,7 @@ function eraMoney(v) {
 function getEventEraMinYear(ev) {
   if (!ev || typeof ev !== 'object') return 0;
   if (ev.eraMinYear != null) return ev.eraMinYear;
+  if (ev.eraMin != null) return ev.eraMin; // ★ 故事事件使用 eraMin 字段（与 offseason 队列一致），统一生效
   if (typeof isEraEconomyActive !== 'function' || !isEraEconomyActive()) return 0;
   var text = String(ev.title || '') + String(ev.name || '') + String(ev.id || '') + String(ev.body || '') + String(ev.desc || '') + String(ev.copy || '');
   if (/(加密货币|比特币|币圈|crypto|加密币)/i.test(text)) return 2009;
@@ -299,9 +300,30 @@ function getEraPlayerDraftYear(en) {
 
 /** 历史时代核心球员年龄：按真实选秀年份估算（19-21 岁入盟）；无选秀数据返回 null */
 function eraPlayerAgeByDraft(eraYear, en) {
+  var eraY = parseInt(eraYear, 10) || 0;
+  // 1) 优先按真实出生年（ERA_HISTORICAL_BIRTHS / 选秀表 birth）精确计算
+  var by = null;
+  if (typeof ERA_HISTORICAL_BIRTHS !== 'undefined' && ERA_HISTORICAL_BIRTHS[en] != null) by = parseInt(ERA_HISTORICAL_BIRTHS[en], 10);
+  if (by == null && typeof HISTORICAL_DRAFT_CLASSES !== 'undefined') {
+    try {
+      var years = Object.keys(HISTORICAL_DRAFT_CLASSES);
+      for (var i = 0; i < years.length; i++) {
+        var list = HISTORICAL_DRAFT_CLASSES[years[i]] || [];
+        for (var j = 0; j < list.length; j++) {
+          if (list[j] && list[j].en === en && list[j].birth != null) { by = parseInt(list[j].birth, 10); break; }
+        }
+        if (by != null) break;
+      }
+    } catch(e) {}
+  }
+  if (by != null) {
+    var a0 = eraY - by;
+    if (a0 >= 16 && a0 <= 50) return a0;
+  }
+  // 2) 回退：按真实选秀年份估算（19-21 岁入盟）
   var dy = getEraPlayerDraftYear(en);
   if (dy == null) return null;
-  var age = (parseInt(eraYear, 10) || 0) - dy + 19 + Math.floor(Math.random() * 3);
+  var age = eraY - dy + 19 + Math.floor(Math.random() * 3);
   return Math.max(19, Math.min(45, age));
 }
 

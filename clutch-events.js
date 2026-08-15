@@ -585,27 +585,27 @@ CLUTCH_EVENTS.applyClutchResult = function (result, hit, eventId, text, key) {
         result.won = winOT;
         if (result.qScoresA) result.qScoresA.push(fa);
         if (result.qScoresB) result.qScoresB.push(bOT);
-        evs.push('⚡ 关键时刻命中追平：' + (text || '绝平！进加时！'));
+        evs.push('⚡ 关键时刻命中，扳平比分进加时！');
       } else if (need === 1 || (is3 && need === 2)) {
         // 反超绝杀
         result.scoreA = result.scoreB + 1;
         result.won = true;
-        evs.push('⚡ 关键时刻命中：' + (text || '绝杀！'));
+        evs.push('⚡ 关键时刻命中，反超绝杀！');
       } else {
         // 命中但分值不够（落后 3 分只进两分）：比分更新，但时间走完仍输
         result.scoreA = (result.scoreA || 0) + (is3 ? 3 : 2);
-        evs.push('💔 关键时刻命中' + (is3 ? '三分' : '两分') + '，但还差一分——时间走完：' + (text || '功亏一篑'));
+        evs.push('💔 关键时刻命中' + (is3 ? '三分' : '两分') + '，但还差一分——时间走完，功亏一篑');
       }
     } else if (diff === 0) {
       // 平局命中 → 绝杀
       result.scoreA = result.scoreB + 1 + (Math.random() < 0.5 ? 1 : 0);
       result.won = true;
-      evs.push('⚡ 关键时刻命中：' + (text || '绝杀！'));
+      evs.push('⚡ 关键时刻命中，压哨绝杀！');
     } else {
       // 领先命中 → 锁定胜局
       result.scoreA = (result.scoreA || 0) + 2;
       result.won = true;
-      evs.push('⚡ 关键时刻命中：' + (text || '锁定胜局！'));
+      evs.push('⚡ 关键时刻命中，锁定胜局！');
     }
   } else {
     // ★ 未命中被逆转：原本领先且分差 ≤3 时，小概率被对手反绝杀（输球 + 媒体压力/争议）
@@ -614,9 +614,9 @@ CLUTCH_EVENTS.applyClutchResult = function (result, hit, eventId, text, key) {
       _rev = true;
       result.won = false;
       result.scoreB = (result.scoreA || 0) + 1;
-      evs.push('💔 关键时刻失手，被对手反绝杀：' + (text || '功亏一篑'));
+      evs.push('💔 关键时刻失手，被对手反绝杀');
     } else {
-      evs.push('💔 关键时刻失手：' + (text || '功亏一篑'));
+      evs.push(result && result.won ? '💔 关键时刻失手，但球队守住了胜利' : '💔 关键时刻失手，时间走完惜败');
     }
     result._clutch = { hit: false, eventId: eventId || '', rate: result._clutchRate || 0, reversed: _rev };
     return result;
