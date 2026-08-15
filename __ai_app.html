@@ -2634,6 +2634,12 @@ function initGame() {
   delete STATE._contractsInited;
   delete STATE._leagueChanges;
   delete STATE._freeAgentPool;
+  // ★ 关键时刻系统状态不跨档残留（生涯去重池/挂起弹窗）
+  delete STATE._clutchUsedIds;
+  delete STATE._clutchResumeGame;
+  delete STATE._clutchResumePO;
+  delete STATE._clutchResumePI;
+  delete STATE._clutchCtx;
   delete STATE._draftPending;
   delete STATE._draftSelfPick;
   delete STATE._draftModalStep;
@@ -5036,7 +5042,22 @@ function quickSimAllGames() {
         return;
       }
 
-      var result = simulateGameNew(STATE.careerTeam, g.opponent);
+      var result;
+      if (STATE._clutchResumeGame && STATE._clutchResumeGame._sameGame === g) {
+        // ★ 关键时刻已选择：用弹窗修改后的结果继续本场结算
+        result = STATE._clutchResumeGame.result;
+        STATE._clutchResumeGame = null;
+      } else {
+        result = simulateGameNew(STATE.careerTeam, g.opponent);
+      }
+      // ★ 比赛关键时刻触发（比分接近 + 概率，在战绩/数据结算前拦截）
+      var _clutchGo = false;
+      try { _clutchGo = !!(result && !result._clutch && typeof CLUTCH_EVENTS !== "undefined" && CLUTCH_EVENTS.shouldTrigger(result, false)); } catch(e) { _clutchGo = false; }
+      if (_clutchGo) {
+        STATE._clutchResumeGame = { result: result, _sameGame: g };
+        try { showClutchEventModal(result, function() { setTimeout(simNextWithDelay, 120); }, "regular", null, null, null, "第 " + (gi + 1) + " 场 · 对阵 " + getTeamName(g.opponent)); } catch(e) { STATE._clutchResumeGame = null; }
+        return;
+      }
       g.simulated = true;
       g.result = result;
       g.scoreA = result.scoreA;
@@ -8445,7 +8466,25 @@ function simPlayInGame(gameId) {
   // ★ 修复：附加赛改用与常规赛/季后赛同一比赛引擎（simulateGameNew）
   //   比分与胜负一致、比分真实（100-130 级别）、胜率对称（无 A 队偏向）
   var gr = null;
-  try { gr = simulateGameNew(teamA, teamB, 0); } catch(e) { gr = null; }
+  try {
+    if (STATE._clutchResumePI && STATE._clutchResumePI.gameId === gameId) {
+      // ★ 附加赛关键时刻已选择：用弹窗修改后的结果继续结算
+      gr = STATE._clutchResumePI.gr;
+      STATE._clutchResumePI = null;
+    } else {
+      gr = simulateGameNew(teamA, teamB, 0);
+    }
+  } catch(e) { gr = null; }
+  // ★ 附加赛关键时刻：玩家参与的淘汰赛，比分接近时触发（同季后赛强度）
+  if (STATE.careerTeam === teamA || STATE.careerTeam === teamB) {
+    var _piTrig = false;
+    try { _piTrig = !!(gr && !gr._clutch && typeof CLUTCH_EVENTS !== "undefined" && CLUTCH_EVENTS.shouldTrigger(gr, true)); } catch(e) { _piTrig = false; }
+    if (_piTrig) {
+      STATE._clutchResumePI = { gr: gr, gameId: gameId };
+      try { showClutchEventModal(gr, function() { simPlayInGame(gameId); }, "playin"); } catch(e) { STATE._clutchResumePI = null; }
+      return;
+    }
+  }
   var aWins = false;
   var scoreA = 0, scoreB = 0;
   if (gr && gr.scoreA != null && gr.scoreB != null) {
@@ -9255,7 +9294,27 @@ function simOnePlayoffGame(round, seriesIdx, teamA, teamB, isMySeries, gameNum, 
     return;
   }
   
-  const gameResult = simulateGameNew(teamA, teamB, seedBonus, userDebuff, isHome, winsA, winsB);
+  var gameResult;
+  var _clutchPOKey = teamA + "|" + teamB + "|" + gameNum;
+  if (STATE._clutchResumePO && STATE._clutchResumePO.key === _clutchPOKey) {
+    // ★ 关键时刻已选择：用弹窗修改后的结果继续本场结算
+    gameResult = STATE._clutchResumePO.gameResult;
+    STATE._clutchResumePO = null;
+  } else {
+    gameResult = simulateGameNew(teamA, teamB, seedBonus, userDebuff, isHome, winsA, winsB);
+  }
+  // ★ 关键时刻触发（仅玩家系列赛，结算前拦截）
+  if (isMySeries && !STATE._clutchResumePO && typeof CLUTCH_EVENTS !== "undefined" && CLUTCH_EVENTS.shouldTrigger(gameResult, true) && !gameResult._clutch) {
+    STATE._clutchResumePO = { gameResult: gameResult, key: _clutchPOKey };
+    try {
+      showClutchEventModal(gameResult, function() {
+        setTimeout(function() {
+          simOnePlayoffGame(round, seriesIdx, teamA, teamB, isMySeries, gameNum, winsA, winsB, seriesGames, userGameStats, roundName, onDone);
+        }, 120);
+      }, gameNum === 6 ? "game7" : "playoff", gameNum, winsA, winsB, roundName + (gameNum === 6 ? " 抢七" : " G" + (gameNum + 1)) + " · 对阵 " + getTeamName(teamB));
+    } catch(e) { STATE._clutchResumePO = null; }
+    return;
+  }
   const finalA = gameResult.scoreA;
   const finalB = gameResult.scoreB;
   const won = gameResult.won;
@@ -13499,8 +13558,8 @@ function calculateLegacyResult() {
   var _lb = (c.profile && c.profile.legacyBonus) || 0;
   if (_lb > 0) score += Math.min(15, _lb * 1.5);
   var mf = mvp + fmvp;
-  // ★ 历史档位（现实口径）：GOAT=乔丹级统治（MVP6/冠军6/FMVP6/总和19，99档约5-10%可达成），前十=统治级，低档按真实得分门槛
-  var goat = mvp >= 6 && championships >= 6 && fmvp >= 6 && (mvp + championships + fmvp) >= 19;
+  // ★ 历史档位（现实口径）：GOAT=乔丹级统治（MVP≥5 且三项核心中至少两项≥6；17冠+11FMVP+5MVP 这类统治力也计入），前十=统治级，低档按真实得分门槛
+  var goat = mvp >= 5 && ((mvp >= 6 ? 1 : 0) + (championships >= 6 ? 1 : 0) + (fmvp >= 6 ? 1 : 0)) >= 2;
   var tier = '优秀职业球员';
   if (goat) tier = 'GOAT级别';
   else if (mf >= 11 && championships >= 6 && mvp >= 5) tier = '历史前十级别';
@@ -16478,7 +16537,7 @@ function evolveLeague() {
       newRoster.push(p);
     });
     var _refillGuard = 0;
-    while (newRoster.length < 18 && _refillGuard++ < 80) { // 休赛期名单补齐到 18 人
+    while (newRoster.length < 15 && _refillGuard++ < 80) { // 休赛期名单补齐到 15 人（与 ROSTER_CAP 一致，避免多补后被裁浪费历史池）
       // ★ 历史模式：从时代真实球员池补位（不消费选秀队列、不引入未来届/假人）
       var rk = (STATE.draftMode === 'historical' && typeof generateEraRoleRefill === 'function') ? generateEraRoleRefill() : null;
       if (!rk) rk = (typeof generateRookie === 'function') ? generateRookie() : null;
@@ -16722,8 +16781,12 @@ function generateEraRoleRefill() {
       salary: (typeof eraSalaryByOvr === 'function') ? eraSalaryByOvr(parseInt(era,10), ovr || 75, _age0) : 500,
     };
   }
-  if (typeof ERA_ROLE_POOLS !== 'undefined' && ERA_ROLE_POOLS[era]) {
-    var _pool = ERA_ROLE_POOLS[era] || [];
+  // ★ 补位池：优先时代角色池（ERA_ROLE_POOLS），其次时代独立替补池（ERA_BENCH_POOLS），两池合计才够 30 队多赛季消耗
+  var _refillPools = [];
+  if (typeof ERA_ROLE_POOLS !== 'undefined' && ERA_ROLE_POOLS[era]) _refillPools.push(ERA_ROLE_POOLS[era]);
+  if (typeof ERA_BENCH_POOLS !== 'undefined' && ERA_BENCH_POOLS[era]) _refillPools.push(ERA_BENCH_POOLS[era]);
+  for (var _pi = 0; _pi < _refillPools.length; _pi++) {
+    var _pool = _refillPools[_pi] || [];
     for (var g = 0; g < 60; g++) {
       var x = _pool[Math.floor(Math.random() * _pool.length)];
       if (!x || !x[0]) continue;
@@ -17239,6 +17302,178 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <!-- ====== 随机事件系统 — EVENT REGISTRY ====== -->
 <script src="./post-game-events.js?v=4"></script>
+<script src="./clutch-events.js?v=2"></script>
+<script>
+// ── 比赛关键时刻：弹窗 + 结果应用（数据与判定在 clutch-events.js） ──
+// ★ 关键时刻结算：命中/未命中联动人气、球迷支持、媒体好感、士气、化学
+function applyClutchSettlement(hit, result) {
+  try {
+    var _pf = STATE.career && STATE.career.profile;
+    var _ev = STATE.season && STATE.season.events;
+    if (hit) {
+      if (_pf) {
+        if (typeof addProfileDelta === 'function') {
+          addProfileDelta('fame', 2);
+          addProfileDelta('fanSupport', 3);
+          addProfileDelta('mediaTrust', 2);
+        } else {
+          _pf.fame = (_pf.fame || 0) + 2;
+          _pf.fanSupport = (_pf.fanSupport || 0) + 3;
+          _pf.mediaTrust = (_pf.mediaTrust || 0) + 2;
+        }
+      }
+      if (_ev) {
+        _ev.moraleBonus = (_ev.moraleBonus || 0) + 2;
+        _ev.teamChemistry = (_ev.teamChemistry || 0) + 1;
+      }
+    } else if (result && result._clutch && result._clutch.reversed) {
+      // ★ 未命中被逆转：媒体压力 + 争议上升，球迷/士气惩罚更重
+      if (_pf) {
+        if (typeof addProfileDelta === 'function') {
+          addProfileDelta('fame', -2);
+          addProfileDelta('fanSupport', -4);
+          addProfileDelta('mediaTrust', -2);
+          addProfileDelta('controversy', 1);
+        } else {
+          _pf.fame = Math.max(0, (_pf.fame || 0) - 2);
+          _pf.fanSupport = Math.max(0, (_pf.fanSupport || 0) - 4);
+          _pf.mediaTrust = Math.max(0, (_pf.mediaTrust || 0) - 2);
+          _pf.controversy = (_pf.controversy || 0) + 1;
+        }
+      }
+      if (_ev) {
+        _ev.moraleBonus = Math.max(0, (_ev.moraleBonus || 0) - 3);
+        _ev.teamChemistry = Math.max(0, (_ev.teamChemistry || 0) - 2);
+        _ev.mediaPressure = (_ev.mediaPressure || 0) + 2;
+      }
+    } else {
+      if (_pf) {
+        if (typeof addProfileDelta === 'function') {
+          addProfileDelta('fame', -1);
+          addProfileDelta('fanSupport', -2);
+          addProfileDelta('mediaTrust', -1);
+        } else {
+          _pf.fame = Math.max(0, (_pf.fame || 0) - 1);
+          _pf.fanSupport = Math.max(0, (_pf.fanSupport || 0) - 2);
+          _pf.mediaTrust = Math.max(0, (_pf.mediaTrust || 0) - 1);
+        }
+      }
+      if (_ev) {
+        _ev.moraleBonus = Math.max(0, (_ev.moraleBonus || 0) - 2);
+        _ev.teamChemistry = Math.max(0, (_ev.teamChemistry || 0) - 1);
+      }
+    }
+  } catch(e) {}
+}
+function showClutchEventModal(result, callback, phaseHint, gameNum, winsA, winsB, ctxLabel) {
+  if (typeof CLUTCH_EVENTS === "undefined" || !CLUTCH_EVENTS.pick) { if (callback) callback(); return; }
+  // ★ 自动模式（自动模拟/测试）：不弹窗，随机选择并直接结算，避免流程卡住
+  if (typeof window !== "undefined" && window.CLUTCH_AUTO) {
+    try {
+      var _pos = STATE.position || "SF";
+      var _ph = phaseHint || ((STATE.season && STATE.season.isPlayoffs) ? "playoff" : "regular");
+      if (!STATE._clutchUsedIds) STATE._clutchUsedIds = [];
+      var _tag = null;
+      if (_ph === "playoff" && gameNum != null) {
+        _tag = gameNum === 4 ? "g5" : (gameNum === 5 ? ((winsA || 0) === 3 ? "g6w" : "g6s") : "g1_4");
+      }
+      var _pk = CLUTCH_EVENTS.pick(_ph, _pos, "any", STATE._clutchUsedIds, _tag);
+      if (!_pk) { STATE._clutchUsedIds = []; _pk = CLUTCH_EVENTS.pick(_ph, _pos, "any", [], _tag); }
+      if (_pk && _pk.event && _pk.event.choices && _pk.event.choices.length) {
+        var _ch = _pk.event.choices[Math.floor(Math.random() * _pk.event.choices.length)];
+        var _rt = CLUTCH_EVENTS.calcHitRate(_ch, _pk.phase, STATE.attrs || {});
+        var _ht = Math.random() < _rt;
+        CLUTCH_EVENTS.applyClutchResult(result, _ht, _pk.event.id, _ht ? (_ch.hit || _pk.event.hit) : (_ch.miss || _pk.event.miss), _ch.key);
+        try { applyClutchSettlement(_ht, result); } catch(e) {}
+        if (STATE._clutchUsedIds.indexOf(_pk.event.id) < 0) STATE._clutchUsedIds.push(_pk.event.id);
+      }
+    } catch(e) {}
+    if (callback) callback();
+    return;
+  }
+  try {
+    var pos = STATE.position || "SF";
+    var side = "any";
+    var phase = phaseHint || ((STATE.season && STATE.season.isPlayoffs) ? "playoff" : "regular");
+    var gameTag = null;
+    if (phase === "playoff" && gameNum != null) {
+      gameTag = gameNum === 4 ? "g5" : (gameNum === 5 ? ((winsA || 0) === 3 ? "g6w" : "g6s") : "g1_4");
+    }
+    if (!STATE._clutchUsedIds) STATE._clutchUsedIds = [];
+    var picked = CLUTCH_EVENTS.pick(phase, pos, side, STATE._clutchUsedIds, gameTag);
+    if (!picked) {
+      // ★ 该位置事件已全部触发过：重置生涯已用记录，开启新一轮（新一轮内仍不重复）
+      STATE._clutchUsedIds = [];
+      picked = CLUTCH_EVENTS.pick(phase, pos, side, [], gameTag);
+    }
+    var ev = picked.event;
+    if (!ev || !ev.choices || !ev.choices.length) { if (callback) callback(); return; }
+    var poolPhase = picked.phase;
+    var overlay = document.createElement("div");
+    overlay.className = "team-picker-overlay";
+    overlay.id = "clutchOverlay";
+    var choicesHtml = "";
+    for (var ci = 0; ci < ev.choices.length; ci++) {
+      var ch = ev.choices[ci];
+      choicesHtml += "<button class=\"btn btn-secondary btn-sm\" data-ci=\"" + ci + "\" style=\"width:100%;margin-bottom:8px;justify-content:flex-start;text-align:left;\" onclick=\"window.__chooseClutch(' + ci + ')\">" + (ch.label || ("选项" + (ci + 1))) + "</button>";
+    }
+    overlay.innerHTML =
+      "<div class=\"team-picker-modal\">" +
+        "<div class=\"team-picker-header\"><span>⚡ " + (ev.title || "关键时刻") + (ctxLabel ? " <span style=\"font-size:10px;color:var(--orange);font-weight:400;\">· " + ctxLabel + "</span>" : "") + "</span></div>" +
+        "<div style=\"padding:14px 14px 12px;max-height:62vh;overflow-y:auto;\">" +
+          "<div style=\"font-size:11px;color:var(--orange);font-weight:700;margin-bottom:6px;\">关键时刻</div>" +
+          "<div style=\"font-size:13px;color:var(--text);line-height:1.7;margin-bottom:12px;\">" + String(ev.scene || "").replace(/\n/g, "<br>") + "</div>" +
+          "<div style=\"font-size:11px;color:var(--orange);font-weight:700;margin-bottom:6px;\">选择</div>" + choicesHtml +
+        "</div>" +
+      "</div>";
+    document.body.appendChild(overlay);
+    // ★ 防卡死：按钮 addEventListener 兜底（内联 onclick 在部分 CSP/移动端环境可能被阻止）
+    try {
+      var _optBtns = overlay.querySelectorAll ? overlay.querySelectorAll("button[data-ci]") : [];
+      for (var _bi = 0; _bi < _optBtns.length; _bi++) {
+        (function(_btn, _ci2) {
+          _btn.addEventListener("click", function() { if (window.__chooseClutch) window.__chooseClutch(_ci2); });
+        })(_optBtns[_bi], parseInt(_optBtns[_bi].getAttribute("data-ci")) || 0);
+      }
+    } catch(e) {}
+    var ctx = { ev: ev, poolPhase: poolPhase, result: result, callback: callback, done: false, timer: null };
+    STATE._clutchCtx = ctx;
+    // ★ 防卡死兜底：60 秒无操作自动随机选择并继续（防止弹窗因环境问题永久卡住）
+    ctx.timer = setTimeout(function() {
+      try { if (!ctx.done && window.__chooseClutch) window.__chooseClutch(Math.floor(Math.random() * ev.choices.length)); } catch(e) {}
+    }, 60000);
+    window.__chooseClutch = function(ci) {
+      if (!ctx || ctx.done) return;
+      if (ctx.timer) { try { clearTimeout(ctx.timer); ctx.timer = null; } catch(e) {} }
+      var ch = ctx.ev.choices[ci];
+      if (!ch) return;
+      ctx.done = true;
+      var rate = 0;
+      try { rate = CLUTCH_EVENTS.calcHitRate(ch, ctx.poolPhase, STATE.attrs || {}); } catch(e) { rate = 0.4; }
+      var hit = Math.random() < rate;
+      var text = hit ? (ch.hit || ctx.ev.hit || "球进！") : (ch.miss || ctx.ev.miss || "没进。");
+      try { CLUTCH_EVENTS.applyClutchResult(ctx.result, hit, ctx.ev.id, text, ch.key); } catch(e) {}
+      try { applyClutchSettlement(hit, ctx.result); } catch(e) {}
+      try { if (STATE._clutchUsedIds && STATE._clutchUsedIds.indexOf(ctx.ev.id) < 0) STATE._clutchUsedIds.push(ctx.ev.id); } catch(e) {}
+      var resultHtml =
+        "<div style=\"font-size:11px;color:var(--orange);font-weight:700;margin-bottom:6px;\">结果</div>" +
+        "<div style=\"font-size:13px;color:var(--text);line-height:1.7;margin-bottom:6px;\">" + text + "</div>" +
+        "<div style=\"font-size:11px;color:var(--text-muted);margin-bottom:12px;\">选项命中率约 " + Math.round(rate * 100) + "%" + (hit ? " · 成功" : " · 失手") + "</div>" +
+        "<button class=\"btn btn-primary btn-sm\" id=\"clutchOkBtn\" style=\"width:100%;\">我知道了</button>";
+      overlay.innerHTML = "<div class=\"team-picker-modal\"><div class=\"team-picker-header\"><span>⚡ " + (ctx.ev.title || "关键时刻") + "</span></div><div style=\"padding:14px 14px 12px;max-height:62vh;overflow-y:auto;\">" + resultHtml + "</div></div>";
+      document.getElementById("clutchOkBtn").onclick = function() {
+        overlay.remove();
+        var cb = ctx.callback;
+        STATE._clutchCtx = null;
+        if (cb) cb();
+      };
+    };
+  } catch(e) {
+    try { console.error("[Clutch] 弹窗异常:", e); } catch(ex) {}
+    if (callback) callback();
+  }
+}
+</script>
 
 <script>
 // ── 配置 ──
@@ -20073,6 +20308,8 @@ function manualLoadGame(slot) {
         Object.keys(STATE).forEach(function(k) { delete STATE[k]; });
         Object.assign(STATE, snap.state);
         if (STATE.season && STATE.season._processedDays && !(STATE.season._processedDays instanceof Set)) STATE.season._processedDays = new Set((Array.isArray(STATE.season._processedDays) ? STATE.season._processedDays : []).map(Number));
+        // ★ 读档后清除挂起的关键时刻弹窗状态（防止旧会话残留导致卡死/错乱；保留 _clutchUsedIds 维持生涯去重）
+        delete STATE._clutchResumeGame; delete STATE._clutchResumePO; delete STATE._clutchResumePI; delete STATE._clutchCtx;
         if (snap.league && typeof NBA2K_DATA !== 'undefined') { Object.keys(NBA2K_DATA).forEach(function(k) { delete NBA2K_DATA[k]; }); Object.assign(NBA2K_DATA, snap.league); }
         if (snap.ages && typeof _playerAges !== 'undefined') { Object.keys(_playerAges).forEach(function(k){ delete _playerAges[k]; }); Object.assign(_playerAges, snap.ages); }
         if (snap.genes && typeof _playerGenes !== 'undefined') { Object.keys(_playerGenes).forEach(function(k){ delete _playerGenes[k]; }); Object.assign(_playerGenes, snap.genes); }
@@ -20117,6 +20354,16 @@ function renderAfterSaveLoad(targetScreen) {
     if (typeof renderTrainingCamp === 'function') { renderTrainingCamp(); return; }
   } catch(e) {}
   showScreen('screen-menu');
+  // ★ 读档渲染兜底：主菜单必须可见，否则强制恢复 active（防止读档后纯背景色）
+  try {
+    var _sm = document.getElementById('screen-menu');
+    if (!_sm || !_sm.classList || !_sm.classList.contains('active')) {
+      var _scs = document.querySelectorAll ? document.querySelectorAll('.screen') : [];
+      for (var _si = 0; _si < _scs.length; _si++) { try { _scs[_si].classList.remove('active'); } catch(e) {} }
+      if (_sm && _sm.classList) _sm.classList.add('active');
+      if (typeof updateSeasonBadge === 'function') { try { updateSeasonBadge('screen-menu'); } catch(e) {} }
+    }
+  } catch(e) {}
 }
 
 function refreshManualSaveMeta() {

@@ -1317,7 +1317,11 @@ function buildEraCorePlayer(era, team, en, capRatio) {
 }
 
 /** 历史球员成长元数据：选秀年 / 入盟第几年 / 新秀OVR / 潜力 / 慢热巅峰年（核心、角色、补位球员共用） */
+// ★ 性能：成长元数据缓存（补位/选秀频繁调用，避免每次线性遍历届名单）
+var _eraGrowthMetaCache = {};
 function getEraPlayerGrowthMeta(en, era) {
+  var _ck = String(en || "") + "|" + String(era || "");
+  if (_eraGrowthMetaCache[_ck]) return _eraGrowthMetaCache[_ck];
   var draftY = null;
   try { draftY = (typeof getEraPlayerDraftYear === 'function') ? getEraPlayerDraftYear(en) : null; } catch(e) {}
   if (draftY == null && typeof ERA_PRE_DRAFT_YEARS !== 'undefined' && ERA_PRE_DRAFT_YEARS[en] != null) draftY = ERA_PRE_DRAFT_YEARS[en];
@@ -1339,6 +1343,7 @@ function getEraPlayerGrowthMeta(en, era) {
   }
   var curve = (typeof ERA_STAR_CURVES !== 'undefined' && ERA_STAR_CURVES[en]) ? ERA_STAR_CURVES[en] : null;
   if (curve && curve.peakPro) meta.peakPro = parseInt(curve.peakPro, 10);
+  _eraGrowthMetaCache[_ck] = meta;
   return meta;
 }
 
