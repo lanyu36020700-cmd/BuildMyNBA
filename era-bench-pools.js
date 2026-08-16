@@ -342,7 +342,6 @@ var ERA_BENCH_POOLS = {
     ['Derrick Coleman', '德里克-科尔曼', 'C', '2.08米', 80, 'PHI', 1967],
     ['Greg Buckner', '格雷格-巴克纳', 'SG', '1.93米', 77, 'PHI', 1976],
     ['Todd MacCulloch', '托德-麦卡洛克', 'C', '2.13米', 68, 'PHI', 1976],
-    ['Amar\'e Stoudemire', '阿马雷-斯塔德迈尔', 'PF', '2.08米', 80, 'PHX', 1982],
     ['Donnell Harvey', '唐奈尔-哈维', 'PF', '2.03米', 73, 'PHX', 1980],
     ['Howard Eisley', '霍华德-埃斯利', 'PG', '1.88米', 74, 'PHX', 1972],
     ['Maciej Lampe', '马切伊-兰佩', 'C', '2.11米', 68, 'PHX', 1985],

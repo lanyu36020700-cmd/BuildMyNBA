@@ -2150,6 +2150,22 @@ function buildEraRosters(era) {
       if (!addRole(t, roster, false)) break;
     }
   });
+  // ★ 兜底去重：同队归一化同名（写法差异如 Amare/Amar'e）只保留最高 OVR 一个，防止替补池/选秀重复入队
+  var _normN = function(s) { return String(s || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, ' ').replace(/\s+/g, ' ').trim(); };
+  allTeams.forEach(function(t) {
+    var _r3 = NBA2K_DATA[t] || [];
+    if (!_r3.length) return;
+    var _seen = {};
+    var _kept = [];
+    _r3.slice().sort(function(a, b) { return (parseInt(b.ovr) || 0) - (parseInt(a.ovr) || 0); }).forEach(function(p) {
+      if (!p || !p.name) { _kept.push(p); return; }
+      var _k3 = _normN(p.nameEN || p.name);
+      if (!_k3 || _seen[_k3]) return;
+      _seen[_k3] = true;
+      _kept.push(p);
+    });
+    NBA2K_DATA[t] = _kept;
+  });
   NBA2K_DATA._eraRostersBuilt = true;
   if (typeof generateEraSchedule === 'function') generateEraSchedule(era, active, 0);
 }
@@ -2587,12 +2603,17 @@ function checkEraExpansion() {
   var era = String(STATE.eraStart);
   var yr = (parseInt(STATE.eraStart, 10) || 0) + sc;
   if (!STATE._leagueChanges) STATE._leagueChanges = {};
+  // ★ 只保留本年度的新军/迁址记录（防止历史条目累积，导致休赛期公告重复显示往年联盟演变）
+  STATE._leagueChanges.expansion = (STATE._leagueChanges.expansion || []).filter(function(e) { return e && e.year === yr; });
+  STATE._leagueChanges.relocations = (STATE._leagueChanges.relocations || []).filter(function(r) { return r && r.year === yr; });
 
   // 先建新入盟球队名单（避免后续覆盖掉迁移过来的玩家对象）
   newcomers.forEach(function(t) {
     buildEraTeamRoster(era, t);
     if (!STATE._leagueChanges.expansion) STATE._leagueChanges.expansion = [];
-    STATE._leagueChanges.expansion.push({ team: t, year: yr });
+    // ★ 防重：同一球队同一年不重复登记（避免重复调用 checkEraExpansion 时公告出现重复行）
+    var _dupExp = STATE._leagueChanges.expansion.some(function(e) { return e && e.team === t && e.year === yr; });
+    if (!_dupExp) STATE._leagueChanges.expansion.push({ team: t, year: yr });
   });
 
   // ★ 玩家所在球队被移出（如 2002 夏洛特迁至新奥尔良）：随队迁往新队，避免困在无赛程球队

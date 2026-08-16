@@ -254,11 +254,11 @@ function isEventAllowedInEra(ev) {
   return y >= minY;
 }
 
-/** 附加赛年代门槛：2020 年起才有附加赛；此前前八直接进季后赛 */
+/** 附加赛年代门槛：2019-20 赛季起才有附加赛（2020 年泡泡赛区首次引入）；此前前八直接进季后赛 */
 function isPlayInEraEnabled() {
   if (typeof isEraEconomyActive === 'function' && !isEraEconomyActive()) return true;
   var y = (typeof getEraEconomyYear === 'function') ? getEraEconomyYear() : 0;
-  return y >= 2020;
+  return y >= 2019;
 }
 function getEraPlayoffMaxSeed() {
   return isPlayInEraEnabled() ? 10 : 8;

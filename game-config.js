@@ -217,6 +217,16 @@ const SIM_CONFIG = {
       midStart: 35, midEnd: 37, midFactor: 0.95, lateFactor: 0.90,
     },
 
+    /** ★ 老将赛季场均下限（38+ 平滑退化）：玩家历史顶级一档，末期保持稳定输出。
+     *  按位置×年龄给“目标场均”，单场下限 = 目标 × 0.88（留波动），命中数由 syncScoreComponents 自动回算 */
+    VET_FLOOR: {
+      PG: { 38: { pts: 23, ast: 8 }, 39: { pts: 21, ast: 8 }, 40: { pts: 20, ast: 8 }, 41: { pts: 20, ast: 8 }, 42: { pts: 20, ast: 8 } },
+      SG: { 38: { pts: 25 }, 39: { pts: 23 }, 40: { pts: 22 }, 41: { pts: 21 }, 42: { pts: 20 } },
+      SF: { 38: { pts: 21 }, 39: { pts: 19 }, 40: { pts: 18 }, 41: { pts: 17 }, 42: { pts: 16 } },
+      PF: { 38: { pts: 20, reb: 9 }, 39: { pts: 18, reb: 9 }, 40: { pts: 17, reb: 9 }, 41: { pts: 16, reb: 8 }, 42: { pts: 15, reb: 8 } },
+      C:  { 38: { pts: 18, reb: 10 }, 39: { pts: 16, reb: 10 }, 40: { pts: 15, reb: 10 }, 41: { pts: 14, reb: 9 }, 42: { pts: 13, reb: 9 } }
+    },
+
     /** ★ 每季状态分布：低迷年/平常年/爆发年
      *  低迷年 20%（扩大低迷期，约 28-30 分赛季）；上端明显收窄（偏强 ≤1.03、爆发 ≤1.05），
      *  巅峰 35+ 赛季从约 7% 降到约 2-3%，均值约 0.99（生涯场均略降约 0.2-0.3） */
@@ -510,14 +520,14 @@ const SIM_CONFIG = {
     winDivisor: 33,        // ★ 方案D：45→33（取中间），平衡黑八与强队统治
     winMin: 0.15,
     winMax: 0.70,
-    seedBonusFactor: 0.33, // ★ 方案D：0.15→0.33，首轮高顺位保护增强
+    seedBonusFactor: 0.33, // ★ #8：首轮种子加成（普通 1v8 减半生效，黑八贴近现实 16-18%）
     playerTeamBoost: 2.9,  // ★ 玩家历史最强档：常规赛净效率加成提升
     // ★ H5：玩家净效率加成按 OVR 分级（≤80 无、81-85 小幅、86-90 中、91-94 高、95+ 满档），避免低档无脑 55+ 胜
     playerBoostByOvr: [ { min: 95, boost: 2.9 }, { min: 91, boost: 2.4 }, { min: 86, boost: 0.6 }, { min: 81, boost: 0.4 }, { min: 0, boost: 0 } ],
     playoffBoostMul: 1.12, // ★ 季后赛玩家球队额外净效率 ×1.12
     dynastyFatigue: { streak2: 0.7, streak3: 1.4 }, // ★ 连冠疲劳：2 连冠净效率 -0.7、3 连冠额外 -1.4
     /** ★ 主场优势：主队净效率加成（≈ +4% 胜率）；背靠背惩罚（≈ -2.7%） */
-    homeAdv: 1.35,
+    homeAdv: 0.7, // ★ A：主场优势贴近现实（主客场差约 +8%，原 1.35 实测 15% 偏高）
     b2bPenalty: 0.88,
     /** ★ NPC 伤病：每队每场小概率核心缺阵 3-10 场（按 OVR 惩罚净效率） */
     npcInjury: { chance: 0.018, minGames: 3, maxGames: 10, minOvr: 78, starPenalty: 2.9, midPenalty: 1.85, rolePenalty: 1.15 },

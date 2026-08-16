@@ -542,7 +542,7 @@ function resolveEventVars(str, ctx, evData) {
   var teamAbbr = ctx && ctx.game && ctx.game.opponent;
   var topPlayer = teamAbbr ? getTeamTopPlayer(teamAbbr) : null;
   var playerName = topPlayer ? (topPlayer.cname || topPlayer.name) : '对手球员';
-  var teamName = teamAbbr ? (TEAM_NAMES_EV[teamAbbr] || teamAbbr) : '对手球队';
+  var teamName = teamAbbr ? ((typeof getTeamName === 'function') ? getTeamName(teamAbbr) : teamAbbr) : '对手球队';
   return str
     .replace(/\{对手球员\}/g, playerName)
     .replace(/\{对手球队\}/g, teamName)
@@ -2146,7 +2146,7 @@ EVENT_REGISTRY.push({
   },
   execute: (ctx) => {
     var opp = ctx && ctx.game && ctx.game.opponent;
-    var teamName = (typeof TEAM_NAMES_EV !== 'undefined' && TEAM_NAMES_EV[opp]) ? TEAM_NAMES_EV[opp] : opp;
+    var teamName = ((typeof getTeamName === 'function') ? getTeamName(opp) : opp) || opp;
     return {
       emoji: '🏳️',
       title: '旧东家重逢',
@@ -2551,7 +2551,7 @@ EVENT_REGISTRY.push({
   },
   execute: (ctx) => {
     var opp = ctx && ctx.game && ctx.game.opponent;
-    var teamName = (typeof TEAM_NAMES_EV !== 'undefined' && TEAM_NAMES_EV[opp]) ? TEAM_NAMES_EV[opp] : opp;
+    var teamName = ((typeof getTeamName === 'function') ? getTeamName(opp) : opp) || opp;
     return {
       emoji: '⚔️',
       title: '冲突后续：再遇',
@@ -2599,7 +2599,7 @@ EVENT_REGISTRY.push({
   execute: (ctx) => {
     var won = !!(ctx && ctx.result && ctx.result.won);
     var opp = ctx && ctx.game && ctx.game.opponent;
-    var teamName = (typeof TEAM_NAMES_EV !== 'undefined' && TEAM_NAMES_EV[opp]) ? TEAM_NAMES_EV[opp] : opp;
+    var teamName = ((typeof getTeamName === 'function') ? getTeamName(opp) : opp) || opp;
     return {
       emoji: '🌩️',
       title: '季后赛：旧怨',
@@ -2680,7 +2680,7 @@ EVENT_REGISTRY.push({
   execute: (ctx) => {
     var won = !!(ctx && ctx.result && ctx.result.won);
     var opp = ctx && ctx.game && ctx.game.opponent;
-    var teamName = (typeof TEAM_NAMES_EV !== 'undefined' && TEAM_NAMES_EV[opp]) ? TEAM_NAMES_EV[opp] : opp;
+    var teamName = ((typeof getTeamName === 'function') ? getTeamName(opp) : opp) || opp;
     return {
       emoji: '🏟️',
       title: '季后赛：回归战',
