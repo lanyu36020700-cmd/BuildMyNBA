@@ -1881,6 +1881,31 @@ function reportGameError(scope, error, opts) {
   } catch(e) {}
 }
 
+var GAME_RELEASE_VERSION = '2026.08.17.2';
+function showGameUpdateNotice(remote) {
+  if (!remote || !remote.version || remote.version === GAME_RELEASE_VERSION) return;
+  var key = 'buildplayer_update_prompted:' + remote.version;
+  try { if (localStorage.getItem(key)) return; localStorage.setItem(key, '1'); } catch(e) {}
+  var old = document.getElementById('game-update-modal'); if (old) old.remove();
+  var msg = remote.message || '\u6E38\u620F\u5DF2\u53D1\u5E03\u65B0\u7248\u672C\uFF0C\u8BF7\u5237\u65B0\u9875\u9762\u4EE5\u83B7\u53D6\u6700\u65B0\u4FEE\u590D\u3002';
+  var html = '<div class="team-picker-overlay" id="game-update-modal"><div class="team-picker-modal">'
+    + '<div class="team-picker-header"><span>\u53D1\u73B0\u65B0\u7248\u672C</span></div>'
+    + '<div style="padding:14px;font-size:13px;line-height:1.7;color:var(--text-dim);">' + msg + '<br><span style="font-size:11px;color:var(--text-muted);">\u5F53\u524D\u7248\u672C\uFF1A' + GAME_RELEASE_VERSION + ' \u00B7 \u6700\u65B0\u7248\u672C\uFF1A' + remote.version + '</span></div>'
+    + '<div style="padding:0 14px 14px;display:flex;gap:8px;"><button class="btn btn-primary btn-sm" id="game-update-now">\u7ACB\u5373\u66F4\u65B0</button><button class="btn btn-secondary btn-sm" id="game-update-later">\u7A0D\u540E\u66F4\u65B0</button></div>'
+    + '</div></div>';
+  document.body.insertAdjacentHTML('beforeend', html);
+  var now = document.getElementById('game-update-now'), later = document.getElementById('game-update-later');
+  if (now) now.onclick = function(){ window.location.href = window.location.pathname + '?update=' + Date.now(); };
+  if (later) later.onclick = function(){ var el = document.getElementById('game-update-modal'); if (el) el.remove(); };
+}
+function checkGameUpdateNotice() {
+  try {
+    if (typeof fetch !== 'function') return;
+    fetch('./version.json?cb=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; }).then(showGameUpdateNotice).catch(function(){});
+  } catch(e) {}
+}
+try { setTimeout(checkGameUpdateNotice, 1200); } catch(e) {}
+
 // == use-va-h5-sdk：虎扑用户信息只请求一次 ==
 var DEFAULT_HUPU_AVATAR = './assets/avatar.png';
 var DEFAULT_HUPU_NICKNAME = 'G.O.A.T'; // 本地修改：默认球员名
@@ -22028,7 +22053,7 @@ function writeManualSlot(key, rawStr, slot, after) {
 }
 
 function manualSaveGame(slot) {
-  if (STATE._offseasonPipelineRunning || STATE._offseasonPhaseError) { showSaveToast('???????????????'); return; }
+  if (STATE._offseasonPipelineRunning || STATE._offseasonPhaseError) { showSaveToast('\u4F11\u8D5B\u671F\u5904\u7406\u4E2D\uFF0C\u6682\u4E0D\u80FD\u4FDD\u5B58\u534A\u6210\u54C1'); return; }
   if (!hasActiveCareer()) { showSaveToast('当前没有进行中的生涯，无法保存'); return; }
   var snap;
   try { snap = buildManualSaveSnapshot(); } catch(e) { showSaveToast('保存失败：' + e.message); return; }
