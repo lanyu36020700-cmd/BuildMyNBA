@@ -612,6 +612,24 @@ var ERA_ROLE_POOLS = {
 var _eraPoolUsed = {};
 
 /** 从真实池取一名球员：优先（同队+位置）→ 同队 → 位置匹配 → 任意；排除当届新秀与已占用 */
+function rebuildEraPoolUsageFromLeague() {
+  _eraPoolUsed = {};
+  _eraBenchUsed = {};
+  if (typeof STATE === 'undefined' || !STATE || STATE.draftMode !== 'historical') return;
+  var era = String(STATE.eraStart || 1984);
+  var names = {};
+  try {
+    Object.keys(NBA2K_DATA || {}).forEach(function(t) {
+      (NBA2K_DATA[t] || []).forEach(function(p) { var n = p && (p.nameEN || p.name); if (n) names[n] = true; });
+    });
+    (STATE._freeAgentPool || []).forEach(function(p) { var n = p && (p.nameEN || p.name); if (n) names[n] = true; });
+  } catch(e) {}
+  var role = _eraPoolUsed[era] = {};
+  ((ERA_ROLE_POOLS && ERA_ROLE_POOLS[era]) || []).forEach(function(x) { if (x && x[0] && names[x[0]]) role[x[0]] = true; });
+  var bench = _eraBenchUsed[era] = {};
+  ((typeof ERA_BENCH_POOLS !== 'undefined' && ERA_BENCH_POOLS[era]) || []).forEach(function(x) { if (x && x[0] && names[x[0]]) bench[x[0]] = true; });
+}
+
 function takeEraRoleFromPool(era, pos, teamHint, strictHint) {
   var pool = (ERA_ROLE_POOLS && ERA_ROLE_POOLS[era]) || [];
   var used = _eraPoolUsed[era] || (_eraPoolUsed[era] = {});
@@ -2107,7 +2125,7 @@ function buildEraRosters(era) {
     var p = {
       name: 'EraEmergency_' + era + '_' + t + '_' + seq,
       nameEN: 'Historical Replacement ' + era + ' ' + t + ' ' + seq,
-      cname: '??????', pos: pos, height: '', type: '????', ovr: ovr,
+      cname: '\u65F6\u4EE3\u8865\u4F4D\u7403\u5458', pos: pos, height: '', type: '\u89D2\u8272\u7403\u5458', ovr: ovr,
       _eraRoster: true, _tier: 'role', _age: 22 + Math.floor(Math.random() * 10),
       contract: (typeof eraNpcContractYears === 'function') ? eraNpcContractYears(era, ovr, 26, false) : 2,
       salary: (typeof eraSalaryByOvr === 'function') ? eraSalaryByOvr(era, ovr, 26) : 500,
