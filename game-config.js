@@ -205,7 +205,25 @@ const SIM_CONFIG = {
     USAGE_CAP: 2.2,
     ROLE_FACTOR: 1.18,
     /** ★ 新秀赛季球权加成：第一年 87 OVR 也能打出 15-20 分（现实顶级新秀第一年即高球权） */
-    ROOKIE_USAGE: 1.35,
+    ROOKIE_USAGE: { PG: 1.08, SG: 1.15, SF: 1.25, PF: 1.30, C: 1.35 },
+    ROOKIE_PLAYOFF_USAGE_RETAIN: 0.45,
+    ROOKIE_PTS_FLOOR: { SF: 14, PF: 14, C: 13 },
+    YOUNG_BY_POS: { SF: 0.95, PF: 0.95, C: 0.95 },
+    PEAK_CONVERGE: { PG: 0.95, SG: 0.89, SF: 1.0, PF: 1.0, C: 1.0 },
+    // Regular-season appearance caps for veteran load management.
+    LOAD_MGMT: {
+      PG: { 35: 80, 36: 78, 37: 76, 38: 74, 39: 74, 40: 74, 41: 74, 42: 74 },
+      SG: { 35: 80, 36: 78, 37: 76, 38: 74, 39: 74, 40: 74, 41: 74, 42: 74 },
+      SF: { 38: 76, 39: 76, 40: 76, 41: 76, 42: 76 },
+      PF: { 38: 76, 39: 76, 40: 76, 41: 76, 42: 76 },
+      C:  { 38: 76, 39: 76, 40: 76, 41: 76, 42: 76 },
+    },
+    TARGETING: {
+      studiedBase: 0.92, studiedStep: 0.02, studiedMin: 0.88,
+      targeted: 0.95, maxCombined: 0.90,
+      adjustOption: 0.96, hardOption: 0.92, offBallOption: 0.95,
+      passOption: 0.95, ignoreOption: 0.93,
+    },
 
     /** ★ 模块三/四：年龄数据曲线（巅峰加成） */
     PEAK: { young: 0.94, primeStart: 26, primeEnd: 31, primeFactor: 1.08, midStart: 32, midEnd: 34, midFactor: 0.99, lateFactor: 0.88 },
@@ -213,18 +231,20 @@ const SIM_CONFIG = {
     /** ★ 玩家专属年龄曲线：巅峰延长到 26-34（NPC 仍走上方 PEAK），
      *  35-37 平缓过渡，38-40 暮年严重下滑（与 NPC 同等衰退幅度） */
     PLAYER_PEAK: {
-      young: 0.95, primeStart: 26, primeEnd: 34, primeFactor: 1.08,
-      midStart: 35, midEnd: 37, midFactor: 0.95, lateFactor: 0.90,
+      young: 0.92, primeStart: 25, primeEnd: 34, primeFactor: 1.08,
+      midStart: 35, midEnd: 36, midFactor: 0.96,
+      lateStart: 37, lateByAge: { 37: 0.90, 38: 0.86, 39: 0.82, 40: 0.78, 41: 0.74, 42: 0.70 },
+      lateFactor: 0.80,
     },
 
     /** ★ 老将赛季场均下限（38+ 平滑退化）：玩家历史顶级一档，末期保持稳定输出。
      *  按位置×年龄给“目标场均”，单场下限 = 目标 × 0.88（留波动），命中数由 syncScoreComponents 自动回算 */
     VET_FLOOR: {
-      PG: { 38: { pts: 23, ast: 8 }, 39: { pts: 21, ast: 8 }, 40: { pts: 20, ast: 8 }, 41: { pts: 20, ast: 8 }, 42: { pts: 20, ast: 8 } },
-      SG: { 38: { pts: 25 }, 39: { pts: 23 }, 40: { pts: 22 }, 41: { pts: 21 }, 42: { pts: 20 } },
-      SF: { 38: { pts: 21 }, 39: { pts: 19 }, 40: { pts: 18 }, 41: { pts: 17 }, 42: { pts: 16 } },
-      PF: { 38: { pts: 20, reb: 9 }, 39: { pts: 18, reb: 9 }, 40: { pts: 17, reb: 9 }, 41: { pts: 16, reb: 8 }, 42: { pts: 15, reb: 8 } },
-      C:  { 38: { pts: 18, reb: 10 }, 39: { pts: 16, reb: 10 }, 40: { pts: 15, reb: 10 }, 41: { pts: 14, reb: 9 }, 42: { pts: 13, reb: 9 } }
+      PG: { 36: { pts: 25, ast: 8 }, 37: { pts: 23, ast: 8 }, 38: { pts: 20, ast: 8 }, 39: { pts: 19, ast: 8 }, 40: { pts: 18, ast: 8 }, 41: { pts: 18, ast: 8 }, 42: { pts: 17, ast: 8 } },
+      SG: { 36: { pts: 26 }, 37: { pts: 24 }, 38: { pts: 22 }, 39: { pts: 21 }, 40: { pts: 20 }, 41: { pts: 19 }, 42: { pts: 18 } },
+      SF: { 36: { pts: 22 }, 37: { pts: 20 }, 38: { pts: 18 }, 39: { pts: 17 }, 40: { pts: 16 }, 41: { pts: 15 }, 42: { pts: 14 } },
+      PF: { 36: { pts: 21, reb: 9 }, 37: { pts: 19, reb: 9 }, 38: { pts: 17, reb: 9 }, 39: { pts: 16, reb: 9 }, 40: { pts: 15, reb: 9 }, 41: { pts: 15, reb: 8 }, 42: { pts: 14, reb: 8 } },
+      C:  { 36: { pts: 20, reb: 11 }, 37: { pts: 18, reb: 11 }, 38: { pts: 16, reb: 10 }, 39: { pts: 15, reb: 10 }, 40: { pts: 14, reb: 10 }, 41: { pts: 13, reb: 9 }, 42: { pts: 13, reb: 9 } }
     },
 
     /** ★ 每季状态分布：低迷年/平常年/爆发年
@@ -345,6 +365,7 @@ const SIM_CONFIG = {
     },
     /** ★ 新秀期压制（方案C）：第一季单场状态 ×0.90、第二季 ×0.96、第三季起正常 */
     ROOKIE_FORM: [0.90, 0.96, 1],
+    SHOT_PROFILE_CAP: { three: 0.52, mid: 0.58, fin: 0.72, volumePenalty: 0.004 },
     /** ★ 生涯之夜：巅峰期稀有爆炸场（生涯 1-2 次） */
     CAREER_NIGHT: {
       chance: 0.0025,      // 每场触发概率（≈每季 18%，巅峰 7 年期望 ~1.3 次）
@@ -519,8 +540,13 @@ const SIM_CONFIG = {
   SIM_BALANCE: {
     winDivisor: 33,        // ★ 方案D：45→33（取中间），平衡黑八与强队统治
     winMin: 0.15,
-    winMax: 0.70,
-    seedBonusFactor: 0.33, // ★ #8：首轮种子加成（普通 1v8 减半生效，黑八贴近现实 16-18%）
+    winMax: 0.72,
+    seedBonusFactor: 0.33, // first-round seed-gap net-rating bonus
+    // 1v8 high-seed game floor; Monte Carlo target is a 7%-8% black-eight rate.
+    oneVsEightHighSeedFloor: 0.725,
+    regularWinMax: 0.72,
+    playoffWinMax: 0.68,
+    firstRoundHighSeedFloor: { oneVsEight: 0.725, twoVsSeven: 0.67 },
     playerTeamBoost: 2.9,  // ★ 玩家历史最强档：常规赛净效率加成提升
     // ★ H5：玩家净效率加成按 OVR 分级（≤80 无、81-85 小幅、86-90 中、91-94 高、95+ 满档），避免低档无脑 55+ 胜
     playerBoostByOvr: [ { min: 95, boost: 2.9 }, { min: 91, boost: 2.4 }, { min: 86, boost: 0.6 }, { min: 81, boost: 0.4 }, { min: 0, boost: 0 } ],
@@ -603,7 +629,7 @@ const SIM_CONFIG = {
       lowTier: 0.20,     // ★ 提高：防守数据 2.2-2.8（低档后卫仍保留 DPOY 窗口）
       // ★ 位置系数：内线（PF/C）最高，小前锋次之（高于后卫、低于内线），后卫为内线约一半：PF/C > SF > PG/SG
       posFactor: { PG: 0.45, SG: 0.55, SF: 0.8, PF: 1.0, C: 1.0 },
-      streakMul: [1, 0.75, 0.55, 0.42, 0.32, 0.25, 0.2],
+      streakMul: [1, 0.85, 0.72, 0.62, 0.56, 0.52, 0.5],
       teamFactor: { good: 1.2, mid: 1.0, bad: 0.8 }, // ★ 弱队防守者也保留机会（原 0.7）
       // 玩家年龄放宽：≤34 全、35-36 ×0.5、37+ ×0.25
       age: { cutoff34: 1, cutoff36: 0.4, cutoff37: 0.15 },
@@ -629,7 +655,7 @@ const SIM_CONFIG = {
   EVENT_RULES: {
     matchEventMax: 2,
     matchCooldown: 10,
-    injuryMult: 1,
+    injuryMult: 0.7,
     eventMult: 1.9,
     noRepeatInSeason: true,
     baseEventRate: 0.7, // ★ 事件线独立基准率：年轻期（年龄基准0）也能触发花絮/冲突/禁赛

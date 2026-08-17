@@ -955,7 +955,7 @@ var ERA_ROSTERS = {
     LAL: ['Magic Johnson', 'Kareem Abdul-Jabbar', 'James Worthy', 'Byron Scott', 'Michael Cooper', 'Bob McAdoo', 'Kurt Rambis', 'Mitch Kupchak', 'Mike McGee', 'Larry Spriggs'],
     MIL: ['Sidney Moncrief', 'Terry Cummings', 'Paul Pressey', 'Marques Johnson', 'Craig Hodges', 'Kevin Grevey', 'Alton Lister', 'Randy Breuer', 'Kenny Fields', 'Paul Mokeski'],
     NYK: ['Bernard King', 'Bill Cartwright', 'Rory Sparrow', 'Darrell Walker', 'Trent Tucker', 'James Bailey', 'Marvin Webster', 'Louis Orr', 'Ernie Grunfeld', 'Ken Bannister'],
-    OKC: ['Tom Chambers', 'Jack Sikma', 'Al Wood', 'Frank Brickowski', 'Tim McCormick', 'Danny Vranes', 'John Greig'], // ★ 修复 84-85 超音速实际名单：威廉姆斯/斯瑞特当年在 76 人与奇才
+    SEA: ['Tom Chambers', 'Jack Sikma', 'Al Wood', 'Frank Brickowski', 'Tim McCormick', 'Danny Vranes', 'John Greig'], // ★ 修复 84-85 超音速实际名单：威廉姆斯/斯瑞特当年在 76 人与奇才
     PHI: ['Julius Erving', 'Moses Malone', 'Maurice Cheeks', 'Andrew Toney', 'Clint Richardson', 'Bobby Jones', 'Leon Wood', 'Sam Williams', 'Clemon Johnson', 'Sedale Threatt', 'George Johnson'], // ★ 修复：补回 84-85 76 人真实成员
     PHX: ['Larry Nance', 'Walter Davis', 'Maurice Lucas', 'Alvan Adams', 'Kyle Macy', 'Jay Humphries', 'James Edwards', 'Charles Jones', 'Rod Foster', 'Mike Sanders'],
     POR: ['Clyde Drexler', 'Jim Paxson', 'Kiki Vandeweghe', 'Steve Colter', 'Mychal Thompson', 'Kenny Carr', 'Darnell Valentine', 'Sam Bowie', 'Jerome Kersey'],
@@ -968,7 +968,7 @@ var ERA_ROSTERS = {
     ATL: ['Dikembe Mutombo', 'Steve Smith', 'Mookie Blaylock', 'Ed Gray', 'Christian Laettner', 'Dwayne Schintzius', 'Eldridge Recasner', 'Donnie Boyce', 'Alan Henderson', 'Tyrone Corbin'],
     BKN: ['Kendall Gill', 'Jayson Williams', 'Sam Cassell', 'Chris Gatling', 'Yinka Dare', "Ed O'Bannon", 'David Benoit', 'Rumeal Robinson', 'Adrian Caldwell'],
     BOS: ['Dana Barros', 'Rick Fox', 'Dino Radja', 'Dee Brown', 'Todd Day', 'Antoine Walker', 'Brett Szabo', 'Tyus Edney', 'Greg Minor', 'Marty Conlon', 'David Wesley'],
-    CHA: ['Glen Rice', 'Vlade Divac', 'Anthony Mason', 'Dell Curry', 'Muggsy Bogues', 'Tony Delk', 'J.R. Reid', 'George Zidek', 'Malik Rose', 'Scott Burrell'],
+    CHH: ['Glen Rice', 'Vlade Divac', 'Anthony Mason', 'Dell Curry', 'Muggsy Bogues', 'Tony Delk', 'J.R. Reid', 'George Zidek', 'Malik Rose', 'Scott Burrell'],
     CHI: ['Michael Jordan', 'Scottie Pippen', 'Dennis Rodman', 'Toni Kukoc', 'Ron Harper', 'Steve Kerr', 'Randy Brown', 'Luc Longley', 'Jud Buechler', 'Jason Caffey'],
     CLE: ['Terrell Brandon', 'Bobby Phills', 'Reggie Geary', 'Bob Sura', 'Tyrone Hill', 'Vitaly Potapenko', 'Chris Mills', 'Danny Ferry', 'Carl Thomas', 'Mitchell Butler'],
     DAL: ['Jim Jackson', 'Michael Finley', 'Derek Harper', 'Erick Strickland', 'A.C. Green', 'George McCloud', 'Lorenzo Williams', 'Eric Montross', 'Chris Anstey', 'Samaki Walker'],
@@ -979,12 +979,12 @@ var ERA_ROSTERS = {
     IND: ['Reggie Miller', 'Rik Smits', 'Dale Davis', 'Antonio Davis', 'Derrick McKey', 'Travis Best', 'Fred Hoiberg', 'Duane Ferrell', 'Eddie Johnson'],
     LAC: ['Loy Vaught', 'Lamond Murray', 'Brent Barry', 'Darrick Martin', 'Malik Sealy', 'Rodney Rogers', 'Kevin Duckworth', 'Terry Dehere', 'Eric Piatkowski', 'Bo Outlaw'],
     LAL: ["Shaquille O'Neal", 'Nick Van Exel', 'Eddie Jones', 'Elden Campbell', 'Derek Fisher', 'Kobe Bryant', 'Robert Horry', 'Travis Knight', 'Jerome Kersey'],
-    MEM: ['Bryant Reeves', 'Blue Edwards', 'Pooh Richardson', 'Lawrence Moten', 'Pete Chilcutt', 'George Lynch', 'Lee Mayberry', 'Anthony Avent', 'Roy Rogers', 'Kevin Edwards'],
+    VAN: ['Bryant Reeves', 'Blue Edwards', 'Pooh Richardson', 'Lawrence Moten', 'Pete Chilcutt', 'George Lynch', 'Lee Mayberry', 'Anthony Avent', 'Roy Rogers', 'Kevin Edwards'],
     MIA: ['Tim Hardaway', 'Alonzo Mourning', 'Jamal Mashburn', 'P.J. Brown', 'Voshon Lenard', 'Keith Askins', 'Isaac Austin', 'Dan Majerle', 'Walt Williams', 'Kevin Gamble'],
     MIL: ['Vin Baker', 'Glenn Robinson', 'Sherman Douglas', 'Ray Allen', 'Armon Gilliam', 'Andrew Lang', 'Johnny Newman', 'Jeff Nordgaard', 'Jerald Honeycutt'],
     MIN: ['Kevin Garnett', 'Tom Gugliotta', 'Terry Porter', 'Stephon Marbury', 'Reggie Jordan', 'Sam Mitchell', 'Cherokee Parks', 'Chris Carr', 'Shane Heal', 'Doug West'],
     NYK: ['Patrick Ewing', 'Allan Houston', 'John Starks', 'Larry Johnson', 'Charles Oakley', 'Chris Childs', 'Charlie Ward', 'Buck Williams', 'John Wallace', 'Walter McCarty'],
-    OKC: ['Gary Payton', 'Shawn Kemp', 'Detlef Schrempf', 'Hersey Hawkins', 'Eric Snow', 'Craig Ehlo', 'Sam Perkins', 'Jim McIlvaine', 'David Wingate', 'Nate McMillan'],
+    SEA: ['Gary Payton', 'Shawn Kemp', 'Detlef Schrempf', 'Hersey Hawkins', 'Eric Snow', 'Craig Ehlo', 'Sam Perkins', 'Jim McIlvaine', 'David Wingate', 'Nate McMillan'],
     ORL: ['Anfernee Hardaway', 'Nick Anderson', 'Dennis Scott', 'Rony Seikaly', 'Darrell Armstrong', 'Brian Shaw', 'Horace Grant', 'Danny Schayes', 'Gerald Wilkins', 'Derek Strong'],
     PHI: ['Jerry Stackhouse', 'Derrick Coleman', 'Allen Iverson', 'Rex Walters', 'Clarence Weatherspoon', 'Michael Cage', 'Mark Davis', 'Don MacLean', 'Mark Hendrickson', 'Johnny Dawkins'],
     PHX: ['Kevin Johnson', 'Jason Kidd', 'Danny Manning', 'Rex Chapman', 'Elliot Perry', 'Hot Rod Williams', 'Mark Bryant', 'Wesley Person', 'Mario Bennett', 'Wayman Tisdale'],
@@ -1013,9 +1013,9 @@ var ERA_ROSTERS = {
     MIA: ['Lamar Odom', 'Eddie Jones', 'Udonis Haslem', 'Brian Grant', 'Rafer Alston', 'Caron Butler', 'Malik Allen', 'Rasual Butler', 'John Wallace', 'Loren Woods'],
     MIL: ['Michael Redd', 'Desmond Mason', 'Joe Smith', 'Erick Strickland', 'Brian Skinner', 'Dan Gadzuric', 'Toni Kukoc', 'Marcus Haislip', 'Brevin Knight'],
     MIN: ['Kevin Garnett', 'Sam Cassell', 'Latrell Sprewell', 'Wally Szczerbiak', 'Troy Hudson', 'Fred Hoiberg', 'Mark Madsen', 'Michael Olowokandi', 'Gary Trent', 'Ervin Johnson'],
-    NOP: ['Baron Davis', 'Jamal Mashburn', 'David Wesley', 'P.J. Brown', 'Darrell Armstrong', 'Steve Smith', 'David West', 'Jamaal Magloire', 'Shammond Williams', 'George Lynch'],
+    NOH: ['Baron Davis', 'Jamal Mashburn', 'David Wesley', 'P.J. Brown', 'Darrell Armstrong', 'Steve Smith', 'David West', 'Jamaal Magloire', 'Shammond Williams', 'George Lynch'],
     NYK: ['Allan Houston', 'Stephon Marbury', 'Kurt Thomas', 'Keith Van Horn', 'Moochie Norris', 'Shandon Anderson', 'Michael Sweetney', 'Nazr Mohammed', 'Othella Harrington', 'Dikembe Mutombo'],
-    OKC: ['Ray Allen', 'Rashard Lewis', 'Ronald Murray', 'Antonio Daniels', 'Jerome James', 'Reggie Evans', 'Vladimir Radmanovic', 'Luke Ridnour', 'Vitaly Potapenko', 'Ansu Sesay'],
+    SEA: ['Ray Allen', 'Rashard Lewis', 'Ronald Murray', 'Antonio Daniels', 'Jerome James', 'Reggie Evans', 'Vladimir Radmanovic', 'Luke Ridnour', 'Vitaly Potapenko', 'Ansu Sesay'],
     ORL: ['Tracy McGrady', 'Tyronn Lue', 'Juwan Howard', 'Drew Gooden', 'Reece Gaines', 'Gordan Giricek', 'Pat Garrity', 'Steven Hunter', 'Keith Bogans', 'Zaza Pachulia'],
     PHI: ['Allen Iverson', 'Eric Snow', 'Aaron McKie', 'Samuel Dalembert', 'Glenn Robinson', 'Kenny Thomas', 'John Salmons', 'Marc Jackson', 'Kyle Korver', 'Willie Green'],
     PHX: ['Shawn Marion', 'Amare Stoudemire', 'Joe Johnson', 'Anfernee Hardaway', 'Antonio McDyess', 'Leandro Barbosa', 'Casey Jacobsen', 'Jake Voskuhl', 'Jahidi White', 'Zarko Cabarkapa'],
@@ -1032,24 +1032,35 @@ var ERA_ROSTERS = {
 /** 联盟演化：各时代初始活跃队 + 扩军年份（向当前季赛年 = eraStart + seasonCount 对比） */
 var ERA_TEAM_EVOLUTION = {
   1984: {
-    startActive: ['ATL','BKN','BOS','CHI','CLE','DAL','DEN','DET','GSW','HOU','IND','LAC','LAL','MIL','NYK','OKC','PHI','PHX','POR','SAC','SAS','UTA','WAS'],
+    startActive: ['ATL','BKN','BOS','CHI','CLE','DAL','DEN','DET','GSW','HOU','IND','LAC','LAL','MIL','NYK','SEA','PHI','PHX','POR','SAC','SAS','UTA','WAS'],
     expansions: {
-      1988: ['CHA','MIA'], 1989: ['ORL','MIN'], 1995: ['TOR','MEM'],
-      2002: { add: ['NOP'], remove: ['CHA'] },   // ★ 黄蜂迁至新奥尔良（夏洛特 02-04 无球队）
-      2004: ['CHA']                               // ★ 山猫入盟（30 队）
+      1988: ['CHH','MIA'], 1989: ['ORL','MIN'], 1995: ['TOR','VAN'],
+      2001: { add: ['MEM'], remove: ['VAN'] },   // ★ 灰熊迁至孟菲斯
+      2002: { add: ['NOH'], remove: ['CHH'] },   // ★ 黄蜂迁至新奥尔良（夏洛特 02-04 无球队）
+      2004: ['CHA'],                              // ★ 山猫入盟（30 队）
+      2008: { add: ['OKC'], remove: ['SEA'] },    // ★ 超音速迁至俄克拉荷马城（雷霆）
+      2014: { add: ['NOP'], remove: ['NOH'] }     // ★ 黄蜂改名鹈鹕（山猫更名黄蜂）
     }
   },
   1996: {
-    startActive: ['ATL','BKN','BOS','CHA','CHI','CLE','DAL','DEN','DET','GSW','HOU','IND','LAC','LAL','MEM','MIA','MIL','MIN','NYK','OKC','ORL','PHI','PHX','POR','SAC','SAS','TOR','UTA','WAS'],
-    expansions: { 2002: { add: ['NOP'], remove: ['CHA'] }, 2004: ['CHA'] }
+    startActive: ['ATL','BKN','BOS','CHH','CHI','CLE','DAL','DEN','DET','GSW','HOU','IND','LAC','LAL','VAN','MIA','MIL','MIN','NYK','SEA','ORL','PHI','PHX','POR','SAC','SAS','TOR','UTA','WAS'],
+    expansions: { 2001: { add: ['MEM'], remove: ['VAN'] }, 2002: { add: ['NOH'], remove: ['CHH'] }, 2004: ['CHA'], 2008: { add: ['OKC'], remove: ['SEA'] }, 2014: { add: ['NOP'], remove: ['NOH'] } }
   },
   2003: {
-    startActive: ['ATL','BKN','BOS','CHI','CLE','DAL','DEN','DET','GSW','HOU','IND','LAC','LAL','MEM','MIA','MIL','MIN','NOP','NYK','OKC','ORL','PHI','PHX','POR','SAC','SAS','TOR','UTA','WAS'],
-    expansions: { 2004: ['CHA'] }
+    startActive: ['ATL','BKN','BOS','CHI','CLE','DAL','DEN','DET','GSW','HOU','IND','LAC','LAL','MEM','MIA','MIL','MIN','NOH','NYK','SEA','ORL','PHI','PHX','POR','SAC','SAS','TOR','UTA','WAS'],
+    expansions: { 2004: ['CHA'], 2008: { add: ['OKC'], remove: ['SEA'] }, 2014: { add: ['NOP'], remove: ['NOH'] } }
   }
 };
 
 /** 当前（即将开始的）赛季的活跃球队列表（现实模式返回全部） */
+/** ★ 2026-08-17：全联盟球队列表（历史模式 = 时代活跃球队；现实模式 = 现代 30 队）——外部定义，内联脚本可提前调用 */
+function getLeagueTeams() {
+  if (typeof STATE !== 'undefined' && STATE && STATE.draftMode === 'historical' && STATE.eraStart && typeof getEraActiveTeams === 'function') {
+    return getEraActiveTeams(String(STATE.eraStart), (STATE.career && STATE.career.seasonCount) || 0);
+  }
+  return (typeof NBA2K_TEAMS !== 'undefined') ? NBA2K_TEAMS : [];
+}
+
 function getEraActiveTeams(era, seasonCount) {
   if (typeof ERA_TEAM_EVOLUTION === 'undefined') return (typeof NBA2K_TEAMS !== 'undefined') ? NBA2K_TEAMS.slice() : [];
   var ev = ERA_TEAM_EVOLUTION[era];
@@ -1842,7 +1853,10 @@ function buildEraCorePlayer(era, team, en, capRatio) {
   // ★ 选秀年份：优先 HISTORICAL_DRAFT_CLASSES，其次 ERA_PRE_DRAFT_YEARS（1984 时代之前的 79-83 届球星）
   var _draftY = null;
   try { _draftY = (typeof getEraPlayerDraftYear === 'function') ? getEraPlayerDraftYear(en) : null; } catch(e) {}
+  // ★ 年代校验：同名球员跨届错配（Johnny Davis 2022 届 vs 1980 年代）→ 选秀年在时代之后视为错配，回退无选秀数据
+  if (_draftY != null && parseInt(_draftY, 10) > parseInt(era, 10)) _draftY = null;
   if (_draftY == null && typeof ERA_PRE_DRAFT_YEARS !== 'undefined' && ERA_PRE_DRAFT_YEARS[en] != null) _draftY = ERA_PRE_DRAFT_YEARS[en];
+  if (_draftY != null && parseInt(_draftY, 10) > parseInt(era, 10)) _draftY = null;
   var _isEraRookie = (_draftY != null && String(_draftY) === String(era));
   var _proYear = (_draftY != null) ? (parseInt(era, 10) - parseInt(_draftY, 10) + 1) : null; // 入盟第 N 年（1=新秀季）
   // ★ 特定球星巅峰曲线：慢热球星按真实巅峰年放缓成长
@@ -2084,6 +2098,27 @@ function buildEraRosters(era) {
     roster.push(p);
     return true;
   }
+  // Last-resort historical replacement: only used when all real role/bench pools are exhausted.
+  function addEmergencyRole(t, roster) {
+    var pos = neededPos(roster);
+    var range = ERA_ROLE_RANGES[era] || [60, 76];
+    var ovr = Math.max(range[0], Math.min(range[1], range[0] + Math.floor(Math.random() * Math.max(1, range[1] - range[0] + 1))));
+    var seq = roster.length + 1;
+    var p = {
+      name: 'EraEmergency_' + era + '_' + t + '_' + seq,
+      nameEN: 'Historical Replacement ' + era + ' ' + t + ' ' + seq,
+      cname: '??????', pos: pos, height: '', type: '????', ovr: ovr,
+      _eraRoster: true, _tier: 'role', _age: 22 + Math.floor(Math.random() * 10),
+      contract: (typeof eraNpcContractYears === 'function') ? eraNpcContractYears(era, ovr, 26, false) : 2,
+      salary: (typeof eraSalaryByOvr === 'function') ? eraSalaryByOvr(era, ovr, 26) : 500,
+      contractType: 'veteran', _awardStreak: {}
+    };
+    var attrs = (typeof getEraPlayerAttrs === 'function') ? getEraPlayerAttrs(pos, ovr) : null;
+    var keys = (typeof SIM_CONFIG !== 'undefined' && SIM_CONFIG.ATTR_LIST) || ['threePT','MID','FIN','DNK','HAN','PAS','PDEF','IDEF','BLK','REB','ATH','STR','CLU'];
+    keys.forEach(function(k) { p[k] = attrs && attrs[k] != null ? attrs[k] : Math.max(30, Math.min(90, ovr + Math.floor(Math.random() * 12) - 6)); });
+    roster.push(p);
+    return true;
+  }
   // 活跃队优先，非活跃队（该时代尚未成立的队）用剩余真实球员兜底建名单，避免残留现役名单
   var allTeams = active.concat(NBA2K_TEAMS.filter(function(t) { return active.indexOf(t) < 0; }));
   // 第一遍：仅核心名单（不在此处用池补人）；非活跃队先清空，避免残留现役名单
@@ -2166,6 +2201,26 @@ function buildEraRosters(era) {
     });
     NBA2K_DATA[t] = _kept;
   });
+  // ★ 年代校验：剔除选秀年 > 时代起始年的球员（未来届新秀不提前入队，由 processDraft 对应届加入）
+  allTeams.forEach(function(_t0) {
+    NBA2K_DATA[_t0] = (NBA2K_DATA[_t0] || []).filter(function(_p0) {
+      if (_p0 && _p0._draftYear != null && parseInt(_p0._draftYear, 10) > parseInt(era, 10)) return false;
+      return true;
+    });
+  });
+  // Deduplication/future-draft filtering can shrink a roster after the earlier fill passes.
+  // Maintain a playable 12-man floor for every active historical team.
+  var minEraRoster = 12;
+  active.forEach(function(t) {
+    var roster = NBA2K_DATA[t] || (NBA2K_DATA[t] = []);
+    var guard = 0;
+    while (roster.length < minEraRoster && guard++ < 20) {
+      var pos = neededPos(roster);
+      var cand = takeEraBenchPlayer(era, pos, t, false) || takeEraRoleFromPool(era, pos, t, false);
+      var p = cand ? buildEraRolePlayer(era, t, null, capRatio, active, cand) : null;
+      if (p) roster.push(p); else addEmergencyRole(t, roster);
+    }
+  });
   NBA2K_DATA._eraRostersBuilt = true;
   if (typeof generateEraSchedule === 'function') generateEraSchedule(era, active, 0);
 }
@@ -2190,57 +2245,105 @@ var ERA_SCHEDULE_SEASONS = {
       ATLANTIC: ['BOS', 'NYK', 'PHI', 'WAS', 'BKN'],
       CENTRAL: ['ATL', 'DET', 'IND', 'MIL', 'CHI', 'CLE'],
       MIDWEST: ['DAL', 'HOU', 'DEN', 'SAS', 'UTA', 'SAC'],
-      PACIFIC: ['LAL', 'PHX', 'OKC', 'POR', 'GSW', 'LAC']
+      PACIFIC: ['LAL', 'PHX', 'SEA', 'POR', 'GSW', 'LAC']
     } },
     { from: 1988, to: 1988, divs: {
       ATLANTIC: ['BOS', 'NYK', 'PHI', 'WAS', 'BKN', 'MIA'],
       CENTRAL: ['ATL', 'DET', 'IND', 'MIL', 'CHI', 'CLE'],
-      MIDWEST: ['DAL', 'HOU', 'DEN', 'SAS', 'UTA', 'SAC', 'CHA'],
-      PACIFIC: ['LAL', 'PHX', 'OKC', 'POR', 'GSW', 'LAC']
+      MIDWEST: ['DAL', 'HOU', 'DEN', 'SAS', 'UTA', 'SAC', 'CHH'],
+      PACIFIC: ['LAL', 'PHX', 'SEA', 'POR', 'GSW', 'LAC']
     } },
     { from: 1989, to: 1994, divs: {
       ATLANTIC: ['BOS', 'NYK', 'PHI', 'WAS', 'BKN', 'MIA'],
-      CENTRAL: ['ATL', 'CHA', 'CHI', 'CLE', 'DET', 'IND', 'MIL', 'ORL'],
+      CENTRAL: ['ATL', 'CHH', 'CHI', 'CLE', 'DET', 'IND', 'MIL', 'ORL'],
       MIDWEST: ['DAL', 'HOU', 'DEN', 'SAS', 'UTA', 'MIN'],
-      PACIFIC: ['LAL', 'PHX', 'OKC', 'POR', 'GSW', 'LAC', 'SAC']
+      PACIFIC: ['LAL', 'PHX', 'SEA', 'POR', 'GSW', 'LAC', 'SAC']
     } },
     { from: 1995, to: 2001, divs: {
       ATLANTIC: ['BOS', 'MIA', 'BKN', 'NYK', 'ORL', 'PHI', 'WAS'],
-      CENTRAL: ['ATL', 'CHA', 'CHI', 'CLE', 'DET', 'IND', 'MIL', 'TOR'],
-      MIDWEST: ['DAL', 'DEN', 'HOU', 'MIN', 'SAS', 'UTA', 'MEM'],
-      PACIFIC: ['GSW', 'LAC', 'LAL', 'PHX', 'POR', 'SAC', 'OKC']
+      CENTRAL: ['ATL', 'CHH', 'CHI', 'CLE', 'DET', 'IND', 'MIL', 'TOR'],
+      MIDWEST: ['DAL', 'DEN', 'HOU', 'MIN', 'SAS', 'UTA', 'VAN'],
+      PACIFIC: ['GSW', 'LAC', 'LAL', 'PHX', 'POR', 'SAC', 'SEA']
     } },
     { from: 2002, to: 2003, divs: {
       ATLANTIC: ['BOS', 'MIA', 'BKN', 'NYK', 'ORL', 'PHI', 'WAS'],
-      CENTRAL: ['ATL', 'CHI', 'CLE', 'DET', 'IND', 'MIL', 'TOR', 'NOP'],
+      CENTRAL: ['ATL', 'CHI', 'CLE', 'DET', 'IND', 'MIL', 'TOR', 'NOH'],
       MIDWEST: ['DAL', 'DEN', 'HOU', 'MIN', 'SAS', 'UTA', 'MEM'],
-      PACIFIC: ['GSW', 'LAC', 'LAL', 'PHX', 'POR', 'SAC', 'OKC']
+      PACIFIC: ['GSW', 'LAC', 'LAL', 'PHX', 'POR', 'SAC', 'SEA']
     } },
-    { from: 2004, divs: ERA_SCHEDULE_DIVISIONS_30 }
+    { from: 2004, to: 2007, divs: {
+      ATLANTIC: ['BOS', 'BKN', 'NYK', 'PHI', 'TOR'],
+      CENTRAL: ['CHI', 'CLE', 'DET', 'IND', 'MIL'],
+      SOUTHEAST: ['ATL', 'CHA', 'MIA', 'ORL', 'WAS'],
+      NORTHWEST: ['DEN', 'MIN', 'SEA', 'POR', 'UTA'],
+      PACIFIC: ['GSW', 'LAC', 'LAL', 'PHX', 'SAC'],
+      SOUTHWEST: ['DAL', 'HOU', 'MEM', 'NOH', 'SAS']
+    } },
+    { from: 2008, to: 2013, divs: {
+      ATLANTIC: ['BOS', 'BKN', 'NYK', 'PHI', 'TOR'],
+      CENTRAL: ['CHI', 'CLE', 'DET', 'IND', 'MIL'],
+      SOUTHEAST: ['ATL', 'CHA', 'MIA', 'ORL', 'WAS'],
+      NORTHWEST: ['DEN', 'MIN', 'OKC', 'POR', 'UTA'],
+      PACIFIC: ['GSW', 'LAC', 'LAL', 'PHX', 'SAC'],
+      SOUTHWEST: ['DAL', 'HOU', 'MEM', 'NOH', 'SAS']
+    } },
+    { from: 2014, divs: ERA_SCHEDULE_DIVISIONS_30 }
   ],
   '1996': [
     { from: 1996, to: 2001, divs: {
       ATLANTIC: ['BOS', 'MIA', 'BKN', 'NYK', 'ORL', 'PHI', 'WAS'],
-      CENTRAL: ['ATL', 'CHA', 'CHI', 'CLE', 'DET', 'IND', 'MIL', 'TOR'],
-      MIDWEST: ['DAL', 'DEN', 'HOU', 'MIN', 'SAS', 'UTA', 'MEM'],
-      PACIFIC: ['GSW', 'LAC', 'LAL', 'PHX', 'POR', 'SAC', 'OKC']
+      CENTRAL: ['ATL', 'CHH', 'CHI', 'CLE', 'DET', 'IND', 'MIL', 'TOR'],
+      MIDWEST: ['DAL', 'DEN', 'HOU', 'MIN', 'SAS', 'UTA', 'VAN'],
+      PACIFIC: ['GSW', 'LAC', 'LAL', 'PHX', 'POR', 'SAC', 'SEA']
     } },
     { from: 2002, to: 2003, divs: {
       ATLANTIC: ['BOS', 'MIA', 'BKN', 'NYK', 'ORL', 'PHI', 'WAS'],
-      CENTRAL: ['ATL', 'CHI', 'CLE', 'DET', 'IND', 'MIL', 'TOR', 'NOP'],
+      CENTRAL: ['ATL', 'CHI', 'CLE', 'DET', 'IND', 'MIL', 'TOR', 'NOH'],
       MIDWEST: ['DAL', 'DEN', 'HOU', 'MIN', 'SAS', 'UTA', 'MEM'],
-      PACIFIC: ['GSW', 'LAC', 'LAL', 'PHX', 'POR', 'SAC', 'OKC']
+      PACIFIC: ['GSW', 'LAC', 'LAL', 'PHX', 'POR', 'SAC', 'SEA']
     } },
-    { from: 2004, divs: ERA_SCHEDULE_DIVISIONS_30 }
+    { from: 2004, to: 2007, divs: {
+      ATLANTIC: ['BOS', 'BKN', 'NYK', 'PHI', 'TOR'],
+      CENTRAL: ['CHI', 'CLE', 'DET', 'IND', 'MIL'],
+      SOUTHEAST: ['ATL', 'CHA', 'MIA', 'ORL', 'WAS'],
+      NORTHWEST: ['DEN', 'MIN', 'SEA', 'POR', 'UTA'],
+      PACIFIC: ['GSW', 'LAC', 'LAL', 'PHX', 'SAC'],
+      SOUTHWEST: ['DAL', 'HOU', 'MEM', 'NOH', 'SAS']
+    } },
+    { from: 2008, to: 2013, divs: {
+      ATLANTIC: ['BOS', 'BKN', 'NYK', 'PHI', 'TOR'],
+      CENTRAL: ['CHI', 'CLE', 'DET', 'IND', 'MIL'],
+      SOUTHEAST: ['ATL', 'CHA', 'MIA', 'ORL', 'WAS'],
+      NORTHWEST: ['DEN', 'MIN', 'OKC', 'POR', 'UTA'],
+      PACIFIC: ['GSW', 'LAC', 'LAL', 'PHX', 'SAC'],
+      SOUTHWEST: ['DAL', 'HOU', 'MEM', 'NOH', 'SAS']
+    } },
+    { from: 2014, divs: ERA_SCHEDULE_DIVISIONS_30 }
   ],
   '2003': [
     { from: 2003, to: 2003, divs: {
       ATLANTIC: ['BOS', 'MIA', 'BKN', 'NYK', 'ORL', 'PHI', 'WAS'],
-      CENTRAL: ['ATL', 'CHI', 'CLE', 'DET', 'IND', 'MIL', 'NOP', 'TOR'],
+      CENTRAL: ['ATL', 'CHI', 'CLE', 'DET', 'IND', 'MIL', 'NOH', 'TOR'],
       MIDWEST: ['DAL', 'DEN', 'HOU', 'MIN', 'SAS', 'UTA', 'MEM'],
-      PACIFIC: ['GSW', 'LAC', 'LAL', 'PHX', 'POR', 'SAC', 'OKC']
+      PACIFIC: ['GSW', 'LAC', 'LAL', 'PHX', 'POR', 'SAC', 'SEA']
     } },
-    { from: 2004, divs: ERA_SCHEDULE_DIVISIONS_30 }
+    { from: 2004, to: 2007, divs: {
+      ATLANTIC: ['BOS', 'BKN', 'NYK', 'PHI', 'TOR'],
+      CENTRAL: ['CHI', 'CLE', 'DET', 'IND', 'MIL'],
+      SOUTHEAST: ['ATL', 'CHA', 'MIA', 'ORL', 'WAS'],
+      NORTHWEST: ['DEN', 'MIN', 'SEA', 'POR', 'UTA'],
+      PACIFIC: ['GSW', 'LAC', 'LAL', 'PHX', 'SAC'],
+      SOUTHWEST: ['DAL', 'HOU', 'MEM', 'NOH', 'SAS']
+    } },
+    { from: 2008, to: 2013, divs: {
+      ATLANTIC: ['BOS', 'BKN', 'NYK', 'PHI', 'TOR'],
+      CENTRAL: ['CHI', 'CLE', 'DET', 'IND', 'MIL'],
+      SOUTHEAST: ['ATL', 'CHA', 'MIA', 'ORL', 'WAS'],
+      NORTHWEST: ['DEN', 'MIN', 'OKC', 'POR', 'UTA'],
+      PACIFIC: ['GSW', 'LAC', 'LAL', 'PHX', 'SAC'],
+      SOUTHWEST: ['DAL', 'HOU', 'MEM', 'NOH', 'SAS']
+    } },
+    { from: 2014, divs: ERA_SCHEDULE_DIVISIONS_30 }
   ]
 };
 
@@ -2592,7 +2695,7 @@ function buildEraTeamRoster(era, team) {
 }
 
 /** 历史时代休赛期检查联盟演化：新队加入/球队迁址时生成名单、随队迁移玩家并重建赛程 */
-var ERA_RELOCATIONS = { '1984': { CHA: 'NOP' }, '1996': { CHA: 'NOP' }, '2003': {} };
+var ERA_RELOCATIONS = { '1984': { CHH: 'NOH', SEA: 'OKC', VAN: 'MEM' }, '1996': { CHH: 'NOH', SEA: 'OKC', VAN: 'MEM' }, '2003': { SEA: 'OKC', NOH: 'NOP' } };
 function checkEraExpansion() {
   if (!STATE || STATE.draftMode !== 'historical' || !STATE.eraStart) return;
   var sc = (STATE.career && STATE.career.seasonCount) || 0;

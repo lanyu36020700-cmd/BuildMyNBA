@@ -57,16 +57,15 @@ function findAnchorPlayer(nameKey) {
 }
 
 /** 锚定率：星级(OVR>=88 或 tier=star) 85%，其余 60%（可被 game-config 覆盖） */
+function isAnchorCore(p) {
+  return !!(p && ((parseInt(p.ovr, 10) || 0) >= 85 || p._tier === 'star' || p._talent === 'star' || (parseInt(p._potential, 10) || 0) >= 92));
+}
 function getAnchorRate(p) {
-  var star = (parseInt(p.ovr, 10) || 0) >= 88 || p._tier === 'star' || p._talent === 'star';
-  var base = star ? 0.85 : 0.6;
+  var core = isAnchorCore(p), base = core ? 0.98 : 0.72;
   try {
     var cfg = (typeof ANCHOR_CONFIG !== 'undefined') ? ANCHOR_CONFIG : null;
     if (cfg && typeof cfg.rate === 'number') base = cfg.rate;
-    else if (cfg) {
-      if (star && typeof cfg.starRate === 'number') base = cfg.starRate;
-      if (!star && typeof cfg.roleRate === 'number') base = cfg.roleRate;
-    }
+    else if (cfg) { if (core && typeof cfg.starRate === 'number') base = cfg.starRate; if (!core && typeof cfg.roleRate === 'number') base = cfg.roleRate; }
   } catch(e) {}
   return base;
 }
@@ -147,7 +146,8 @@ function applySeasonAnchors(year, respectSeasonMoves) {
         }
         if (curTeam === userTeam) { kept++; continue; }
         if (curTeam === team) { kept++; continue; } // 已在正确球队
-        if (respectSeasonMoves && isSeasonMoveExempt(p)) { kept++; continue; } // 本季交易/新签约不归位
+        // Current-season moves remain visible for role players; NPC cores still return to their historical team.
+        if (respectSeasonMoves && isSeasonMoveExempt(p) && !isAnchorCore(p)) { kept++; continue; }
         if (Math.random() >= getAnchorRate(p)) { kept++; continue; } // 波动：允许搅局
         if (moveAnchorPlayer(p, team)) moved++;
         else kept++;
