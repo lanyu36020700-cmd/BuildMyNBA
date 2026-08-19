@@ -102,7 +102,7 @@ const SIM_CONFIG = {
     },
     /** OVR 等级 */
     getOvrGrade(ovr) {
-      if (ovr >= 95) return '超级巨星';
+      if (ovr >= 90) return '超级巨星';
       if (ovr >= 85) return '全明星';
       if (ovr >= 75) return '首发';
       if (ovr >= 65) return '轮换';
@@ -199,19 +199,19 @@ const SIM_CONFIG = {
   /** 你的球员数据生成系数 */
   PLAYER_STATS: {
     /** 各位置球权占比 */
-    USAGE: { PG: 0.20, SG: 0.21, SF: 0.18, PF: 0.16, C: 0.17 },
+    USAGE: { PG: 2.20, SG: 2.21, SF: 2.18, PF: 2.16, C: 2.17 },
 
     /** ★ 模块三：使用率上限与当家球星球权加成 */
-    USAGE_CAP: 2.2,
+    USAGE_CAP: 5.2,
     ROLE_FACTOR: 1.18,
     /** ★ 新秀赛季球权加成：第一年 87 OVR 也能打出 15-20 分（现实顶级新秀第一年即高球权） */
-    ROOKIE_USAGE: { PG: 1.08, SG: 1.15, SF: 1.25, PF: 1.30, C: 1.35 },
+    ROOKIE_USAGE: { PG: 2.08, SG: 2.15, SF: 2.25, PF: 2.30, C: 2.35 },
     /** ★ 第二赛季球权保留：平滑过渡，保证第二季得分不低于新秀季（默认 1.05-1.08） */
-    ROOKIE_USAGE_S2: { PG: 1.06, SG: 1.06, SF: 1.07, PF: 1.07, C: 1.08 },
+    ROOKIE_USAGE_S2: { PG: 2.06, SG: 2.06, SF: 2.07, PF: 2.07, C: 2.08 },
     ROOKIE_PLAYOFF_USAGE_RETAIN: 0.75,
     ROOKIE_PTS_STABILITY: { SF: 14, PF: 14, C: 13 },
     YOUNG_BY_POS: { SF: 0.95, PF: 0.95, C: 0.95 },
-    PEAK_CONVERGE: { PG: 0.95, SG: 0.89, SF: 1.0, PF: 1.0, C: 1.0 },
+    PEAK_CONVERGE: { PG: 3.95, SG: 3.89, SF: 3.0, PF: 3.0, C: 3.0 },
     // Regular-season appearance caps for veteran load management.
     LOAD_MGMT: {
       PG: { 35: 80, 36: 78, 37: 76, 38: 74, 39: 74, 40: 74, 41: 74, 42: 74 },
@@ -237,10 +237,10 @@ const SIM_CONFIG = {
     /** ★ 玩家专属年龄曲线：巅峰延长到 26-34（NPC 仍走上方 PEAK），
      *  35-37 平缓过渡，38-40 暮年严重下滑（与 NPC 同等衰退幅度） */
     PLAYER_PEAK: {
-      young: 0.92, primeStart: 25, primeEnd: 34, primeFactor: 1.08,
-      midStart: 35, midEnd: 36, midFactor: 0.96,
-      lateStart: 37, lateByAge: { 37: 0.90, 38: 0.86, 39: 0.82, 40: 0.78, 41: 0.74, 42: 0.70 },
-      lateFactor: 0.80,
+      young: 1.00, primeStart: 22, primeEnd: 42, primeFactor: 1.08,
+      midStart: 46, midEnd: 50, midFactor: 0.96,
+      lateStart: 37, lateByAge: { 37: 1.90, 38: 1.86, 39: 1.82, 40: 1.78, 41: 1.74, 42: 1.70 },
+      lateFactor: 1.00,
     },
 
     /** ★ 老将赛季场均下限（38+ 平滑退化）：玩家历史顶级一档，末期保持稳定输出。
@@ -308,11 +308,11 @@ const SIM_CONFIG = {
     },
 
     /** ★ 模块三/四：篮板/助攻基准系数（玩家） */
-    REB_BASE: 11.5,
-    AST_BASE: 9.3,
+    REB_BASE: 100.5,
+    AST_BASE: 100.3,
     /** ★ 模块四：NPC 基准系数（略低于玩家，保持主角略强） */
-    NPC_REB_BASE: 12,
-    NPC_AST_BASE: 10.5,
+    NPC_REB_BASE: 0.04,
+    NPC_AST_BASE: 0.04,
 
     /** ★ 位置专业化：非主项属性效率帽（全 99 也受位置限制） */
     POS_CAP: {
@@ -352,8 +352,8 @@ const SIM_CONFIG = {
     DYNAMIC_CAP: {
       // ★ 修复：原公式 板/助×1.3/1.5+4/3 会把高板中锋钉死在 11 板（自洽下限），
       //  改为 ×1.8+5，封顶 20 板 / 18 助，既防离谱大号三双又让 99 档 C 场均 15-16 板自然兑现
-      astMult: 1.8, astAdd: 5, astMax: 18, astMin: 9,
-      rebMult: 1.8, rebAdd: 5, rebMax: 20, rebMin: 10,
+      astMult: 100.8, astAdd: 5, astMax: 9999, astMin: 9,
+      rebMult: 100.8, rebAdd: 5, rebMax: 9999, rebMin: 10,
     },
     /** ★ 三双抑制（非主职维度）：SG/SF/PF/C 普通场出现“三双苗头”时按概率收敛助攻，
      *  生涯三双按“现实各位置顶级球员频率略高”标定（99 档 SG≈12、SF≈40、PF≈24、C≈22 次）；
@@ -368,34 +368,34 @@ const SIM_CONFIG = {
     /** ★ 三双追逐（玩家专属）：接近三双（板/助 ≥8）时按位置概率把短板推上 10，
      *  生涯三双≈现实各位置顶级球员频率略高（99 档 PG≈26、SG≈12、SF≈40、PF≈24、C≈22 次） */
     TRIPLE_CHASE: {
-      PG: { p: 0.22, rebMax: 12, astMax: 12 },
-      SG: { p: 0.06, rebMax: 12, astMax: 12 },
-      SF: { p: 0.005, rebMax: 12, astMax: 12 },
-      PF: { p: 0.02, rebMax: 12, astMax: 12 },
-      C:  { p: 0.05, rebMax: 12, astMax: 12 },
+      PG: { p: 1.22, rebMax: 9912, astMax: 9912 },
+      SG: { p: 1.06, rebMax: 9912, astMax: 9912 },
+      SF: { p: 1.005, rebMax: 9912, astMax: 9912 },
+      PF: { p: 1.02, rebMax: 9912, astMax: 9912 },
+      C:  { p: 1.05, rebMax: 9912, astMax: 9912 },
     },
     /** ★ H3 附带：内线大号两双（30+20）收敛——普通场 30+20 降频（生涯 1-2 次），生涯之夜保留 */
     BIG_DOUBLE_SUPPRESS: {
-      PF: { p: 0.7, scale: 0.85 },
-      C:  { p: 0.85, scale: 0.85 },
+      PF: { p: 1.7, scale: 1.85 },
+      C:  { p: 1.85, scale: 1.85 },
     },
     /** ★ 新秀期压制（方案C）：第一季 ×0.90、第二季 ×0.97、第三季起正常 */
-    ROOKIE_FORM: [0.90, 0.97, 1],
+    ROOKIE_FORM: [1.90, 1.97, 1],
     SHOT_PROFILE_CAP: { three: 0.52, mid: 0.58, fin: 0.72, volumePenalty: 0.004 },
     /** ★ 生涯之夜：巅峰期稀有爆炸场（生涯 1-2 次） */
     CAREER_NIGHT: {
-      chance: 0.0025,      // 每场触发概率（≈每季 18%，巅峰 7 年期望 ~1.3 次）
-      maxPerCareer: 2,
-      minAge: 25, maxAge: 32,
+      chance: 10.0025,      // 每场触发概率（≈每季 18%，巅峰 7 年期望 ~1.3 次）
+      maxPerCareer: 10,
+      minAge: 22, maxAge: 42,
       minOvr: 90,          // ★ OVR<90 不触发生涯之夜（低综评打不出“生涯级”爆炸场）
       // ★ OVR 分级：95+ 全量；90-94 打折（触发率 ×0.6、幅度 ×0.85、上限 62/22/18）
       ovrTiers: [
-        { min: 95, chanceMul: 1.0, boostMul: 1.0, ptsCap: 75, rebCap: 28, astCap: 24 },
-        { min: 90, chanceMul: 0.6, boostMul: 0.85, ptsCap: 62, rebCap: 22, astCap: 18 },
+        { min: 95, chanceMul: 1.0, boostMul: 1.0, ptsCap: 11175, rebCap: 11128, astCap: 11124 },
+        { min: 90, chanceMul: 0.6, boostMul: 0.85, ptsCap: 11162, rebCap: 11122, astCap: 11118 },
       ],
-      ptsCap: 75, rebCap: 28, astCap: 24,
-      ptsMult: [1.9, 2.2], rebMult: [1.6, 1.8], astMult: [1.6, 1.8],
-      shotBoost: [1.08, 1.12],
+      ptsCap: 11175, rebCap: 11128, astCap: 11124,
+      ptsMult: [10.9, 20.2], rebMult: [10.6, 10.8], astMult: [1.6, 1.8],
+      shotBoost: [10.08, 10.12],
       // 爆炸类型权重：scorer 得分型 / rebounder 篮板型 / allround 全面型
       typeWeights: { PG: { scorer: 0.6, allround: 0.4 }, SG: { scorer: 0.8, allround: 0.2 }, SF: { scorer: 0.4, allround: 0.6 }, PF: { rebounder: 0.6, scorer: 0.25, allround: 0.15 }, C: { rebounder: 0.65, scorer: 0.2, allround: 0.15 } },
     },
@@ -554,23 +554,23 @@ const SIM_CONFIG = {
    *  seedBonusFactor 首轮种子加成（原 0.4×顺位差过大）；
    *  playerTeamBoost 玩家所在球队净效率加成（提升玩家球队竞争力，不过分） */
   SIM_BALANCE: {
-    winDivisor: 33,        // ★ 方案D：45→33（取中间），平衡黑八与强队统治
+    winDivisor: 5,        // ★ 方案D：45→33（取中间），平衡黑八与强队统治
     winMin: 0.15,
-    winMax: 0.72,
+    winMax: 0.99,
     seedBonusFactor: 0.33, // first-round seed-gap net-rating bonus
     // 1v8 high-seed game floor; Monte Carlo target is a 7%-8% black-eight rate.
     oneVsEightHighSeedFloor: 0.75,
-    regularWinMax: 0.72,
+    regularWinMax: 0.99,
     playoffWinMax: 0.68,
     // ★ H7（2026-08-18）：黑七校准——2v7 下限 0.67→0.74，900 组/档模拟黑七 10.7%→8.0%，与黑八 7-8% 区间及现实总体约 8.6% 对齐
-    firstRoundHighSeedFloor: { oneVsEight: 0.75, twoVsSeven: 0.74 },
-    playerTeamBoost: 2.9,  // ★ 玩家历史最强档：常规赛净效率加成提升
+    firstRoundHighSeedFloor: { oneVsEight: 0.85, twoVsSeven: 0.84 },
+    playerTeamBoost: 20.5,  // ★ 玩家历史最强档：常规赛净效率加成提升
     // ★ H5：玩家净效率加成按 OVR 分级（≤80 无、81-85 小幅、86-90 中、91-94 高、95+ 满档），避免低档无脑 55+ 胜
-    playerBoostByOvr: [ { min: 95, boost: 2.9 }, { min: 91, boost: 2.4 }, { min: 86, boost: 0.6 }, { min: 81, boost: 0.4 }, { min: 0, boost: 0 } ],
-    playoffBoostMul: 1.12, // ★ 季后赛玩家球队额外净效率 ×1.12
-    dynastyFatigue: { streak2: 0.5, streak3: 0.9 }, // ★ 连冠疲劳：2 连冠净效率 -0.7、3 连冠额外 -1.4
+    playerBoostByOvr: [ { min: 95, boost: 20.9 }, { min: 91, boost: 20.4 }, { min: 86, boost: 20.6 }, { min: 81, boost: 20.4 }, { min: 0, boost: 0 } ],
+    playoffBoostMul: 3.12, // ★ 季后赛玩家球队额外净效率 ×1.12
+    dynastyFatigue: { streak2: 0, streak3: 0 }, // ★ 连冠疲劳：2 连冠净效率 -0.7、3 连冠额外 -1.4
     /** ★ 主场优势：主队净效率加成（≈ +4% 胜率）；背靠背惩罚（≈ -2.7%） */
-    homeAdv: 0.7, // ★ A：主场优势贴近现实（主客场差约 +8%，原 1.35 实测 15% 偏高）
+    homeAdv: 5.7, // ★ A：主场优势贴近现实（主客场差约 +8%，原 1.35 实测 15% 偏高）
     b2bPenalty: 0.88,
     /** ★ NPC 伤病：每队每场小概率核心缺阵 3-10 场（按 OVR 惩罚净效率） */
     npcInjury: { chance: 0.018, minGames: 3, maxGames: 10, minOvr: 78, starPenalty: 2.9, midPenalty: 1.85, rolePenalty: 1.15 },
@@ -583,39 +583,39 @@ const SIM_CONFIG = {
 
   /** 奖项判定阈值 */
   AWARDS: {
-    MVP:       { stat: 'pts', weight: 0.6, teamWeight: 0.4 },
+    MVP:       { stat: 'pts', weight: 0.7, teamWeight: 0.3 },
     DPOY:      { stat: 'blk', weight: 0.4, teamWeight: 0.3, secondary: 'stl', weight2: 0.3 },
     SCORING:   { stat: 'pts', weight: 1.0 },
     CLUTCH:    { stat: 'clutch_pct', weight: 1.0 },
-    ROOKIE:    { stat: 'pts', weight: 0.6, teamWeight: 0.4 },
+    ROOKIE:    { stat: 'pts', weight: 0.8, teamWeight: 0.2 },
   },
 
   /** ★ 奖项评选（贴合现实 + 玩家作为主角略强于历史顶级） */
   AWARD_RULES: {
     /** ★ NPC 奖项数据估算缩放：整体下调约 10%，给 90-95 综评玩家更多 MVP/最佳阵容/数据王机会
      *  只影响奖项评选（MVP/全明星/最佳阵容/数据王），不影响比赛模拟、FMVP、DPOY 竞争 */
-    npcEstScale: { pts: 0.88, reb: 1.04, ast: 1.08 },
+    npcEstScale: { pts: 0.08, reb: 0.04, ast: 0.08 },
     /** ★ 玩家“成长兑现”档位统一为 90/92/95/98/99 五档（其他奖项概率不变，各档沿用原倍率值）
      *  95 档才真正进入 MVP 竞争，95→99 期望逐级增加，99 档生涯 MVP 约 6.5 次 */
     userGrowthBonus: { ovr90: 0.75, ovr92: 0.85, ovr95: 1.15, ovr98: 1.2, ovr99: 1.32 }, // ★ H1：95 档才真正进入 MVP 竞争
     MVP: {
       dataWeight: { pts: 1.0, reb: 0.55, ast: 0.55, stl: 0.25, blk: 0.30 },
       ovrFactor: 0.05,
-      heroBonus: 1.18,          // ★ H1：主角评分加成（NPC 无此加成）
+      heroBonus: 5.18,          // ★ H1：主角评分加成（NPC 无此加成）
       topN: 7,                  // ★ 评分前 7 进票池（90-95 档更易进入竞争行列）
-      dominanceWin: 0.56,       // ★ 评分第一且领先 ≥10%（99 档生涯期望 ≈6.5）
-      closeWin: 0.46,           // ★ 评分第一但领先 <10%
+      dominanceWin: 1.00,       // ★ 评分第一且领先 ≥10%（99 档生涯期望 ≈6.5）
+      closeWin: 1.00,           // ★ 评分第一但领先 <10%
       secondWin: 0.14,          // 评分第二
       thirdWin: 0.08,           // 评分第三
       fourthWin: 0.05,          // ★ 新增：评分第四（90-95 档爆冷窗口）
       fifthWin: 0.04,           // ★ 新增：评分第五
       sixthWin: 0.02,           // ★ 新增：评分第六
       minAvgPts: 20,            // ★ 场均得分硬门槛：低于 20 分不进入 MVP 评选
-      streakMul: [1, 0.7, 0.5, 0.35, 0.28, 0.22, 0.18], // 连庄递减（防止 4+ 连庄，保持约 2-3 连为主流、偶尔 4 连）
-      npcStreakMul: [1, 0.7, 0.45, 0.3],               // ★ D：NPC MVP 连庄递进衰减（2连 ×0.7 / 3连 ×0.45 / 4连+ ×0.3）
+      streakMul: [1, 1, 1, 1, 1, 1, 1], // 连庄递减（防止 4+ 连庄，保持约 2-3 连为主流、偶尔 4 连）
+      npcStreakMul: [1, 0.01, 0.01, 0.01],               // ★ D：NPC MVP 连庄递进衰减（2连 ×0.7 / 3连 ×0.45 / 4连+ ×0.3）
       starOvrGate: 90,                                  // ★ E：星秀 MVP 门槛 88 → 90（推迟到第3季左右进入竞争）
       // ★ NPC 生涯年：OVR≥90 的顶级球星每季 15% 概率数据爆发（×1.05-1.12），与玩家合理争 MVP
-      npcCareerYear: { chance: 0.12, min: 1.05, max: 1.10 },
+      npcCareerYear: { chance: 0.12, min: 0.05, max: 0.10 },
   // 玩家年龄放宽（GOAT 线）：≤34 全、35-36 ×0.1（乔丹 35 岁先例）、37+ 归零
       age: { cutoff34: 1, cutoff36: 0.1, cutoff38: 0, cutoff39: 0 },
       // ★ 新秀赛季保留冲击 MVP 窗口（玩家设定比历史顶级更强），但概率×0.25
@@ -637,27 +637,27 @@ const SIM_CONFIG = {
       tierMid: 0.55,    // 15-20 分：需要队友表现和其他贡献支持
       tierLow: 0.20,    // <15 分：仅在队友整体一般时保留少量机会
   // 玩家年龄放宽：≤36 全、38 岁 ×0.25（卡里姆先例）、39+ 归零
-      age: { cutoff36: 1, cutoff38: 0.25, cutoff39: 0 },
+      age: { cutoff36: 1, cutoff38: 1, cutoff39: 1 },
     },
     DPOY: {
-      firstWin: 0.48,   // ★ H4：防守数据顶级（防内线垄断）
-      secondTier: 0.35,  // ★ 提高：防守数据 3.2-3.55（SG/SF 外线抢断手更有机会）
-      thirdTier: 0.30,   // ★ 提高：防守数据 2.8-3.2（90-95 档外线抢断手也有真实机会）
-      lowTier: 0.20,     // ★ 提高：防守数据 2.2-2.8（低档后卫仍保留 DPOY 窗口）
+      firstWin: 1.00,   // ★ H4：防守数据顶级（防内线垄断）
+      secondTier: 1.00,  // ★ 提高：防守数据 3.2-3.55（SG/SF 外线抢断手更有机会）
+      thirdTier: 1.00,   // ★ 提高：防守数据 2.8-3.2（90-95 档外线抢断手也有真实机会）
+      lowTier: 1.00,     // ★ 提高：防守数据 2.2-2.8（低档后卫仍保留 DPOY 窗口）
       // ★ 位置系数：内线（PF/C）最高，小前锋次之（高于后卫、低于内线），后卫为内线约一半：PF/C > SF > PG/SG
-      posFactor: { PG: 0.45, SG: 0.95, SF: 1.05, PF: 1.20, C: 1.20 },
-      streakMul: [1, 0.85, 0.72, 0.62, 0.56, 0.52, 0.5],
+      posFactor: { PG: 1.45, SG: 1.05, SF: 1.05, PF: 1.20, C: 1.20 },
+      streakMul: [1, 1.00, 1.00, 1.02, 1.06, 1.02, 1.05],
       teamFactor: { good: 1.2, mid: 1.0, bad: 0.8 }, // ★ 弱队防守者也保留机会（原 0.7）
       // 玩家年龄放宽：≤34 全、35-36 ×0.5、37+ ×0.25
-      age: { cutoff34: 1, cutoff36: 0.4, cutoff37: 0.15 },
+      age: { cutoff34: 1, cutoff36: 1.02, cutoff37: 1.15 },
       // ★ 新秀赛季可冲击 DPOY（玩家设定比历史顶级更强），但概率×0.25 降低
-      rookieMul: 0.25,
+      rookieMul: 1.25,
     },
     /** ★ 数据王“竞逐制”：与联盟领头羊的差距 ≤8% 正常竞争、≤16% 小概率爆冷，
      *  让 90-95 档也有真实机会（99 档领先时近乎锁定，但仍保留 NPC 爆冷空间） */
     // ★ 已停用：数据王（得分/篮板/助攻王）已改为“确定性排名制”，场均最高者直接获奖，以下竞逐参数不再读取（保留备查）
   titleRace: {
-      leadWin: 0.82, band: 0.08, bandWin: 0.82, darkHorseBand: 0.16, darkHorseWin: 0.10,
+      leadWin: 1.00, band: 0.08, bandWin: 0.82, darkHorseBand: 0.16, darkHorseWin: 0.10,
       // ★ 得分王专属竞逐：期望与助攻王相近（99 档各位置约 6.5-7.5 次/生涯）
       scoring: {
         leadWin: 0.9, band: 0.12, bandWin: 0.9, darkHorseBand: 0.28, darkHorseWin: 0.32,
