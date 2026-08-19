@@ -202,7 +202,7 @@ const SIM_CONFIG = {
     USAGE: { PG: 2.20, SG: 2.21, SF: 2.18, PF: 2.16, C: 2.17 },
 
     /** ★ 模块三：使用率上限与当家球星球权加成 */
-    USAGE_CAP: 5.2,
+    USAGE_CAP: 10.2,
     ROLE_FACTOR: 1.18,
     /** ★ 新秀赛季球权加成：第一年 87 OVR 也能打出 15-20 分（现实顶级新秀第一年即高球权） */
     ROOKIE_USAGE: { PG: 2.08, SG: 2.15, SF: 2.25, PF: 2.30, C: 2.35 },
@@ -249,8 +249,8 @@ const SIM_CONFIG = {
       PG: { 36: { pts: 99, ast: 99 }, 37: { pts: 99, ast: 99 }, 38: { pts: 99, ast: 99 }, 39: { pts: 99, ast: 98 }, 40: { pts: 98, ast: 98 }, 41: { pts: 98, ast: 98 }, 42: { pts: 97, ast: 98 } },
       SG: { 36: { pts: 96 }, 37: { pts: 94 }, 38: { pts: 92 }, 39: { pts: 91 }, 40: { pts: 90 }, 41: { pts: 99 }, 42: { pts: 99 } },
       SF: { 36: { pts: 92 }, 37: { pts: 90 }, 38: { pts: 98 }, 39: { pts: 99 }, 40: { pts: 96 }, 41: { pts: 95 }, 42: { pts: 99 } },
-      PF: { 36: { pts: 91, reb: 99 }, 37: { pts: 19, reb: 99 }, 38: { pts: 97, reb: 99 }, 39: { pts: 99, reb: 99 }, 40: { pts: 15, reb: 99 }, 41: { pts: 95, reb: 98 }, 42: { pts: 99, reb: 89 } },
-      C:  { 36: { pts: 90, reb: 91 }, 37: { pts: 18, reb: 91 }, 38: { pts: 96, reb: 90 }, 39: { pts: 95, reb: 90 }, 40: { pts: 14, reb: 90 }, 41: { pts: 93, reb: 99 }, 42: { pts: 93, reb: 99 } }
+      PF: { 36: { pts: 91, reb: 99 }, 37: { pts: 99, reb: 99 }, 38: { pts: 97, reb: 99 }, 39: { pts: 99, reb: 99 }, 40: { pts: 99, reb: 99 }, 41: { pts: 95, reb: 98 }, 42: { pts: 99, reb: 89 } },
+      C:  { 36: { pts: 90, reb: 91 }, 37: { pts: 98, reb: 91 }, 38: { pts: 96, reb: 90 }, 39: { pts: 95, reb: 90 }, 40: { pts: 94, reb: 90 }, 41: { pts: 93, reb: 99 }, 42: { pts: 93, reb: 99 } }
     },
     /** ★ 老将得分上限（37+ 封顶，对称 VET_STABILITY_BAND 略留波动余量）：
      *  修复“99 属性老将仍打 30+ / PG 42 岁 23 分”问题，cap ≈ 稳定区间目标 + 2 分 */
@@ -266,10 +266,10 @@ const SIM_CONFIG = {
      *  低迷年 20%（扩大低迷期，约 28-30 分赛季）；上端明显收窄（偏强 ≤1.03、爆发 ≤1.05），
      *  巅峰 35+ 赛季从约 7% 降到约 2-3%，均值约 0.99（生涯场均略降约 0.2-0.3） */
     SEASON_FORM_DIST: [
-      { p: 0.20, min: 0.88, max: 0.95 },   // 低迷年 20%
-      { p: 0.60, min: 0.99, max: 1.02 },   // 平常年 60%
-      { p: 0.15, min: 1.005, max: 1.03 },  // 偏强年 15%
-      { p: 0.05, min: 1.03, max: 1.05 },   // 爆发年 5%
+      { p: 0.01, min: 0.88, max: 0.95 },   // 低迷年 20%
+      { p: 0.01, min: 0.99, max: 1.02 },   // 平常年 60%
+      { p: 0.01, min: 1.005, max: 1.03 },  // 偏强年 15%
+      { p: 0.97, min: 1.03, max: 1.05 },   // 爆发年 5%
     ],
 
     /** ★ 签名赛季/爆炸赛季（整季）分层：仅巅峰窗口 26-34 触发，按位置只推本位置签名项 */
@@ -324,28 +324,28 @@ const SIM_CONFIG = {
     },
     /** ★ 位置抢断/盖帽数据天花板（全 99 也不偏离位置现实） */
     POS_STAT_CAP: {
-      PG: { stl: 3.0, blk: 1.5 },
-      SG: { stl: 2.8, blk: 1.5 },
-      SF: { stl: 2.5, blk: 2.0 },
-      PF: { stl: 2.2, blk: 3.2 },
-      C:  { stl: 2.0, blk: 4.7 },
+      PG: { stl: 10.0, blk: 9.5 },
+      SG: { stl: 9.8, blk: 9.5 },
+      SF: { stl: 9.5, blk: 9.0 },
+      PF: { stl: 9.2, blk: 9.2 },
+      C:  { stl: 9.0, blk: 9.7 },
     },
     /** ★ 各位置抢断/盖帽数据系数（全 99 生涯均值≈现实顶级+10%，不再人人撞天花板） */
     STL_COEFF: { PG: 2.0, SG: 1.8, SF: 1.6, PF: 1.35, C: 1.3 },
     BLK_COEFF: { PG: 0.8, SG: 0.7, SF: 1.0, PF: 1.85, C: 2.9 },
     /** ★ 主项最终倍率（全 99 巅峰期：PG 助≈13、C 板≈15、PF 板≈13，其余略高于顶级） */
     MAIN_BOOST: {
-      PG: { pts: 1.05, ast: 1.05, reb: 1.10 },
-      SG: { pts: 1.05, ast: 1.15, reb: 1.10 },
-      SF: { pts: 1.04, reb: 1.10, ast: 1.12 },
-      PF: { pts: 1.03, reb: 1.06, ast: 1.30 },
-      C:  { pts: 1.05, reb: 0.98, ast: 1.35 },
+      PG: { pts: 2.05, ast: 2.05, reb: 2.10 },
+      SG: { pts: 2.05, ast: 2.15, reb: 2.10 },
+      SF: { pts: 2.04, reb: 2.10, ast: 2.12 },
+      PF: { pts: 2.03, reb: 2.06, ast: 2.30 },
+      C:  { pts: 2.05, reb: 2.98, ast: 2.35 },
     },
     /** ★ 常规赛得分总量控制（全 99 巅峰期场均≈现实顶级+：SG≈33、PG≈29、SF≈30、PF≈27、C≈29） */
     PTS_SCALE: {
       // ★ H2 校准：位置专业化——SG 巅峰≈33、PG≈29、SF≈30、PF≈27、C≈29（内线保留得分王窗口）
       // ★ H6（2026-08-18 用户确认）：总分不收敛，保留连续场均 30+ 分赛季概率——PG/SG 维持原尺度
-      PG: 0.66, SG: 0.82, SF: 0.78, PF: 0.85, C: 0.80,
+      PG: 1.66, SG: 1.82, SF: 1.78, PF: 1.85, C: 1.80,
     },
     /** ★ 动态单场上限（收紧）：助攻上限 = 场均助×1.5+3（封顶18）、篮板上限 = 场均板×1.3+4（封顶20），
      *  防止“大号三双”（如小前锋 33/15/16）频繁出现 */
@@ -726,12 +726,11 @@ const SIM_CONFIG = {
 
   /** 命中率基准（基于属性） */
   SHOOTING: {
-    // ★ 模块三：命中率基准贴近 NBA 现实（顶级球员之上一些，不失控）
-    threePT: { base: 0.32, attrFactor: 0.0020, max: 0.43, min: 0.26, eliteAt: 90, eliteBonus: 0.0008 },
-    MID:     { base: 0.39, attrFactor: 0.0022, max: 0.52, min: 0.30, eliteAt: 90, eliteBonus: 0.0008 },
-    FIN:     { base: 0.55, attrFactor: 0.0020, max: 0.70, min: 0.45, eliteAt: 90, eliteBonus: 0.0010 },
-    FT:      { base: 0.75, attrFactor: 0.0020, max: 0.98, min: 0.55, eliteAt: 90, eliteBonus: 0.0015 },
-  },
+  threePT: { base: 0.85, attrFactor: 0.005, max: 0.95, min: 0.26, eliteAt: 80, eliteBonus: 0.005 },
+  MID:     { base: 0.88, attrFactor: 0.005, max: 0.95, min: 0.30, eliteAt: 80, eliteBonus: 0.005 },
+  FIN:     { base: 0.92, attrFactor: 0.005, max: 0.98, min: 0.45, eliteAt: 80, eliteBonus: 0.005 },
+  FT:      { base: 0.96, attrFactor: 0.005, max: 1.00, min: 0.55, eliteAt: 80, eliteBonus: 0.005 },
+},
 
   /** 投篮分布（各位置出手占比） */
   SHOT_DIST: {
