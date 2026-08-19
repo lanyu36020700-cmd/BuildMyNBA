@@ -241,7 +241,10 @@ function getEventEraMinYear(ev) {
   if (/(加密货币|比特币|币圈|crypto|加密币)/i.test(text)) return 2009;
   if (/(吐槽2K|2K评分|2K给|2K官方)/.test(text)) return 1999;
   if (/(蓝牙音箱|EDM|电音)/.test(text)) return 2005;
-  if (/(社交媒体|社媒|推特|Twitter|Instagram|IG直播|TikTok|抖音|Twitch|网红|TMZ|表情包|虎扑直播|直播打游戏|微信|银行App|被Shaq|帕金斯|Perkins|Stephen A|勒布朗|杜兰特)/.test(text)) return 2006;
+  if (/(TikTok|抖音)/.test(text)) return 2016;
+  if (/(Instagram|IG直播|微信)/.test(text)) return 2010;
+  if (/(社交媒体|社媒|推特|Twitter|Twitch|网红|TMZ|表情包|虎扑直播|直播打游戏|银行App|被Shaq|帕金斯|Perkins|Stephen A|勒布朗|杜兰特)/.test(text)) return 2006;
+  if (/(智能手机|手机摄像|手机直播|短视频)/.test(text)) return 2007;
   return 0;
 }
 

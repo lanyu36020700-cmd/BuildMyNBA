@@ -84,19 +84,19 @@ function getEraSeasonYear(eraStart, seasonCount) {
 //   pts     联盟场均得分比例（现代=1.0；用于 NPC 得分与奖项门槛缩放）
 //   rebAdj/astAdj/stlAdj/blkAdj 分项校正系数（玩家数据已随 totalScore 自动缩，
 //           这些系数把篮板/助攻/抢断/盖帽校准到当年真实联盟均值）
-//   king    当年得分王（玩家得分保底 = max(自动值, king*1.03)，保证玩家永远略强于当年顶级）
+//   king    当年得分王（玩家得分稳定性校正 = max(自动值, king*1.03)，保证玩家永远略强于当年顶级）
 // ============================================================
 var ERA_SIM_YEAR_TABLE = {
-  1984: { pace: 102, div: 19, max: 0.81, pts: 0.97, reb: 1.000, ast: 0.985, stl: 1.149, blk: 0.946, rebAdj: 1.031, astAdj: 1.015, stlAdj: 1.184, blkAdj: 0.975, king: 32.9 },
-  1988: { pace: 98, div: 19, max: 0.81, pts: 0.94, reb: 0.972, ast: 0.910, stl: 1.203, blk: 0.982, rebAdj: 1.025, astAdj: 1.010, stlAdj: 1.150, blkAdj: 0.990, king: 32.5 },
-  1991: { pace: 94, div: 19, max: 0.81, pts: 0.90, reb: 0.968, ast: 0.869, stl: 1.095, blk: 0.857, rebAdj: 1.020, astAdj: 1.000, stlAdj: 1.170, blkAdj: 1.005, king: 31.5 },
-  1996: { pace: 89, div: 18, max: 0.82, pts: 0.88, reb: 0.945, ast: 0.824, stl: 1.108, blk: 0.875, rebAdj: 1.114, astAdj: 0.972, stlAdj: 1.307, blkAdj: 1.032, king: 30.1 },
-  1997: { pace: 89, div: 18, max: 0.82, pts: 0.85, reb: 0.945, ast: 0.816, stl: 1.108, blk: 0.875, rebAdj: 1.112, astAdj: 0.970, stlAdj: 1.310, blkAdj: 1.030, king: 29.6 },
-  2004: { pace: 86, div: 20, max: 0.80, pts: 0.83, reb: 0.989, ast: 0.783, stl: 1.027, blk: 0.893, rebAdj: 1.209, astAdj: 0.957, stlAdj: 1.255, blkAdj: 1.091, king: 28.0 },
-  2009: { pace: 92, div: 19, max: 0.81, pts: 0.88, reb: 0.993, ast: 0.820, stl: 1.000, blk: 0.929, rebAdj: 1.100, astAdj: 0.960, stlAdj: 1.150, blkAdj: 1.060, king: 30.2 },
-  2016: { pace: 95, div: 18, max: 0.82, pts: 0.90, reb: 1.030, ast: 0.899, stl: 1.054, blk: 0.911, rebAdj: 1.030, astAdj: 0.980, stlAdj: 1.020, blkAdj: 1.000, king: 30.1 },
-  2019: { pace: 102, div: 18, max: 0.82, pts: 0.97, reb: 1.025, ast: 0.970, stl: 1.041, blk: 0.982, rebAdj: 1.005, astAdj: 0.995, stlAdj: 0.995, blkAdj: 1.000, king: 34.0 },
-  2024: { pace: 105, div: 18, max: 0.82, pts: 1.00, reb: 1.000, ast: 1.000, stl: 1.000, blk: 1.000, rebAdj: 1.000, astAdj: 1.000, stlAdj: 1.000, blkAdj: 1.000, king: 33.9 }
+  1984: { pace: 102, div: 19, max: 0.81, pts: 0.97, reb: 1.000, ast: 0.985, stl: 1.149, blk: 0.946, rebAdj: 1.031, astAdj: 1.015, stlAdj: 1.184, blkAdj: 0.975, king: 32.9, threePt: 0.06},
+  1988: { pace: 98, div: 19, max: 0.81, pts: 0.94, reb: 0.972, ast: 0.910, stl: 1.203, blk: 0.982, rebAdj: 1.025, astAdj: 1.010, stlAdj: 1.150, blkAdj: 0.990, king: 32.5, threePt: 0.09},
+  1991: { pace: 94, div: 19, max: 0.81, pts: 0.90, reb: 0.968, ast: 0.869, stl: 1.095, blk: 0.857, rebAdj: 1.020, astAdj: 1.000, stlAdj: 1.170, blkAdj: 1.005, king: 31.5, threePt: 0.13},
+  1996: { pace: 89, div: 18, max: 0.82, pts: 0.88, reb: 0.945, ast: 0.824, stl: 1.108, blk: 0.875, rebAdj: 1.114, astAdj: 0.972, stlAdj: 1.307, blkAdj: 1.032, king: 30.1, threePt: 0.2},
+  1997: { pace: 89, div: 18, max: 0.82, pts: 0.85, reb: 0.945, ast: 0.816, stl: 1.108, blk: 0.875, rebAdj: 1.112, astAdj: 0.970, stlAdj: 1.310, blkAdj: 1.030, king: 29.6, threePt: 0.21},
+  2004: { pace: 86, div: 20, max: 0.80, pts: 0.83, reb: 0.989, ast: 0.783, stl: 1.027, blk: 0.893, rebAdj: 1.209, astAdj: 0.957, stlAdj: 1.255, blkAdj: 1.091, king: 28.0, threePt: 0.22},
+  2009: { pace: 92, div: 19, max: 0.81, pts: 0.88, reb: 0.993, ast: 0.820, stl: 1.000, blk: 0.929, rebAdj: 1.100, astAdj: 0.960, stlAdj: 1.150, blkAdj: 1.060, king: 30.2, threePt: 0.25},
+  2016: { pace: 95, div: 18, max: 0.82, pts: 0.90, reb: 1.030, ast: 0.899, stl: 1.054, blk: 0.911, rebAdj: 1.030, astAdj: 0.980, stlAdj: 1.020, blkAdj: 1.000, king: 30.1, threePt: 0.3},
+  2019: { pace: 102, div: 18, max: 0.82, pts: 0.97, reb: 1.025, ast: 0.970, stl: 1.041, blk: 0.982, rebAdj: 1.005, astAdj: 0.995, stlAdj: 0.995, blkAdj: 1.000, king: 34.0, threePt: 0.39},
+  2024: { pace: 105, div: 18, max: 0.82, pts: 1.00, reb: 1.000, ast: 1.000, stl: 1.000, blk: 1.000, rebAdj: 1.000, astAdj: 1.000, stlAdj: 1.000, blkAdj: 1.000, king: 33.9, threePt: 0.42}
 };
 
 /** 按年份取年代化比赛/数据参数（线性插值；超出锚点取边界值） */
@@ -122,6 +122,7 @@ function getEraSimParams(year) {
         rebAdj: Math.round((a.rebAdj + (b.rebAdj - a.rebAdj) * t) * 1000) / 1000,
         astAdj: Math.round((a.astAdj + (b.astAdj - a.astAdj) * t) * 1000) / 1000,
         stlAdj: Math.round((a.stlAdj + (b.stlAdj - a.stlAdj) * t) * 1000) / 1000,
+        threePt: Math.round((a.threePt + (b.threePt - a.threePt) * t) * 1000) / 1000,
         blkAdj: Math.round((a.blkAdj + (b.blkAdj - a.blkAdj) * t) * 1000) / 1000,
         king: Math.round((a.king + (b.king - a.king) * t) * 10) / 10
       };
@@ -139,7 +140,7 @@ function getCurrentSeasonYear() {
   return 2025 + sc;
 }
 
-/** 玩家得分保底比例：相对现代玩家 33 分基准，保证历史时代不低于当年得分王 x1.03 */
+/** 玩家得分稳定性校正比例：相对现代玩家 33 分基准，保证历史时代不低于当年得分王 x1.03 */
 function getEraPlayerPtsFloor() {
   try {
     var p = getEraSimParams(getCurrentSeasonYear());

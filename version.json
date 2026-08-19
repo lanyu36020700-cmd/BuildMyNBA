@@ -1,5 +1,5 @@
-{
-  "version": "2026.08.17.2",
-  "releasedAt": "2026-08-17",
-  "message": "Game update available. Refresh to receive the latest fixes."
+﻿{
+  "version": "2026.08.19.2",
+  "releasedAt": "2026-08-19",
+  "message": "游戏已更新：修复 My Card 赛季总结空白、退役按钮缺失、旧档无法推进等问题。刷新页面即可获取最新版本。"
 }

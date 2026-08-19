@@ -12,6 +12,13 @@
 var ERA_ROLE_RANGES = { 1984: [58, 74], 1996: [60, 76], 2003: [63, 79] };
 var ERA_ROSTER_SIZE = 14;
 
+function _reportEraRosterError(scope, error) {
+  try {
+    if (typeof reportGameModuleError === 'function') reportGameModuleError('eraRoster.' + scope, error);
+    else if (typeof reportGameError === 'function') reportGameError('eraRoster.' + scope, error, { console: false });
+  } catch(e) {}
+}
+
 /** 时代球员属性模板：位置 × OVR 85 基准（13 项，风格参考原版 NBA2K 数据）
  *  生成公式：attr = clamp(30, 99, base + (ovr - 85) * 0.65 + 位置特色 ± 随机)
  *  高 OVR 球星各属性更全面，位置特色（中锋篮板/盖帽、控卫组织等）始终保留。
@@ -623,7 +630,7 @@ function rebuildEraPoolUsageFromLeague() {
       (NBA2K_DATA[t] || []).forEach(function(p) { var n = p && (p.nameEN || p.name); if (n) names[n] = true; });
     });
     (STATE._freeAgentPool || []).forEach(function(p) { var n = p && (p.nameEN || p.name); if (n) names[n] = true; });
-  } catch(e) {}
+  } catch(e) { _reportEraRosterError('rebuildPoolUsage:' + era, e); }
   var role = _eraPoolUsed[era] = {};
   ((ERA_ROLE_POOLS && ERA_ROLE_POOLS[era]) || []).forEach(function(x) { if (x && x[0] && names[x[0]]) role[x[0]] = true; });
   var bench = _eraBenchUsed[era] = {};
@@ -1175,7 +1182,50 @@ var ERA_STAR_CURVES = {
   'Victor Wembanyama': { peakPro: 5 }
 };
 
-var ERA_STAR_ATTRS = {
+/** ★ 双位置补全清单：历史时代球星的真实可打位置（模板缺失/为单位置时兜底） */
+var ERA_DUAL_POS_FIX = {
+  // ===== 1984 =====
+  'Michael Jordan': 'SG / SF', 'Larry Bird': 'SF / PF', 'Kevin McHale': 'PF / C', 'Charles Barkley': 'PF / SF',
+  'Clyde Drexler': 'SG / SF', 'Dominique Wilkins': 'SF / PF', 'James Worthy': 'SF / PF', 'Adrian Dantley': 'SF / PF',
+  'Bernard King': 'SF / PF', 'Alex English': 'SF / PF', 'Buck Williams': 'PF / C', 'Terry Cummings': 'PF / C',
+  'Jack Sikma': 'C / PF', 'Kevin Willis': 'PF / C', 'Otis Thorpe': 'PF / C', 'Ralph Sampson': 'C / PF',
+  'Sidney Moncrief': 'SG / PG', 'Walter Davis': 'SG / SF', 'Marques Johnson': 'SF / SG', 'Bobby Jones': 'PF / SF',
+  'Maurice Lucas': 'PF / C', 'Dan Roundfield': 'PF / C', 'Alvan Adams': 'C / PF', 'Bill Laimbeer': 'C / PF',
+  'Dennis Johnson': 'PG / SG', 'Gus Williams': 'PG / SG', 'World B. Free': 'PG / SG', 'Norm Nixon': 'PG / SG',
+  'Mark Aguirre': 'SF / PF', 'Kelly Tripucka': 'SF / PF', 'Cedric Maxwell': 'SF / PF', 'Kiki Vandeweghe': 'SF / PF',
+  'Purvis Short': 'SF / SG', 'George Gervin': 'SG / SF', 'John Drew': 'SF / PF', 'Eddie Johnson': 'SF / SG',
+  'Calvin Natt': 'SF / PF', 'Dan Issel': 'C / PF', 'Tom Chambers': 'PF / SF', 'Fat Lever': 'PG / SG',
+  'Sleepy Floyd': 'PG / SG', 'Micheal Ray Richardson': 'PG / SG', 'Reggie Theus': 'SG / PG',
+  'Orlando Woolridge': 'SF / PF', 'Dave Greenwood': 'PF / C', 'Roy Hinson': 'PF / C', 'Jay Vincent': 'PF / SF',
+  'Sam Perkins': 'PF / C', 'Derek Harper': 'PG / SG', 'Rolando Blackman': 'SG / PG',
+  // ===== 1996 =====
+  'Scottie Pippen': 'SF / PF', 'Grant Hill': 'SF / SG', 'Anfernee Hardaway': 'PG / SG', 'Kobe Bryant': 'SG / SF',
+  'Allen Iverson': 'PG / SG', 'Chris Webber': 'PF / C', 'Shawn Kemp': 'PF / C', 'Vin Baker': 'PF / C',
+  'Antonio McDyess': 'PF / C', 'Rasheed Wallace': 'PF / C', 'Juwan Howard': 'PF / C', 'Christian Laettner': 'PF / C',
+  'Joe Smith': 'PF / C', 'Donyell Marshall': 'SF / PF', 'Danny Manning': 'PF / SF', 'Derrick Coleman': 'PF / C',
+  'Sean Elliott': 'SF / SG', 'Toni Kukoc': 'SF / PF', 'Jamal Mashburn': 'SF / SG',
+  'Eddie Jones': 'SG / SF', 'Jerry Stackhouse': 'SG / SF', 'Jeff Hornacek': 'SG / PG', 'Mitch Richmond': 'SG / SF',
+  'Glen Rice': 'SF / SG', 'Latrell Sprewell': 'SG / SF', 'Jim Jackson': 'SG / SF', 'Michael Finley': 'SG / SF',
+  'Cedric Ceballos': 'SF / PF', 'Tom Gugliotta': 'PF / SF', 'Cliff Robinson': 'PF / C', 'Kevin Garnett': 'PF / C',
+  'Larry Johnson': 'PF / SF', 'Glenn Robinson': 'SF / PF', 'Horace Grant': 'PF / C', 'Charles Oakley': 'PF / C',
+  'Dale Davis': 'PF / C', 'Antoine Walker': 'SF / PF',
+  // ===== 2003 =====
+  'LeBron James': 'SF / PF', 'Tracy McGrady': 'SG / SF', 'Tim Duncan': 'PF / C', 'Dirk Nowitzki': 'PF / C',
+  'Jermaine O\'Neal': 'PF / C', 'Amare Stoudemire': 'PF / C', 'Vince Carter': 'SG / SF', 'Manu Ginobili': 'SG / SF',
+  'Paul Pierce': 'SF / SG', 'Carmelo Anthony': 'SF / PF', 'Chauncey Billups': 'PG / SG', 'Baron Davis': 'PG / SG',
+  'Gilbert Arenas': 'PG / SG', 'Steve Francis': 'PG / SG', 'Stephon Marbury': 'PG / SG', 'Ron Artest': 'SF / PF',
+  'Lamar Odom': 'SF / PF', 'Andrei Kirilenko': 'SF / PF', 'Shawn Marion': 'SF / PF', 'Rashard Lewis': 'SF / PF',
+  'Antawn Jamison': 'SF / PF', 'Elton Brand': 'PF / C', 'Pau Gasol': 'PF / C', 'Zach Randolph': 'PF / C',
+  'Carlos Boozer': 'PF / C', 'David West': 'PF / C', 'Chris Bosh': 'PF / C', 'Brad Miller': 'C / PF',
+  'Mehmet Okur': 'C / PF', 'Michael Redd': 'SG / SF', 'Jason Terry': 'PG / SG', 'Corey Maggette': 'SF / SG',
+  'Richard Jefferson': 'SF / SG', 'Hedo Turkoglu': 'SF / PF', 'Nene': 'PF / C', 'Stromile Swift': 'PF / C',
+  'Lorenzen Wright': 'PF / C', 'Jamal Crawford': 'PG / SG', 'Keith Van Horn': 'SF / PF', 'Al Harrington': 'SF / PF',
+  'Kenyon Martin': 'PF / C', 'Raef LaFrentz': 'PF / C', 'Erick Dampier': 'C / PF', 'Jamaal Magloire': 'C / PF',
+  'Drew Gooden': 'PF / C', 'Troy Murphy': 'PF / C', 'Chris Kaman': 'C / PF', 'Marcus Camby': 'C / PF',
+  'Joe Johnson': 'SG / SF', 'Quentin Richardson': 'SG / SF', 'Caron Butler': 'SF / SG', 'Jason Richardson': 'SG / SF',
+};
+
+ERA_STAR_ATTRS = {
   // ===== 1984 时代 =====
   'Doc Rivers': ['道格-里弗斯','PG',80,{threePT:55,MID:75,FIN:82,DNK:65,HAN:86,PAS:88,PDEF:88,IDEF:80,BLK:55,REB:62,ATH:85,STR:62,CLU:88}],
   'Michael Cooper': ['迈克尔-库珀','SG',80,{threePT:62,MID:78,FIN:78,DNK:68,HAN:84,PAS:74,PDEF:99,IDEF:90,BLK:62,REB:60,ATH:88,STR:60,CLU:90}],
@@ -1851,6 +1901,21 @@ function buildEraCorePlayer(era, team, en, capRatio) {
   var ovr = parseInt(d.ovr, 10) || (info.src === 'template' ? 85 : 75);
   var _peakOvr = ovr; // 模板/补充表的“巅峰”综评：年轻球员成长曲线的目标值
   var pos = d.pos || 'SF';
+  // ★ 双位置补全：优先采用历史模板的双位置（Pippen SF/SG、Kobe SG/SF 等），
+  //   选秀/补充类数据只有单位置时不会把球星压成单位置
+  try {
+    if (typeof HISTORICAL_PLAYERS !== 'undefined' && String(pos).indexOf('/') < 0) {
+      for (var _hp2 = 0; _hp2 < HISTORICAL_PLAYERS.length; _hp2++) {
+        if (HISTORICAL_PLAYERS[_hp2] && HISTORICAL_PLAYERS[_hp2].en === en &&
+            HISTORICAL_PLAYERS[_hp2].pos && String(HISTORICAL_PLAYERS[_hp2].pos).indexOf('/') >= 0) {
+          pos = HISTORICAL_PLAYERS[_hp2].pos;
+          break;
+        }
+      }
+    }
+  } catch(e) {}
+  // ★ 补充：已知双位置球星清单（模板缺失时兜底）
+  if (typeof ERA_DUAL_POS_FIX !== 'undefined' && ERA_DUAL_POS_FIX[en]) pos = ERA_DUAL_POS_FIX[en];
   var height = d.height || '';
   var cn = d.cn || en;
   var attrs = {};
@@ -1870,7 +1935,7 @@ function buildEraCorePlayer(era, team, en, capRatio) {
   if (_age0 == null) _age0 = ovr >= 95 ? 27 + Math.floor(Math.random() * 4) : ovr >= 90 ? 24 + Math.floor(Math.random() * 5) : ovr >= 84 ? 23 + Math.floor(Math.random() * 5) : 22 + Math.floor(Math.random() * 8);
   // ★ 选秀年份：优先 HISTORICAL_DRAFT_CLASSES，其次 ERA_PRE_DRAFT_YEARS（1984 时代之前的 79-83 届球星）
   var _draftY = null;
-  try { _draftY = (typeof getEraPlayerDraftYear === 'function') ? getEraPlayerDraftYear(en) : null; } catch(e) {}
+  try { _draftY = (typeof getEraPlayerDraftYear === 'function') ? getEraPlayerDraftYear(en) : null; } catch(e) { _reportEraRosterError('draftYear:' + en, e); }
   // ★ 年代校验：同名球员跨届错配（Johnny Davis 2022 届 vs 1980 年代）→ 选秀年在时代之后视为错配，回退无选秀数据
   if (_draftY != null && parseInt(_draftY, 10) > parseInt(era, 10)) _draftY = null;
   if (_draftY == null && typeof ERA_PRE_DRAFT_YEARS !== 'undefined' && ERA_PRE_DRAFT_YEARS[en] != null) _draftY = ERA_PRE_DRAFT_YEARS[en];
@@ -1898,7 +1963,7 @@ function buildEraCorePlayer(era, team, en, capRatio) {
         if (_ceS.attrs) _rookClsAttrs = true;
         break;
       }
-    } catch(e) {}
+    } catch(e) { _reportEraRosterError('rookieClass:' + en + ':' + era, e); }
   }
   // ★ 当季新秀：用选秀类“新秀 OVR/潜力”覆盖巅峰模板 OVR（否则科比 96 时代直接 97，18 岁新秀比巅峰还强），
   //   并打 _rookieSeason 标记，使其被 MVP/DPOY 等评选按“新秀赛季不参与”规则排除。
@@ -1913,7 +1978,11 @@ function buildEraCorePlayer(era, team, en, capRatio) {
         var _ceN = String(_ce.en).normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
         if (_ceN !== _enN) continue;
         if (_ce.ovr != null) { ovr = parseInt(_ce.ovr, 10) || ovr; }
-        if (_ce.pos) pos = String(_ce.pos).split('/')[0].trim();
+        if (_ce.pos) {
+          // ★ 选秀类单位置不覆盖模板/清单的双位置（如 1996 科比 SG/SF、艾弗森 PG/SG）
+          var _cePos = String(_ce.pos).trim();
+          if (_cePos.indexOf('/') >= 0 || String(pos).indexOf('/') < 0) pos = _cePos;
+        }
         if (_ce.height) height = _ce.height;
         if (_ce._potential != null) { var _pot = parseInt(_ce._potential, 10); if (_pot > ovr) { _rookiePot = _pot; } }
         if (_ce.attrs) { attrs = JSON.parse(JSON.stringify(_ce.attrs)); _rookClsAttrs = true; }
@@ -2002,7 +2071,7 @@ function getEraPlayerGrowthMeta(en, era) {
         if (ce.tier) meta.tier = ce.tier;
         break;
       }
-    } catch(e) {}
+    } catch(e) { _reportEraRosterError('growthMeta:' + en + ':' + era, e); }
   }
   var curve = (typeof ERA_STAR_CURVES !== 'undefined' && ERA_STAR_CURVES[en]) ? ERA_STAR_CURVES[en] : null;
   if (curve && curve.peakPro) meta.peakPro = parseInt(curve.peakPro, 10);
@@ -2189,6 +2258,7 @@ function buildEraRosters(era) {
   });
   // 第二遍（原第一遍）：同队真实球员补足（先确保每队拿到自己人）
   allTeams.forEach(function(t) {
+    if (active.indexOf(t) < 0) return;
     var roster = NBA2K_DATA[t] || [];
     var _guardA = 0;
     while (roster.length < ERA_ROSTER_SIZE && _guardA++ < 40) {
@@ -2197,6 +2267,7 @@ function buildEraRosters(era) {
   });
   // 第二遍：剩余位置用池内任意未用真实球员补齐（活跃队优先，非活跃队拿剩余）
   allTeams.forEach(function(t) {
+    if (active.indexOf(t) < 0) return;
     var roster = NBA2K_DATA[t] || [];
     var _guardB = 0;
     while (roster.length < ERA_ROSTER_SIZE && _guardB++ < 40) {
@@ -2752,7 +2823,7 @@ function checkEraExpansion() {
       if (!STATE._leagueChanges.relocations) STATE._leagueChanges.relocations = [];
       STATE._leagueChanges.relocations.push({ from: STATE.careerTeam, to: replacement, year: yr, userInvolved: true });
       STATE.careerTeam = replacement;
-      if (typeof clearLineupCache === 'function') { try { clearLineupCache(); } catch(e) {} }
+      if (typeof clearLineupCache === 'function') { try { clearLineupCache(); } catch(e) { _reportEraRosterError('relocation.clearLineupCache', e); } }
     }
   }
 

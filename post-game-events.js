@@ -149,7 +149,8 @@ function applyEventConsequence(d, ctx, opts) {
     _injDays = _spec
       ? (_spec[0] + Math.floor(Math.random() * (_spec[1] - _spec[0] + 1)))
       : ((d._games || 1) * AVG_DAYS_PER_GAME);
-    _injGames = injuryDaysToGames(_injDays);
+    // ★ 修复：赛季级重伤保留事件自带的“剩余场数”，避免 ACL/跟腱恢复天数（200-330 天）覆盖成 100+ 场缺阵
+    _injGames = (d._majorInjury && d._games) ? d._games : injuryDaysToGames(_injDays);
     _injSev = _spec ? _spec[2] : (d._majorInjury ? 'major' : 'minor');
     _injForbid = _spec ? !!_spec[3] : !!d._majorInjury;
     d._games = _injGames;
@@ -201,6 +202,9 @@ function applyEventConsequence(d, ctx, opts) {
   }
   if (d._consequence === 'suspension' && STATE.season && STATE.season.events) {
     STATE.season.events.suspensionGamesLeft += (d._games || 1);
+    // ★ 禁赛收敛：记录本季禁赛次数与最近禁赛场次，供 checkRandomEvents 限制“天天被禁赛”
+    STATE.season.events.suspensionEventCount = (STATE.season.events.suspensionEventCount || 0) + 1;
+    STATE.season.events.lastSuspensionGameNum = STATE.season.games.length;
     // ★ 禁赛计数 → “复出首战 / 再犯警告”连锁
     var _flS = getChainFlags();
     if (_flS) {
@@ -423,11 +427,16 @@ function maybeWorsenInjuryAfterPlaying(ev, severity) {
     : (7 + Math.floor(Math.random() * 8));
   var extra = injuryDaysToGames(extraDays);
   if (severity === 'major' && Math.random() < 0.08) {
-    extra = Math.max(extra, getSeasonEndingInjuryGamesLeft());
+    extra = Math.max(extra, Math.min(getSeasonEndingInjuryGamesLeft(), 28)); // 重伤加重不再叠整季剩余，最多追加28场
     ev.majorInjuryThisSeason = true;
     if (ev.injury) ev.injury.forbidPlay = true; // 重伤加重后禁止再带伤
   }
   ev.injuryGamesLeft = Math.max(ev.injuryGamesLeft || 0, 0) + extra;
+  // ★ 修复：重伤追加休战场数不突破“本季剩余 + 季后赛缓冲”，避免“休息 150 场”
+  if (severity === 'major') {
+    var _capLeft = getSeasonEndingInjuryGamesLeft() + (STATE.season.isPlayoffs ? 0 : 28);
+    ev.injuryGamesLeft = Math.min(ev.injuryGamesLeft, _capLeft);
+  }
   ev.injuryReason = (ev.injuryReason || '伤病') + '（带伤出战后加重）';
   if (ev.injury) {
     ev.injury.daysLeft = (ev.injury.daysLeft || 0) + extraDays;
@@ -688,7 +697,6 @@ function checkRandomEvents(game, result, stats) {
   var injuryHit = Math.random() * 100 < injuryRate * injuryMult;
   var baseEventRate = (_er.baseEventRate != null) ? _er.baseEventRate : 0.7; // ★ 事件线独立基准率（年轻期也能触发，伤病线不受影响）
   var eventHit = Math.random() * 100 < Math.max(baseEventRate, injuryRate) * eventMult;
-  if (!injuryHit && !eventHit) return null;
   var picked = null;
   if (injuryHit) {
     // 原版伤病线（含重伤）
@@ -709,15 +717,55 @@ function checkRandomEvents(game, result, stats) {
       _ratio = { suspension: _ratio.suspension, conflict: _ratio.conflict - _cut, flavor: _ratio.flavor + _cut };
     }
     var catRoll = Math.random();
-    if (catRoll < _ratio.suspension) picked = pickWeightedEvent(pools.suspension);
-    else if (catRoll < _ratio.suspension + _ratio.conflict) picked = pickWeightedEvent(pools.conflict);
-    else picked = pickWeightedEvent(pools.flavor);
+    // ★ 禁赛收敛：单季禁赛后果上限 + 冷却（susp_ 与 fight_ 全部为禁赛后果，合并计算）；
+    //   超限后禁赛/冲突类全部转花絮，保证“不至于天天被禁赛”
+    var _suspMax = _er.suspensionSeasonMax != null ? _er.suspensionSeasonMax : 1;
+    var _suspCool = _er.suspensionCooldown != null ? _er.suspensionCooldown : 0;
+    var _suspCnt = ev.suspensionEventCount || 0;
+    var _suspOk = _suspCnt < _suspMax;
+    if (_suspOk && _suspCool > 0 && ev.lastSuspensionGameNum != null) {
+      if ((STATE.season.games || []).length - ev.lastSuspensionGameNum < _suspCool) _suspOk = false;
+    }
+    var _suspTotal = _ratio.suspension + _ratio.conflict;
+    if (catRoll < _suspTotal) {
+      if (_suspOk) {
+        if (catRoll < _ratio.suspension) picked = pickWeightedEvent(pools.suspension);
+        else picked = pickWeightedEvent(pools.conflict);
+      } else {
+        picked = pickWeightedEvent(pools.flavor);
+      }
+    } else {
+      picked = pickWeightedEvent(pools.flavor);
+    }
+  }
+  // ★ H9（2026-08-18）：花絮补位——连续 flavorPityGames 场无事件且冷却已过时，补出一个纯花絮事件（无后果，
+  //   受常规赛 2 场/季上限约束，不影响禁赛/冲突/伤病计数，提升沉浸感）
+  if (!picked) {
+    try {
+      var _pityGap = (_er.flavorPityGames != null) ? _er.flavorPityGames : 20;
+      if (_pityGap > 0 && pools.flavor.length) {
+        var _lg = ev.lastTriggerGameNum;
+        var _since = (_lg == null) ? (STATE.season.games.length + 1) : (STATE.season.games.length - _lg);
+        if (_since >= _pityGap) picked = pickWeightedEvent(pools.flavor);
+      }
+    } catch(e) {}
+    if (!picked) return null;
   }
   // ★ 单季不重复：同一事件本季已触发过则不触发（保留新鲜感；跨季由 events 重置）
   if (picked && _er.noRepeatInSeason !== false) {
     var _trIds = ev.triggeredIds || (ev.triggeredIds = []);
     if (_trIds.indexOf(picked.id) >= 0) picked = null;
     else _trIds.push(picked.id);
+  }
+  // ? 生涯级不重复：同一叙事事件整个生涯只触发一次（防止“教练战术调整/更衣室责任/荣誉争议”跨季反复出现）
+  if (picked && _er.noRepeatCareer) {
+    try {
+      var _cc = STATE.career || {};
+      _cc.flags = _cc.flags || {};
+      var _careerIds = _cc.flags.careerEventIds || (_cc.flags.careerEventIds = []);
+      if (_careerIds.indexOf(picked.id) >= 0) picked = null;
+      else _careerIds.push(picked.id);
+    } catch(e) {}
   }
 
   if (picked) {
@@ -1040,6 +1088,7 @@ EVENT_REGISTRY.push({
 EVENT_REGISTRY.push({
   id: 'like_controversy',
   name: '手滑点赞争议帖',
+  eraMinYear: 2006,
   weight: 2,
   condition: (ctx) => true,
   execute: (ctx) => {
@@ -1051,6 +1100,7 @@ EVENT_REGISTRY.push({
 EVENT_REGISTRY.push({
   id: 'ig_live_leak',
   name: 'IG直播泄露队友吐槽教练',
+  eraMinYear: 2010,
   weight: 2,
   condition: (ctx) => true,
   execute: (ctx) => {
@@ -1061,7 +1111,7 @@ EVENT_REGISTRY.push({
 // ── 51. 吐槽2K评分 ──
 EVENT_REGISTRY.push({
   id: 'tweet_2k',
-  name: '吐槽2K评分',
+  name: '吐槽2K评分', eraMinYear: 2006,
   weight: 2,
   condition: (ctx) => true,
   execute: (ctx) => {
@@ -1095,6 +1145,7 @@ EVENT_REGISTRY.push({
 EVENT_REGISTRY.push({
   id: 'date_netcelebrity',
   name: '和网红约会曝光',
+  eraMinYear: 2010,
   weight: 2,
   condition: (ctx) => true,
   execute: (ctx) => {
@@ -1118,6 +1169,7 @@ EVENT_REGISTRY.push({
 EVENT_REGISTRY.push({
   id: 'game_live_curse',
   name: '直播打游戏爆粗',
+  eraMinYear: 2011,
   weight: 2,
   condition: (ctx) => true,
   execute: (ctx) => {
@@ -1129,6 +1181,7 @@ EVENT_REGISTRY.push({
 EVENT_REGISTRY.push({
   id: 'meme',
   name: '被做成表情包',
+  eraMinYear: 2006,
   weight: 2,
   condition: (ctx) => true,
   execute: (ctx) => {
@@ -1141,6 +1194,7 @@ EVENT_REGISTRY.push({
 EVENT_REGISTRY.push({
   id: 'tiktok_dance',
   name: 'TikTok跳舞爆火',
+  eraMinYear: 2016,
   weight: 2,
   condition: (ctx) => true,
   execute: (ctx) => {
@@ -1239,7 +1293,7 @@ EVENT_REGISTRY.push({
 // ── 73. 带队友玩新游戏 ──
 EVENT_REGISTRY.push({
   id: 'game_night',
-  name: '带队友玩新游戏',
+  name: '带队友玩新游戏', eraMinYear: 2017,
   weight: 2,
   condition: (ctx) => true,
   execute: (ctx) => {
@@ -1261,7 +1315,7 @@ EVENT_REGISTRY.push({
 // ── 75. 和保安成为朋友 ──
 EVENT_REGISTRY.push({
   id: 'friend_security',
-  name: '和保安成为朋友',
+  name: '和保安成为朋友', eraMinYear: 1984,
   weight: 2,
   condition: (ctx) => true,
   execute: (ctx) => {
@@ -1362,6 +1416,7 @@ EVENT_REGISTRY.push({
 EVENT_REGISTRY.push({
   id: 'crypto_loss',
   name: '投资加密货币亏钱',
+  eraMinYear: 2013,
   weight: 2,
   condition: (ctx) => true,
   execute: (ctx) => {
@@ -1545,7 +1600,7 @@ EVENT_REGISTRY.push({
 // ── S1. 赛后停车场冲突 ──
 EVENT_REGISTRY.push({
   id: 'susp_parking_fight',
-  name: '赛后停车场冲突',
+  name: '赛后停车场冲突', eraMinYear: 2006,
   weight: 15,
   condition: (ctx) => true,
   execute: (ctx) => {
@@ -1645,6 +1700,7 @@ EVENT_REGISTRY.push({
 EVENT_REGISTRY.push({
   id: 'susp_social_media',
   name: '社交媒体发布不当言论',
+  eraMinYear: 2006,
   weight: 15,
   condition: (ctx) => true,
   execute: (ctx) => {
@@ -1947,7 +2003,7 @@ EVENT_REGISTRY.push({
 // ── I27. 切百吉饼割伤手指（离谱） ──
 EVENT_REGISTRY.push({
   id: 'injury_bagel',
-  name: '切百吉饼割伤手指',
+  name: '切百吉饼割伤手指', eraMinYear: 2006,
   weight: 8,
   condition: (ctx) => true,
   execute: (ctx) => {
@@ -3106,5 +3162,147 @@ EVENT_REGISTRY.push({
     addProfileDelta('lockerRoomTrust', -1);
     if (STATE.season && STATE.season.events) STATE.season.events.mediaPressure = Math.min(10, (STATE.season.events.mediaPressure || 0) + 1);
     return { emoji: '📉', title: '留守：承诺落空', body: '赛季过半，管理层承诺的补强没有兑现，战绩也没有起色。更衣室里开始有人低声讨论明年的事，你没有接话，但那份信任已经出现了裂痕。\n\n效果：忠诚-1；更衣室信任-1；媒体压力+1。' };
+  },
+});
+
+// ━━━ 沉浸事件族：教练战术调整（连败/战绩低迷时，角色与球权变化） ━━━
+EVENT_REGISTRY.push({
+  id: 'coach_adjustment',
+  name: '教练战术调整',
+  weight: 12,
+  noRepeatCareer: true,
+  condition: (ctx) => {
+    if (!STATE.season || STATE.season.isPlayoffs) return false;
+    if ((STATE.season.games || []).length < 20) return false;
+    var us = (ctx && ctx.userState) ? ctx.userState : buildUserEventState();
+    var streak = us.streak || '';
+    var streakLen = us.streakLen || 0;
+    var pct = (us.pct != null) ? us.pct : 0.5;
+    return (streak === 'L' && streakLen >= 2) || pct < 0.45;
+  },
+  execute: (ctx) => {
+    return {
+      emoji: '📋',
+      title: '教练战术调整',
+      body: '最近战绩不理想，教练把你单独叫进办公室。他摊开战术板，上面画了好几种新跑位：“我想调整一下你的角色。你可以接受更少的持球，专注效率；也可以要求更多球权，我来给你设计战术。你怎么想？”',
+      choices: [
+        { label: '接受新角色，少持球多无球', hint: '化学+；媒体好感+；效率优先', apply: function() {
+          addProfileDelta('coachTrust', 1);
+          addProfileDelta('mediaTrust', 1);
+          return { emoji: '🤝', title: '教练调整：接受角色', body: '你点了点头：“教练，怎么打都行，赢球最重要。”接下来的几场，你主动让出部分持球，更多跑位、掩护、接球就投，球队的进攻顺畅了不少。<br><br>效果：教练信任+1；媒体好感+1；未来5场化学+1。', _mods: { games: 5, chem: 1 } };
+        } },
+        { label: '要求更多持球，设计战术', hint: '得分/助攻短期+；媒体压力+；争议+', apply: function() {
+          addProfileDelta('controversy', 1);
+          STATE.season.events.mediaPressure = Math.min(10, (STATE.season.events.mediaPressure || 0) + 1);
+          if (STATE.season.events) STATE.season.events.scoringPush = { gamesLeft: 6, boost: 0.08 };
+          return { emoji: '💪', title: '教练调整：要球权', body: '“球给我，我来解决问题。”教练盯了你两秒，把战术板推到一边：“行，我按你的打法设计。但要是输了，责任你来扛。”接下来的比赛你获得了更多的支配权。<br><br>效果：未来6场出手/组织加成；媒体压力+1；争议+1。', _mods: { games: 6, morale: 2 } };
+        } },
+        { label: '主动加练，先把自己练到无可挑剔', hint: '关键球属性+1；士气+', apply: function() {
+          try {
+            STATE.attrs.CLU = Math.min(99, (parseInt(STATE.attrs.CLU, 10) || 50) + 1);
+            if (typeof calcOVR === 'function') STATE.finalOVR = calcOVR(STATE.attrs, STATE.position);
+          } catch(e) {}
+          return { emoji: '🌙', title: '教练调整：加练', body: '你没有直接回答，当晚加练到深夜：无球跑位、接球出手、对抗下的终结。一周后教练在训练里看到你的变化，点了点头：“那就按你现在的状态打。”<br><br>效果：关键球属性+1；未来3场士气+1。', _mods: { games: 3, morale: 1 } };
+        } }
+      ]
+    };
+  },
+});
+
+// ━━━ 沉浸事件族：更衣室责任（高领袖 + 连败时，队内责任归属） ━━━
+EVENT_REGISTRY.push({
+  id: 'locker_responsibility',
+  name: '更衣室责任',
+  weight: 10,
+  noRepeatCareer: true,
+  condition: (ctx) => {
+    if (!STATE.season || STATE.season.isPlayoffs) return false;
+    var lead = (STATE.career && STATE.career.profile && STATE.career.profile.leadership) || 0;
+    if (lead < 7) return false;
+    var us = (ctx && ctx.userState) ? ctx.userState : buildUserEventState();
+    var streak = us.streak || '';
+    var streakLen = us.streakLen || 0;
+    var pct = (us.pct != null) ? us.pct : 0.5;
+    return (streak === 'L' && streakLen >= 2) || pct < 0.45;
+  },
+  execute: (ctx) => {
+    return {
+      emoji: '🛡️',
+      title: '更衣室责任',
+      body: '更衣室里气压很低。连败让每个人都低着头刷手机，没人说话。你是这支球队的领袖——你知道这时候总得有人先开口。队友的目光陆续落在你身上。',
+      choices: [
+        { label: '站起来把责任揽过来', hint: '领袖+；化学+；士气+', apply: function() {
+          addProfileDelta('leadership', 1);
+          return { emoji: '🗣️', title: '更衣室：承担责任', body: '你站起来：“这几天输球，我担主要责任。我手感不好，没有把大家带起来。明天开始，我们先从防守做起。”更衣室安静了几秒，然后有人拍了桌子：“干了。”<br><br>效果：领袖+1；未来5场化学+2、士气+1。', _mods: { games: 5, chem: 2, morale: 1 } };
+        } },
+        { label: '要求管理层尽快补强', hint: '人气+；争议+；媒体压力+', apply: function() {
+          addProfileDelta('fame', 1);
+          addProfileDelta('controversy', 1);
+          STATE.season.events.mediaPressure = Math.min(10, (STATE.season.events.mediaPressure || 0) + 1);
+          return { emoji: '📢', title: '更衣室：公开要补强', body: '“阵容深度不够，这不是秘密。管理层该做点什么了。”第二天你的采访登上了头条，球队办公室当天没有回应，但更衣室里有人觉得你说出了大家的心声，也有人觉得这话不该公开说。<br><br>效果：人气+1；争议+1；媒体压力+1；未来3场士气-1。', _mods: { games: 3, morale: -1 } };
+        } },
+        { label: '组织队内会议，逐个谈心', hint: '化学+；士气+；更衣室信任+', apply: function() {
+          addProfileDelta('lockerRoomTrust', 1);
+          return { emoji: '☕', title: '更衣室：队内会议', body: '你让助教把更衣室门关上，搬了把椅子坐到中间：“一个一个说，谁先说都行。”两个小时里，大家把积压的话都倒了出来。散会时，有人主动把战术板上的问题圈了出来。<br><br>效果：更衣室信任+1；未来4场化学+2、士气+2。', _mods: { games: 4, chem: 2, morale: 2 } };
+        } }
+      ]
+    };
+  },
+});
+
+// ━━━ 沉浸事件族：输在哪里（关键失利复盘 → 下场应对选项；走常规事件管线，不做独立 UI） ━━━
+EVENT_REGISTRY.push({
+  id: 'lost_where',
+  name: '输在哪里',
+  weight: 26,
+  condition: (ctx) => {
+    if (!ctx || !ctx.result || ctx.result.won) return false;
+    if (!STATE.season) return false;
+    var games = STATE.season.games || [];
+    if (games.length < 4) return false;
+    var margin = Math.abs((ctx.result.scoreA || 0) - (ctx.result.scoreB || 0));
+    if (margin > 8) return false;
+    var cc = STATE.career || {};
+    var fl = cc.flags || {};
+    if ((fl.lostWhereCount || 0) >= 5) return false;
+    return true;
+  },
+  execute: (ctx) => {
+    var stats = ctx.stats || {};
+    var reasons = [];
+    var tov = stats.tov || 0;
+    if (tov >= 5) reasons.push('失误过多——你送出 ' + tov + ' 次失误，对手的快攻全部打在这上面。');
+    var reb = stats.reb || 0;
+    if (reb <= 3) reasons.push('篮板失守——你只抢到 ' + reb + ' 个篮板，二次进攻的机会全让给了对手。');
+    var fgaN = stats.fga || 0, fgmN = stats.fgm || 0;
+    if (fgaN >= 10 && fgmN / fgaN < 0.42) reasons.push('手感冰凉——' + Math.round(fgmN / fgaN * 100) + '% 的命中率，关键回合的出手都差了一口气。');
+    var astN = stats.ast || 0;
+    if ((stats.pts || 0) >= 25 && astN >= 8) reasons.push('独木难支——你砍下 ' + stats.pts + ' 分 ' + astN + ' 次助攻，但队友没能跟上节奏。');
+    if (reasons.length === 0) reasons.push('关键球失手——最后五分钟的回合没有执行好，比分就这样被咬住拖死。');
+    if (reasons.length > 3) reasons = reasons.slice(0, 3);
+    var cc = STATE.career || {};
+    cc.flags = cc.flags || {};
+    cc.flags.lostWhereCount = (cc.flags.lostWhereCount || 0) + 1;
+    var body = '又输了。更衣室里没人说话，只有冰袋落地的声音。复盘下来，问题出在：\n\n· ' + reasons.join('\n· ') + '\n\n下一场，你打算怎么调整？';
+    return {
+      emoji: '📉',
+      title: '输在哪里',
+      body: body,
+      choices: [
+        { label: '加练到深夜，针对性补强', hint: '关键球属性+1；士气+', apply: function() {
+          return { emoji: '🌙', title: '复盘：加练', body: '你留在球馆加练到熄灯：空位接球、对抗终结、失误后的回防。训练师把录像导出来一帧帧看，把问题圈给你。<br><br>效果：关键球属性+1；未来 3 场士气+1。', _mods: { games: 3, morale: 1 }, _attrDelta: { CLU: 1 } };
+        } },
+        { label: '下一场自己来，回应质疑', hint: '得分短期+；媒体压力+；争议+', apply: function() {
+          try { STATE.season.events.mediaPressure = Math.min(10, (STATE.season.events.mediaPressure || 0) + 1); } catch(e) {}
+          addProfileDelta('controversy', 1);
+          try { STATE.season.events.scoringPush = { gamesLeft: 2, boost: 0.10 }; } catch(e) {}
+          return { emoji: '🔥', title: '复盘：把球给我', body: '你在训练时找到教练：「下一场我来。」教练看了你一眼：「输了怎么办？」「输了算我的。」<br><br>效果：未来 2 场得分小幅提升；媒体压力+1；争议+1。', _mods: { games: 2, morale: 1 } };
+        } },
+        { label: '拉队友看录像，调整战术', hint: '化学+；教练信任+；出手权更均衡', apply: function() {
+          addProfileDelta('coachTrust', 1);
+          return { emoji: '🤝', title: '复盘：更衣室录像课', body: '你把队友叫到一起看录像，先承认自己的问题，再听每个人讲自己的困惑。第二天训练，跑位和轮转顺畅了不少。<br><br>效果：教练信任+1；未来 5 场化学+1。', _mods: { games: 5, chem: 1 } };
+        } }
+      ]
+    };
   },
 });

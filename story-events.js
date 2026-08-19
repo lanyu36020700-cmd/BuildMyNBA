@@ -4236,7 +4236,7 @@ const STAGED_BRANCH_EVENTS = [
   {
     id: 'transfer_settle',
     branch: 'transfer', phase: 'offseason', slot: 'main', weight: 14,
-    title: '转会风波：新城市',
+    title: '转会风波：新城市', eraMin: 2006,
     body: '换一支球队，不只是换球衣。这座城市、球迷、训练馆、更衣室的规矩，都要重新学一遍。',
     requires: function() {
       var n = getBranchNode('transfer');
@@ -4377,7 +4377,7 @@ const STAGED_BRANCH_EVENTS = [
     id: 'kd_join_champion',
     branch: 'kd_move', phase: 'offseason', slot: 'main', weight: 40,
     recordHistory: true, // 本地：关键事件写入生涯历史
-    title: '冠军球队的召唤',
+    title: '冠军球队的召唤', eraMin: 2006,
     body: '总决赛的伤口还没有结痂，那支刚刚击败你的球队的电话先到了。总经理没有绕弯子：我们需要一个能终结系列赛的人，而我们刚刚证明我们能做到。你很清楚这句话意味着什么——穿上那件刚刚击败过你的球衣。',
     requires: function() {
       var c = STATE.career;
@@ -4513,7 +4513,7 @@ const STAGED_BRANCH_EVENTS = [
     id: 'rivalry_born',
     branch: 'rivalry', phase: 'season', slot: 'main', weight: 7,
     recordHistory: false,
-    title: '宿敌诞生',
+    title: '宿敌诞生', eraMin: 2006,
     body: '又是他们。这个赛季你在这支球队面前吃了不止一次亏，每一次交手都带着火药味。赛后他们的核心朝你这边看了一眼，什么都没说——但你知道，这段梁子算是结下了。',
     requires: function() {
       var g = STATE.season && STATE.season.games ? STATE.season.games : [];

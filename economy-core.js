@@ -310,6 +310,12 @@ function settleAnnualSalary(force) {
 
 
 var ECON_BIG_MARKET = ['LAL', 'NYK', 'GSW', 'MIA', 'CHI', 'BOS', 'DAL', 'HOU', 'PHI', 'TOR'];
+function _reportFreeAgencyError(scope, error) {
+  try {
+    if (typeof reportGameModuleError === 'function') reportGameModuleError('freeAgency.' + scope, error);
+    else if (typeof reportGameError === 'function') reportGameError('freeAgency.' + scope, error, { console: false });
+  } catch(e) {}
+}
 
 
 // ============ 合并自 league-economy.js ============
@@ -374,7 +380,7 @@ function assignFreeAgents() {
           var _faYear = getEraSeasonYear(parseInt(STATE.eraStart, 10), (STATE.career ? STATE.career.seasonCount : 0) || 0);
           if (parseInt(fa._draftYear, 10) > _faYear) return false;
         }
-      } catch(e) {}
+      } catch(e) { _reportFreeAgencyError('filterCandidate:' + ((fa && (fa.nameEN || fa.name)) || ''), e); }
       return true;
     });
     STATE._freeAgentPool = pool;
@@ -432,7 +438,7 @@ function assignFreeAgents() {
         if (canPlayPosition(p.pos || '', pos)) posCount++;
       });
       if (posCount < 2) {
-        try { ensureDualPos(fa); } catch(e) {}
+        try { ensureDualPos(fa); } catch(e) { _reportFreeAgencyError('ensureDualPos:' + (fa.nameEN || fa.name || ''), e); }
         roster.push(fa);
         fa._faSigned = true;
         fa._justSigned = true;
@@ -477,7 +483,7 @@ function assignFreeAgents() {
   STATE._freeAgentPool = (STATE._freeAgentPool || []).filter(function(fa) {
     if (!fa) return false;
     if (fa._faSigned) return false;
-    try { if (typeof getLeaguePlayerAge === 'function' && getLeaguePlayerAge(fa) >= 40) return false; } catch(e) {}
+    try { if (typeof getLeaguePlayerAge === 'function' && getLeaguePlayerAge(fa) >= 40) return false; } catch(e) { _reportFreeAgencyError('cleanupAge:' + (fa.nameEN || fa.name || ''), e); }
     return true;
   });
   // 上限：自由市场最多保留 120 人（正常赛季稳态约 78-83 人，120 留足缓冲；对运行/存档影响极小），超出丢弃最低 OVR（公告记录）

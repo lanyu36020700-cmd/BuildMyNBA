@@ -7,6 +7,12 @@
 // ============================================================
 
 var HISTORICAL_SEASON_ANCHORS = {};
+function _reportEraAnchorError(scope, error) {
+  try {
+    if (typeof reportGameModuleError === 'function') reportGameModuleError('historyAnchor.' + scope, error);
+    else if (typeof reportGameError === 'function') reportGameError('historyAnchor.' + scope, error, { console: false });
+  } catch(e) {}
+}
 
 /** 玩家交易/招募过的球员：永久跳过锚定归位（nameEN -> true） */
 function markAnchorLocked(nameEN) {
@@ -34,6 +40,10 @@ function getAnchorYear() {
 /** 按名字查找联盟内球员（nameEN/name/cname 三种键） */
 var _anchorIdxCache = null;
 var _anchorIdxSeason = null;
+function resetAnchorPlayerIndex() {
+  _anchorIdxCache = null;
+  _anchorIdxSeason = null;
+}
 function findAnchorPlayer(nameKey) {
   if (!nameKey) return null;
   // ★ 性能优化：每赛季只建一次名字索引，避免每次全联盟遍历
@@ -94,7 +104,7 @@ function moveAnchorPlayer(p, targetTeam) {
     target.splice(worstIdx, 1); // 被挤出的球员进入自由市场池
     try {
       if (STATE._freeAgentPool && Array.isArray(STATE._freeAgentPool)) STATE._freeAgentPool.push(worst);
-    } catch(e) {}
+    } catch(e) { _reportEraAnchorError('movePlayer.freeAgentPool', e); }
   }
   target.push(p);
   return true;
@@ -114,7 +124,7 @@ function isSeasonMoveExempt(p) {
       var _tr = _trs[_ti];
       if (_tr.playerA === _nm || _tr.playerB === _nm || _tr.playerA === _cn || _tr.playerB === _cn) return true;
     }
-  } catch(e) {}
+  } catch(e) { _reportEraAnchorError('isSeasonMoveExempt', e); }
   return false;
 }
 
@@ -151,7 +161,7 @@ function applySeasonAnchors(year, respectSeasonMoves) {
         if (Math.random() >= getAnchorRate(p)) { kept++; continue; } // 波动：允许搅局
         if (moveAnchorPlayer(p, team)) moved++;
         else kept++;
-      } catch(e) {}
+      } catch(e) { _reportEraAnchorError('apply:' + year + ':' + team + ':' + names[_ni], e); }
     }
   }
   STATE._anchorStats = { year: year, moved: moved, kept: kept };
