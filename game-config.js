@@ -202,12 +202,12 @@ const SIM_CONFIG = {
     USAGE: { PG: 2.20, SG: 2.21, SF: 2.18, PF: 2.16, C: 2.17 },
 
     /** ★ 模块三：使用率上限与当家球星球权加成 */
-    USAGE_CAP: 10.2,
+    USAGE_CAP: 100.2,
     ROLE_FACTOR: 1.18,
     /** ★ 新秀赛季球权加成：第一年 87 OVR 也能打出 15-20 分（现实顶级新秀第一年即高球权） */
-    ROOKIE_USAGE: { PG: 2.08, SG: 2.15, SF: 2.25, PF: 2.30, C: 2.35 },
+    ROOKIE_USAGE: { PG: 5.08, SG: 5.15, SF: 5.25, PF: 5.30, C: 5.35 },
     /** ★ 第二赛季球权保留：平滑过渡，保证第二季得分不低于新秀季（默认 1.05-1.08） */
-    ROOKIE_USAGE_S2: { PG: 2.06, SG: 2.06, SF: 2.07, PF: 2.07, C: 2.08 },
+    ROOKIE_USAGE_S2: { PG: 5.06, SG: 5.06, SF: 5.07, PF: 5.07, C: 5.08 },
     ROOKIE_PLAYOFF_USAGE_RETAIN: 0.75,
     ROOKIE_PTS_STABILITY: { SF: 14, PF: 14, C: 13 },
     YOUNG_BY_POS: { SF: 0.95, PF: 0.95, C: 0.95 },
@@ -232,13 +232,13 @@ const SIM_CONFIG = {
     },
 
     /** ★ 模块三/四：年龄数据曲线（巅峰加成） */
-    PEAK: { young: 0.94, primeStart: 26, primeEnd: 31, primeFactor: 1.08, midStart: 32, midEnd: 34, midFactor: 0.99, lateFactor: 0.88 },
+    PEAK: { young: 0.94, primeStart: 26, primeEnd: 31, primeFactor: 1.08, midStart: 32, midEnd: 34, midFactor: 0.99, lateFactor: 1.88 },
 
     /** ★ 玩家专属年龄曲线：巅峰延长到 26-34（NPC 仍走上方 PEAK），
      *  35-37 平缓过渡，38-40 暮年严重下滑（与 NPC 同等衰退幅度） */
     PLAYER_PEAK: {
-      young: 1.00, primeStart: 22, primeEnd: 42, primeFactor: 1.08,
-      midStart: 46, midEnd: 50, midFactor: 0.96,
+      young: 1.00, primeStart: 22, primeEnd: 42, primeFactor: 4.08,
+      midStart: 46, midEnd: 50, midFactor: 1.96,
       lateStart: 37, lateByAge: { 37: 1.00, 38: 1.86, 39: 1.82, 40: 1.78, 41: 1.74, 42: 1.70 },
       lateFactor: 1.00,
     },
@@ -269,7 +269,7 @@ const SIM_CONFIG = {
       { p: 0.01, min: 0.88, max: 0.95 },   // 低迷年 20%
       { p: 0.01, min: 0.99, max: 1.02 },   // 平常年 60%
       { p: 0.01, min: 1.005, max: 1.03 },  // 偏强年 15%
-      { p: 0.97, min: 1.03, max: 1.05 },   // 爆发年 5%
+      { p: 0.97, min: 5.03, max: 5.05 },   // 爆发年 5%
     ],
 
     /** ★ 签名赛季/爆炸赛季（整季）分层：仅巅峰窗口 26-34 触发，按位置只推本位置签名项 */
@@ -352,8 +352,8 @@ const SIM_CONFIG = {
     DYNAMIC_CAP: {
       // ★ 修复：原公式 板/助×1.3/1.5+4/3 会把高板中锋钉死在 11 板（自洽下限），
       //  改为 ×1.8+5，封顶 20 板 / 18 助，既防离谱大号三双又让 99 档 C 场均 15-16 板自然兑现
-      astMult: 100.8, astAdd: 5, astMax: 9999, astMin: 9,
-      rebMult: 100.8, rebAdd: 5, rebMax: 9999, rebMin: 10,
+      astMult: 100.8, astAdd: 105, astMax: 9999, astMin: 9,
+      rebMult: 100.8, rebAdd: 105, rebMax: 9999, rebMin: 10,
     },
     /** ★ 三双抑制（非主职维度）：SG/SF/PF/C 普通场出现“三双苗头”时按概率收敛助攻，
      *  生涯三双按“现实各位置顶级球员频率略高”标定（99 档 SG≈12、SF≈40、PF≈24、C≈22 次）；
@@ -368,16 +368,16 @@ const SIM_CONFIG = {
     /** ★ 三双追逐（玩家专属）：接近三双（板/助 ≥8）时按位置概率把短板推上 10，
      *  生涯三双≈现实各位置顶级球员频率略高（99 档 PG≈26、SG≈12、SF≈40、PF≈24、C≈22 次） */
     TRIPLE_CHASE: {
-      PG: { p: 1.22, rebMax: 9912, astMax: 9912 },
-      SG: { p: 1.06, rebMax: 9912, astMax: 9912 },
-      SF: { p: 1.005, rebMax: 9912, astMax: 9912 },
-      PF: { p: 1.02, rebMax: 9912, astMax: 9912 },
-      C:  { p: 1.05, rebMax: 9912, astMax: 9912 },
+      PG: { p: 5.22, rebMax: 9912, astMax: 9912 },
+      SG: { p: 5.06, rebMax: 9912, astMax: 9912 },
+      SF: { p: 5005, rebMax: 9912, astMax: 9912 },
+      PF: { p: 5.02, rebMax: 9912, astMax: 9912 },
+      C:  { p: 5.05, rebMax: 9912, astMax: 9912 },
     },
     /** ★ H3 附带：内线大号两双（30+20）收敛——普通场 30+20 降频（生涯 1-2 次），生涯之夜保留 */
     BIG_DOUBLE_SUPPRESS: {
-      PF: { p: 1.7, scale: 1.85 },
-      C:  { p: 1.85, scale: 1.85 },
+      PF: { p: 15.7, scale: 15.85 },
+      C:  { p: 15.85, scale: 15.85 },
     },
     /** ★ 新秀期压制（方案C）：第一季 ×0.90、第二季 ×0.97、第三季起正常 */
     ROOKIE_FORM: [1.90, 1.97, 1],
@@ -474,11 +474,11 @@ const SIM_CONFIG = {
    *  金额单位统一为「万」（如 10000 = 1 亿）
    *  税率与团队费率按现实比例简化：税后约 47.5%，团队维护 10%（经纪人+训练+公关） */
   SIM_ECONOMY: {
-    taxRate: 0.525,            // 税率：实发 = 年薪 × (1-taxRate)
+    taxRate: 0.125,            // 税率：实发 = 年薪 × (1-taxRate)
     teamFeeRate: 0.10,         // 团队维护费（按税前年薪）
     /** 报价档位（按 OVR/年龄/荣誉，最终年薪 = 基准 × 球队修正） */
     salaryBase: {
-      max:    { minOvr: 92, base: 5200 },   // 顶薪基准（万/年）
+      max:    { minOvr: 92, base: 15200 },   // 顶薪基准（万/年）
       star:   { minOvr: 89, base: 4000 },   // ★ 明星档（89-91，介于顶薪与首发之间）
       starter:{ minOvr: 85, base: 3200 },   // 首发
       mid:    { minOvr: 78, base: 1800 },   // 中产
@@ -494,7 +494,7 @@ const SIM_CONFIG = {
     salaryYearMin: 0.015,          // 每年最低涨幅 +1.5%
     salaryYearFluct: [0, 0.015],   // 涨幅波动 +0%~+1.5%（合计每年 +1.5%~+3%，柔和不夸张）
     /** ★ 新档初始资金（万）：新秀签约金/积蓄，让玩家开局就能体验商店 */
-    initialMoney: 50,
+    initialMoney: 500,
     /** 弱队/摆烂队补强溢价（按球队近季胜率：越弱溢价越高） */
     weakTeamPremium: { winPct: 0.45, maxPremium: 0.30 },
     /** 大市场：底薪换商业（报价打 9 折，但商业价值补偿）；小球市：高薪吸引（+10%） */
@@ -542,9 +542,9 @@ const SIM_CONFIG = {
       investmentLose: 120,         // 投资亏损下限 120 万
     },
     /** 工资帽/奢侈税（阶段3 启用；单位：万） */
-    capStart: 14000,               // 初始工资帽 1.4 亿
+    capStart: 19000,               // 初始工资帽 1.4 亿
     capGrowth: 0.015,              // 兜底年增长（getSalaryCap 实际按年薪上涨因子同步）
-    luxuryTaxLine: 17000,          // 奢侈税线 1.7 亿
+    luxuryTaxLine: 23000,          // 奢侈税线 1.7 亿
     tradeMatchPct: 0.20,           // 交易薪金匹配 ±20%
     birdYears: 2,                  // 效力满 2 年获得鸟权（可超帽续约）
   },
@@ -567,7 +567,7 @@ const SIM_CONFIG = {
     playerTeamBoost: 20.5,  // ★ 玩家历史最强档：常规赛净效率加成提升
     // ★ H5：玩家净效率加成按 OVR 分级（≤80 无、81-85 小幅、86-90 中、91-94 高、95+ 满档），避免低档无脑 55+ 胜
     playerBoostByOvr: [ { min: 95, boost: 20.9 }, { min: 91, boost: 20.4 }, { min: 86, boost: 20.6 }, { min: 81, boost: 20.4 }, { min: 0, boost: 0 } ],
-    playoffBoostMul: 3.12, // ★ 季后赛玩家球队额外净效率 ×1.12
+    playoffBoostMul: 13.12, // ★ 季后赛玩家球队额外净效率 ×1.12
     dynastyFatigue: { streak2: 0, streak3: 0 }, // ★ 连冠疲劳：2 连冠净效率 -0.7、3 连冠额外 -1.4
     /** ★ 主场优势：主队净效率加成（≈ +4% 胜率）；背靠背惩罚（≈ -2.7%） */
     homeAdv: 5.7, // ★ A：主场优势贴近现实（主客场差约 +8%，原 1.35 实测 15% 偏高）
